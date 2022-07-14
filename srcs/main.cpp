@@ -1,7 +1,9 @@
 #include <iostream>
-#include <string.h>
-#include <sys/types.h>
+#include <string>
+#include <strings.h>
 #include <sys/socket.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 
@@ -18,25 +20,26 @@ int main()
 		7. close socket
 	*/
 	 //1 . Create a socket
-	int listen = socket(AF_INET, SOCK_STREAM, 0);
-	if (listen < 0)
+	int listenning = socket(AF_INET, SOCK_STREAM, 0);
+	if (listenning < 0)
 	{
-		std::cerr << "Error calling socket function" << std::end;
+		std::cerr << "Error calling socket function" << std::endl;
 		return (-1);
 	}
+
 	//2. Bind the socket to an IP port
 	sockaddr_in hint;
 	hint.sin_family = AF_INET;
 	hint.sin_port = htons(54000);// stands for host to network short
 	inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr); // internet command ->  pointer to string to a number (number to an arry of integer), the 0.0.0.0 links 
-	if (bind(listen, (int)AF_INET, (sockaddr*)&hint, sizeof(hint)) == -1)
+	if (bind(listenning, (sockaddr*)&hint, sizeof(hint)) == -1)
 	{
 		std::cerr << "Can't bid to IP/port" << std::endl;
 		return (-1);
 	}
 
 	// 3 . check if the socket is listenning in
-	if ( listen(listen, SOMAXCONN) == -1)
+	if (listen(listenning, SOMAXCONN) == -1)
 	{
 		std::cerr << "Can't listen" << std::endl;
 		return (-1);
@@ -47,15 +50,16 @@ int main()
 	socklen_t clientsize = sizeof(client);
 	char host[NI_MAXHOST];
 	char svc[NI_MAXSERV];
+
 	// our new client socket
-	int clientSocket = accept(listen, (sockaddr*)&client, &clientsize);	
+	int clientSocket = accept(listenning, (sockaddr*)&client, &clientsize);	
 
 	if (clientSocket == -1)
 	{
-		cerr << "Problem with client connecting" << std::endl;
+        std::cerr << "Problem with client connecting" << std::endl;
 		return (-4);
 	}
-	close(listen);
+	close(listenning);
 
 	memset(host, 0, NI_MAXHOST);
 	memset(svc, 0, NI_MAXSERV);
@@ -92,9 +96,7 @@ int main()
 			break;
 		}
 		//display message
-		std::cout << "Recieved : " << string(buffer, 0, byteRecv) << std::endl;
-		// 
+		std::cout << "Recieved : " << std::string(buffer, 0, byteRecv) << std::endl;
 	}
-
 	return (0);
 }

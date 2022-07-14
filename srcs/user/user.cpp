@@ -1,38 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.cpp                                         :+:      :+:    :+:   */
+/*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/14 10:21:57 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/14 10:23:55 by adu-pavi         ###   ########.fr       */
+/*   Created: 2022/07/09 11:51:26 by adu-pavi          #+#    #+#             */
+/*   Updated: 2022/07/13 15:12:53 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "user.hpp"
 
-server::server()
-{
-	
-}
-
-server::~server()
+user::user()
 {
 
 }
 
-server::server(server const & rhs)
+user::~user()
 {
 
 }
 
-server::~server()
+user::user(user const & rhs)
 {
 
 }
 
-server &server::operator=(server const & rhs)
+user::~user()
+{
+
+}
+
+user &user::operator=(user const & rhs)
 {
 
 }
