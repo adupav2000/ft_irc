@@ -2,7 +2,7 @@
 #define USER_HPP
 #include <string>
 #include <iostream>
-class user : public map
+class user 
 {
 public:
     user();

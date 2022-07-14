@@ -2,6 +2,7 @@
 //Handle multiple socket connections with select and fd_set on Linux 
 #include <stdio.h> 
 #include <iostream>
+#include <cstring>
 #include <string.h>   //strlen 
 #include <stdlib.h> 
 #include <errno.h> 
@@ -18,6 +19,8 @@
      
 int main(int argc , char *argv[])  
 {  
+	(void)argc;
+	(void)argv;
     int opt = TRUE;  
     int master_socket , addrlen , new_socket , client_socket[30] , 
           max_clients = 30 , activity, i , valread , sd;  
@@ -25,12 +28,11 @@ int main(int argc , char *argv[])
     struct sockaddr_in address;  
          
     char buffer[1025];  //data buffer of 1K 
-         
     //set of socket descriptors 
     fd_set readfds;  
          
     //a message 
-    std::string message = "ECHO Daemon v1.0 ";  
+    const void *message = "ECHO Daemon v1.0 ";  
      
     //initialise all client_socket[] to 0 so not checked 
     for (i = 0; i < max_clients; i++)  
@@ -60,7 +62,7 @@ int main(int argc , char *argv[])
     address.sin_port = htons( PORT );  
          
     //bind the socket to localhost port 8888 
-    if (bind(master_socket, (struct sockaddr *)&address, sizeof(address))<0)  
+    if (bind(master_socket, (struct sockaddr *)&address, sizeof(address)) < 0)  
     {  
 		std::cerr << "bind failed" << std::endl;
         exit(EXIT_FAILURE);  
@@ -108,7 +110,7 @@ int main(int argc , char *argv[])
        
         if ((activity < 0) && (errno!=EINTR))  
         {  
-            printf("select error");  
+			std::cout << "select error " << std::endl;
         }  
              
         //If something happened on the master socket , 
@@ -118,23 +120,20 @@ int main(int argc , char *argv[])
             if ((new_socket = accept(master_socket, 
                     (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)  
             {  
-                perror("accept");  
+				std::cerr << "Accept" << std::endl;
                 exit(EXIT_FAILURE);  
             }  
              
             //inform user of socket number - used in send and receive commands 
-            printf("New connection , socket fd is %d , ip is : %s , port : %d 
-                  \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs
-                  (address.sin_port));  
-           
+            std::cout << "New connection , socket fd is " << new_socket << " , ip is : " <<  inet_ntoa(address.sin_addr) << ", port : " << ntohs (address.sin_port) << std::endl;  
             //send new connection greeting message 
-            if( send(new_socket, message, strlen(message), 0) != strlen(message) )  
-            {  
-                perror("send");  
-            }  
-                 
-            puts("Welcome message sent successfully");  
-                 
+            if( send(new_socket, (message), strlen(static_cast<const char *>(message)), 0) != (ssize_t)strlen(static_cast<const char *>(message)))
+            {
+				std::cout << "send" << std::endl;
+            }
+
+            puts("Welcome message sent successfully");
+
             //add new socket to array of sockets 
             for (i = 0; i < max_clients; i++)  
             {  
@@ -142,12 +141,11 @@ int main(int argc , char *argv[])
                 if( client_socket[i] == 0 )  
                 {  
                     client_socket[i] = new_socket;  
-                    printf("Adding to list of sockets as %d\n" , i);  
-                         
-                    break;  
-                }  
-            }  
-        }  
+					std::cout << "Adding to list of sockets as " << i << std::endl;
+                    break;
+                }
+            }
+        }
              
         //else its some IO operation on some other socket
         for (i = 0; i < max_clients; i++)  
@@ -163,8 +161,7 @@ int main(int argc , char *argv[])
                     //Somebody disconnected , get his details and print 
                     getpeername(sd , (struct sockaddr*)&address , \
                         (socklen_t*)&addrlen);  
-                    printf("Host disconnected , ip %s , port %d \n" , 
-                          inet_ntoa(address.sin_addr) , ntohs(address.sin_port));  
+                     std::cout << "Host disconnected , ip "<< inet_ntoa(address.sin_addr) << " , port " << ntohs(address.sin_port) << std::endl;
                          
                     //Close the socket and mark as 0 in list for reuse 
                     close( sd );  

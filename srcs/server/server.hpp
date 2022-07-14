@@ -59,10 +59,8 @@ private:
 	int handle_incomming_connection();
 	int handle_other_connection();
 
-
-
 	/* Error types */
-
+	
 };
 
 #endif
