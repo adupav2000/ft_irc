@@ -46,6 +46,22 @@ private:
 	int new_client(); // sends a PL_WELCOME and adds a client in map
 	int new_service(); // sends a RPL_YOURESERVICE and adds a service in maps
 
+	/* A list of connection requirement variables */
+	int				listenning_socket;
+	sockaddr_in		hint_address;
+
+
+	/* Connection initialisation */
+	int initialise_socket();
+	int bind_socket();
+	int init_descriptors();
+	int await_activity();
+	int handle_incomming_connection();
+	int handle_other_connection();
+
+
+
+	/* Error types */
 
 };
 
