@@ -41,7 +41,6 @@ public:
 	int create_channel();
 	int destroy_channel();
 
-
 private:
 	std::string name;
 	//Client map<int, std::string> client_list;
