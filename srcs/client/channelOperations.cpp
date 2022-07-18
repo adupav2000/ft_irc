@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 13:59:57 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 14:08:22 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/18 19:41:13 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ Command: JOIN
 		   ERR_TOOMANYTARGETS              ERR_UNAVAILRESOURCE
 		   RPL_TOPIC
 */
-int client::JOIN(std::string arguments)
+int Client::JOIN(std::string arguments)
 {
 	return (0);
 }
@@ -73,7 +73,7 @@ int client::JOIN(std::string arguments)
            ERR_NEEDMOREPARAMS              ERR_NOSUCHCHANNEL
            ERR_NOTONCHANNEL
 */
-int client::PART(std::string arguments)
+int Client::PART(std::string arguments)
 {
 	return (0);
 }

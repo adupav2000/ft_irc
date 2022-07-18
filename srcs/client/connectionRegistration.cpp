@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 11:59:46 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/18 19:50:52 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
            ERR_NICKNAMEINUSE               ERR_NICKCOLLISION
            ERR_UNAVAILRESOURCE             ERR_RESTRICTED
 */
-int client::NICK(std::string arguments)
+int Client::NICK(std::string arguments)
 {
 	int false_synthax = 1;
 	if (!arguments.size())
@@ -60,7 +60,7 @@ int client::NICK(std::string arguments)
 
            ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
 */
-int client::USER(std::string arguments);
+int Client::USER(std::string arguments);
 
 /* Command: MODE
    Parameters: <nickname>
@@ -92,7 +92,7 @@ int client::USER(std::string arguments);
            ERR_UMODEUNKNOWNFLAG            RPL_UMODEIS
 
 */
-int client::MODE(std::string arguments);
+int Client::MODE(std::string arguments);
 
 /*
   Command: SERVICE
@@ -119,7 +119,7 @@ int client::MODE(std::string arguments);
 		   RPL_YOURESERVICE                RPL_YOURHOST
 		   RPL_MYINFO
 */
-int client::SERVICE(std::string arguments)
+int Client::SERVICE(std::string arguments)
 {
 	return (0);
 }
@@ -135,7 +135,7 @@ Command: QUIT
 
            None.
 */
-int client::QUIT(std::string arguments)
+int Client::QUIT(std::string arguments)
 {
 	return (0);
 }
@@ -162,8 +162,7 @@ Command: SQUIT
            ERR_NOPRIVILEGES                ERR_NOSUCHSERVER
            ERR_NEEDMOREPARAMS
 */
-int client::SQUIT(std::string arguments)
+int Client::SQUIT(std::string arguments)
 {
 	return (0);
 }
-

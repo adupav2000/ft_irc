@@ -6,33 +6,33 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 09:26:19 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/18 19:58:31 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./server.hpp"
 
-server::server() : _name(), _fds()
+Server::Server() : _name(), _fds()
 {
 	return;
 }
 
-server::~server()
+Server::~Server()
 {
 	return;
 }
 
-// server::server(server const & rhs)
+// Server::Server(Server const & rhs)
 // {
 //     return ;
 // }
 
-// server &server::operator=(server const & rhs)
+// Server &Server::operator=(Server const & rhs)
 // {
 //     return _null;
 // }
 
-void server::init()
+void Server::init()
 {
 	int				 	socketfd, on;
 	socklen_t			addr_size;
@@ -57,7 +57,7 @@ void server::init()
 	_fds.events = POLLIN;
 }
 
-void server::launch()
+void Server::launch()
 {
 	struct sockaddr_storage		client_addr;
 	socklen_t					addr_size;
@@ -77,7 +77,7 @@ void server::launch()
 		{
 			if (beg->fd == _fds.fd)
 			{
-				std::cout << "server :" << std::endl;
+				std::cout << "Server :" << std::endl;
 				addr_size = sizeof(client_addr);
 				client_sock = accept(_fds.fd, (struct sockaddr *)&client_addr, &addr_size);
 				if (client_sock == -1)

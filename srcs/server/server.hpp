@@ -24,13 +24,13 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
-class server
+class Server
 {
 public:
-    server();// meant to launch the server
-    server(server const & rhs); // lauch another server
-    ~server();// destroys all channel and everything that was set
-	//server &operator=(server const & rhs);
+    Server();// meant to launch the Server
+    Server(Server const & rhs); // lauch another Server
+    ~Server();// destroys all channel and everything that was set
+	//Server &operator=(Server const & rhs);
 
 	void init();
 

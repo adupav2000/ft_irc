@@ -6,12 +6,12 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 16:00:06 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/18 19:56:36 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+#ifndef Client_HPP
+#define Client_HPP
 #include <string>
 #include <iostream>
 #include <map>
@@ -20,15 +20,15 @@
 #include "../server/server.hpp"
 #include "../globals.hpp"
 
-class client
+class Client
 {
 public:
-    client();
-    client(struct pollfd _fds);
-    client(client const & rhs);
-    ~client();
-    client &operator=(client const & rhs);
-	server &_serverRef;
+    Client();
+    Client(struct pollfd _fds, Server &serverRef);
+    Client(Client const & rhs);
+    ~Client();
+    Client &operator=(Client const & rhs);
+	Server &_serverRef;
 	int execCommand(std::string arguments);
 	
 	/* Getters */
@@ -37,12 +37,13 @@ public:
 
 protected:
 	/* Server side variables */
-	struct pollfd	_fds;
+	typedef struct pollfd t_pollfd;
+	t_pollfd _fds;
 
 	/* Variables */
-	typedef std::map<std::string, int (client::*)(std::string)> t_messFuncMap;
+	typedef std::map<std::string, int (Client::*)(std::string)> t_messFuncMap;
 	t_messFuncMap	_messageFunctions;
-	std::string nickname;
+	std::string		_nickname;
 
 	/* Connection registration functions*/
 	int NICK(std::string);
@@ -55,7 +56,7 @@ protected:
 	/* Channel operations */
 	int JOIN(std::string arguments);
 	int PART(std::string arguments);
-	
+
 	/* Utils */
 	int isDigit(char c);
 	int isLetter(char c);
