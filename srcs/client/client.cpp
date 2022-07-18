@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 15:10:29 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/18 15:56:54 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,20 @@
 
 client::client()
 {
-	_messageFunctions.insert(std::pair<std::string, int (*)(std::string)>("NICK", &NICK));
+
+}
+
+client::client(struct pollfd	fds) : _fds(fds) 
+{
+	/* connection registration */
+	_messageFunctions["NICK"] = &NICK;
+	_messageFunctions["USER"] = &USER;
+	_messageFunctions["MODE"] = &MODE;
+	_messageFunctions["SERVICE"] = &SERVICE;
+	_messageFunctions["QUIT"] = &QUIT;
+	_messageFunctions["SQUIT"] = &SQUIT;
+
+	/*  */
 }
 
 client::~client()

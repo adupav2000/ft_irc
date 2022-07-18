@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 15:07:46 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/18 16:00:06 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,26 +24,33 @@ class client
 {
 public:
     client();
+    client(struct pollfd _fds);
     client(client const & rhs);
     ~client();
     client &operator=(client const & rhs);
 	server &_serverRef;
 	int execCommand(std::string arguments);
 	
+	/* Getters */
+	std::string		getNickname();
+	struct pollfd	getPollFds();
+
 protected:
+	/* Server side variables */
+	struct pollfd	_fds;
+
 	/* Variables */
-	typedef std::map<std::string, int (*)(std::string)> t_messFuncMap;
-	typedef std::pair<std::string, int (*)(std::string)> t_messFuncPair;
-	// t_messFuncMap	_messageFunctions;
-	std::map<std::string, int (*)(std::string)> _messageFunctions;
+	typedef std::map<std::string, int (client::*)(std::string)> t_messFuncMap;
+	t_messFuncMap	_messageFunctions;
+	std::string nickname;
 
 	/* Connection registration functions*/
-	int NICK(std::string arguments);
-	int USER(std::string arguments);
-	int MODE(std::string arguments);
-	int SERVICE(std::string arguments);
-	int QUIT(std::string arguments);
-	int SQUIT(std::string arguments);
+	int NICK(std::string);
+	int USER(std::string);
+	int MODE(std::string);
+	int SERVICE(std::string);
+	int QUIT(std::string);
+	int SQUIT(std::string);
 
 	/* Channel operations */
 	int JOIN(std::string arguments);
