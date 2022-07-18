@@ -9,8 +9,10 @@ public:
     user(user const & rhs);
     ~user();
     user &operator=(user const & rhs);
+	int handle_command();
 
 private:
+
 // should first give the PASS
 // then NICK / USER ...
 
