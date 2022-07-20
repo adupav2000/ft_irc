@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 15:56:48 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 21:13:21 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void Server::acceptClient()
 		
 	fds.fd = client_sock;
 	fds.events = POLLIN;
-	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds)));
+	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, static_cast<Server &>(*this))));
 	this->_nb_clients += 1;
 }
 

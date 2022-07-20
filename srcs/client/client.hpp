@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 20:55:07 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/20 21:10:15 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include "../command/command.hpp"
 #define BUFFER_SIZE 1024
 
+class Server;
+
 class Client
 {
 public:
@@ -32,9 +34,12 @@ public:
     Client &operator=(Client const & rhs);
 	int execCommand(std::string arguments);
 	
+    /* handling messages and commands */
+    void treatMessage();
+
 	/* Getters */
 	std::string		getNickname() const;
-	struct pollfd	getPollFds() const;
+	struct pollfd	getPoll() const;
 	Server			&getServerRef() const;
 
 protected:

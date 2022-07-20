@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 17:23:43 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 21:09:42 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,7 @@ Client::~Client()
 }
 
 
-Client::Client(Client const & rhs) : _serverRef(rhs.getServerRef()), _fds(rhs.getPollFds())
-
+Client::Client(Client const & rhs) : _serverRef(rhs.getServerRef()), _fds(rhs.getPoll())
 {
 	this->_messageFunctions = rhs._messageFunctions;
 	this->_nickname = rhs._nickname;
@@ -66,7 +65,7 @@ std::string		Client::getNickname() const
 {
 	return (this->_nickname);
 }
-struct pollfd	Client::getPollFds() const
+struct pollfd	Client::getPoll() const
 {
 	return (this->_fds);
 }
