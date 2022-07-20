@@ -6,13 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 19:58:31 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 15:56:48 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./server.hpp"
 
-Server::Server() : _name(), _fds()
+Server::Server()
 {
 	return;
 }
@@ -62,8 +62,8 @@ void Server::launch()
 	struct sockaddr_storage		client_addr;
 	socklen_t					addr_size;
 	int							client_sock;
-	std::vector<struct pollfd>	pollfds;
-	struct pollfd				client;
+	std::vector<t_pollfd>		pollfds;
+	t_pollfd					client;
 	char						buffer[1025];
 	std::string					message;
 	for (;;)

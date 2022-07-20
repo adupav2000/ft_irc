@@ -6,10 +6,11 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 19:50:52 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 13:58:27 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "client.hpp"
 #include "../server/server.hpp"
 #include "../globals.hpp"
 
@@ -29,14 +30,14 @@
 */
 int Client::NICK(std::string arguments)
 {
-	int false_synthax = 1;
+	// int false_synthax = 1;
 	if (!arguments.size())
 		return (ERR_NONICKNAMEGIVEN);
-	if (_serverRef->nickNameUsed(arguments))
-		return (ERR_NICKNAMEINUSE);	
-	if (arguments.size() > 9 || )
-		return (ERR_ERRONEUSNICKNAME);
-
+	// if (_serverRef.nickNameUsed(arguments))
+	// 	return (ERR_NICKNAMEINUSE);	
+	// if (arguments.size() > 9 || )
+	// 	return (ERR_ERRONEUSNICKNAME);
+	return (0);
 
 }
 
@@ -60,7 +61,11 @@ int Client::NICK(std::string arguments)
 
            ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
 */
-int Client::USER(std::string arguments);
+int Client::USER(std::string arguments)
+{
+	(void)arguments;
+	return (0);
+}
 
 /* Command: MODE
    Parameters: <nickname>
@@ -92,7 +97,11 @@ int Client::USER(std::string arguments);
            ERR_UMODEUNKNOWNFLAG            RPL_UMODEIS
 
 */
-int Client::MODE(std::string arguments);
+int Client::MODE(std::string arguments)
+{
+	(void)arguments;
+	return (0);
+}
 
 /*
   Command: SERVICE
@@ -121,6 +130,7 @@ int Client::MODE(std::string arguments);
 */
 int Client::SERVICE(std::string arguments)
 {
+	(void)arguments;
 	return (0);
 }
 
@@ -137,6 +147,7 @@ Command: QUIT
 */
 int Client::QUIT(std::string arguments)
 {
+	(void)arguments;
 	return (0);
 }
 
@@ -164,5 +175,6 @@ Command: SQUIT
 */
 int Client::SQUIT(std::string arguments)
 {
+	(void)arguments;
 	return (0);
 }

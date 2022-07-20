@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
 	(void)argc;
 	(void)argv;
 
-	server test;
+	Server test;
 	test.init();
+	test.launch();
 	return 0;
 }

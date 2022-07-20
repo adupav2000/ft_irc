@@ -22,6 +22,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <netdb.h>
+#include <fcntl.h>
+#include <poll.h>
+#include <vector>
 #include <arpa/inet.h>
 
 class Server
@@ -33,6 +36,7 @@ public:
 	//Server &operator=(Server const & rhs);
 
 	void init();
+	void launch();
 
 	/* Handle incomming strings */
 	// in charge of calling the right function
@@ -42,7 +46,9 @@ public:
 	int destroy_channel();
 
 private:
-	std::string name;
+	std::string _name;
+	typedef struct pollfd	t_pollfd;
+	t_pollfd				_fds;
 	//Client map<int, std::string> client_list;
 	//Service map<int, std::string> service_list;
 	/* client operation */

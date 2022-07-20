@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 19:56:36 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 15:28:46 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <poll.h>
 #include <utility>
 
 #include "../server/server.hpp"
@@ -23,22 +24,22 @@
 class Client
 {
 public:
-    Client();
     Client(struct pollfd _fds, Server &serverRef);
     Client(Client const & rhs);
     ~Client();
     Client &operator=(Client const & rhs);
-	Server &_serverRef;
 	int execCommand(std::string arguments);
 	
 	/* Getters */
-	std::string		getNickname();
-	struct pollfd	getPollFds();
+	std::string		getNickname() const;
+	struct pollfd	getPollFds() const;
+	Server			&getServerRef() const;
 
 protected:
 	/* Server side variables */
-	typedef struct pollfd t_pollfd;
-	t_pollfd _fds;
+	Server					&_serverRef;
+	typedef struct pollfd	t_pollfd;
+	t_pollfd				_fds;
 
 	/* Variables */
 	typedef std::map<std::string, int (Client::*)(std::string)> t_messFuncMap;
@@ -54,13 +55,13 @@ protected:
 	int SQUIT(std::string);
 
 	/* Channel operations */
-	int JOIN(std::string arguments);
-	int PART(std::string arguments);
+	int JOIN(std::string);
+	int PART(std::string);
 
 	/* Utils */
-	int isDigit(char c);
-	int isLetter(char c);
-	int isSpecial(char c);
+	int isDigit(char c) const;
+	int isLetter(char c) const;
+	int isSpecial(char c) const;
 
 };
 
