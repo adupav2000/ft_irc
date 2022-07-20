@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 17:23:43 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 21:09:42 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,7 @@ Client::~Client()
 }
 
 
-Client::Client(Client const & rhs) : _serverRef(rhs.getServerRef()), _fds(rhs.getPollFds())
-
+Client::Client(Client const & rhs) : _serverRef(rhs.getServerRef()), _fds(rhs.getPoll())
 {
 	this->_messageFunctions = rhs._messageFunctions;
 	this->_nickname = rhs._nickname;
@@ -66,7 +65,7 @@ std::string		Client::getNickname() const
 {
 	return (this->_nickname);
 }
-struct pollfd	Client::getPollFds() const
+struct pollfd	Client::getPoll() const
 {
 	return (this->_fds);
 }
@@ -81,7 +80,7 @@ void Client::treatMessage()
 	char buffer[BUFFER_SIZE + 1];
 	std::string message;
 	int ret;
-	size_t pos;
+	int i, start;	
 
 	memset(buffer, 0, BUFFER_SIZE);
 	ret = recv(this->getPoll().fd, buffer, 1024, 0);
@@ -89,23 +88,22 @@ void Client::treatMessage()
 		return;
 	buffer[ret] = 0;
 	message += buffer;
-	std::cout << "buffer" << std::endl;
-	std::cout << "find " << message.find("\r\n") << std::endl;
-	std::cout << "lenght " << message.length() - 2 << std::endl;
-	if ((pos = message.find("\r\n")) == (message.length() - 2))
+	if (*(message.end() - 1) == '\n' && *(message.end() - 2) == '\r' && message.length() > 2)
 	{
-		std::cout << buffer << " ";
-		std::cout << "" << std::flush;
-		// while (message[i] && _message[i+1])
-		// {
-		// 	if (message[i] ==  '\r' && _message[i + 1] == '\n')
-		// 	{
-		// 		this->_command.push_back(_message.substr(init, i - init));
-		// 		init = i + 2;
-		// 		i += 2;
-		// 	}
-		// 	else
-		// 		i++;
-		// }
+		i = 0;
+		start = 0;
+		while (message[i] && message[i+1])
+		{
+			if (message[i] ==  '\r' && message[i + 1] == '\n')
+			{
+				// std::cout << i << message.substr(start, i - start) << std::endl;
+				_commands.push_back(new Command(message.substr(start, i - start)));
+				start = i + 2;
+				i += 2;
+			}
+			else
+				i++;
+		}
 	}
+
 }
