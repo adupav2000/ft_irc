@@ -1,26 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   service.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/20 15:32:01 by adu-pavi          #+#    #+#             */
+/*   Updated: 2022/07/20 15:32:14 by adu-pavi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "service.hpp"
 
-service::service()
-{
-
-}
-
-service::~service()
-{
-
-}
-
-service::service(service const & rhs)
-{
-
-}
-
-service::~service()
-{
-
-}
-
-service &service::operator=(service const & rhs)
+Service::~Service()
 {
 
 }

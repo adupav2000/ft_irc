@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:37:01 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 10:46:45 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 20:46:43 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <iostream>
@@ -353,4 +353,5 @@ the a mode flag sent was not recognized.
 - Error sent to any user trying to view or change the
 user mode for a user other than themselves.
 */
+
 std::vector<std::string> split(std::string str, std::string delimiter);

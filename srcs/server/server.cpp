@@ -6,12 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 09:26:19 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 15:56:48 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./server.hpp"
 #
+
 
 Server::Server() : _name("ircServer"), _fds()
 {
@@ -63,6 +64,7 @@ void Server::init()
 
 void Server::launch()
 {
+
 	std::vector<struct pollfd>		pollfds;
 	struct pollfd					client;
 

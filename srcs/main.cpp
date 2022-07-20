@@ -25,5 +25,6 @@ int main(int argc, char *argv[])
 
 	Server test;
 	test.init();
+	test.launch();
 	return 0;
 }

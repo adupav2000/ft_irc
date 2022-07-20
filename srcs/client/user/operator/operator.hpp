@@ -2,13 +2,15 @@
 #define OPERATOR_HPP
 #include <string>
 #include <iostream>
-class operator
+#include "../user.hpp"
+
+class Operator : public User
 {
 public:
-    operator();
-    operator(operator const & rhs);
-    ~operator();
-    operator &operator=(operator const & rhs);
+    Operator();
+    Operator(Operator const & rhs);
+    ~Operator();
+    Operator &operator=(Operator const & rhs);
 
 private:
 
