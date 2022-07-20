@@ -19,23 +19,43 @@
 
 #include "../server/server.hpp"
 #include "../globals.hpp"
+#define BUFFER_SIZE 1024
 
-class client
+enum clientStatus {
+
+};
+
+class Client
 {
 public:
-    client();
-    client(client const & rhs);
-    ~client();
-    client &operator=(client const & rhs);
-	server &_serverRef;
+    Client();
+    Client(struct pollfd poll);
+    Client(Client const & rhs);
+    ~Client();
+    Client &operator=(Client const & rhs);
+	// Server &_serverRef;
 	int execCommand(std::string arguments);
 	
+	// GETTERS
+
+	struct pollfd const &getPoll();
+	std::string const &getNickname();
+
+
+	void treatMessage();
+	
 protected:
+ 
 	/* Variables */
+	struct pollfd _fds;
+	std::string _nickname;
+
 	typedef std::map<std::string, int (*)(std::string)> t_messFuncMap;
 	typedef std::pair<std::string, int (*)(std::string)> t_messFuncPair;
 	// t_messFuncMap	_messageFunctions;
 	std::map<std::string, int (*)(std::string)> _messageFunctions;
+
+
 
 	/* Connection registration functions*/
 	int NICK(std::string arguments);
