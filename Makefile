@@ -47,7 +47,7 @@ $(OBJ):
 	@echo "${_GREEN}Moving obj files in right place${_WHITE}"
 
 $(NAME): $(OBJ)
-	@$(COMPILER) $(FLAGS) srcs/main.cpp $(OBJ) -o server
+	@$(COMPILER) $(FLAGS) srcs/main.cpp $(OBJ) -o $(NAME)
 	@echo "${_GREEN}Compiling${_WHITE}"
 	@echo "${_GREEN}${NAME} executable was created${_WHITE}"
 
