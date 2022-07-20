@@ -19,11 +19,14 @@
 
 #include "../server/server.hpp"
 #include "../globals.hpp"
+#include "../command/command.hpp"
 #define BUFFER_SIZE 1024
 
 enum clientStatus {
 
 };
+
+class Command;
 
 class Client
 {
@@ -49,7 +52,8 @@ protected:
 	/* Variables */
 	struct pollfd _fds;
 	std::string _nickname;
-
+	std::vector<Command *> _commands;
+	std::map<std::string, void(*)(Command *)> functionCmd;
 	typedef std::map<std::string, int (*)(std::string)> t_messFuncMap;
 	typedef std::pair<std::string, int (*)(std::string)> t_messFuncPair;
 	// t_messFuncMap	_messageFunctions;

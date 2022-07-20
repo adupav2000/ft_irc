@@ -1,5 +1,10 @@
 NAME	=	ft_irc
-SRCS	=	main.cpp ./srcs/server/server.cpp ./srcs/client/client.cpp
+SRCS	=	main.cpp \
+			./srcs/server/server.cpp \
+			./srcs/client/client.cpp \
+			./srcs/command/command.cpp \
+			./srcs/utils.cpp
+
 CC		=	c++
 CFLAGS	=	-Wall -Wextra -Werror
 OBJS	=	$(SRCS:.cpp=.o)

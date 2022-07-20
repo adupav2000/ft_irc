@@ -9,6 +9,8 @@
 /*   Updated: 2022/07/18 10:46:45 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include <iostream>
+#include <vector>
 
 #define ERR_NOSUCHNICK 401 
 /*              "<nickname> :No such nick/channel"
@@ -351,3 +353,4 @@ the a mode flag sent was not recognized.
 - Error sent to any user trying to view or change the
 user mode for a user other than themselves.
 */
+std::vector<std::string> split(std::string str, std::string delimiter);
