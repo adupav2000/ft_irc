@@ -20,6 +20,7 @@
 
 #include "../server/server.hpp"
 #include "../globals.hpp"
+#define BUFFER_SIZE 1024
 
 class Client
 {
