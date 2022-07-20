@@ -6,16 +6,22 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 15:10:29 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 17:23:43 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
-Client::Client()
+Client::Client(t_pollfd	fds, Server &serverRef) : _serverRef(serverRef), _fds(fds)  
 {
-	return ;
-	// _messageFunctions.insert(std::pair<std::string, int (*)(std::string)>("NICK", &NICK));
+	/* connection registration */
+	_messageFunctions["NICK"] = &Client::NICK;
+	_messageFunctions["USER"] = &Client::USER;
+	_messageFunctions["MODE"] = &Client::MODE;
+	_messageFunctions["SERVICE"] = &Client::SERVICE;
+	_messageFunctions["QUIT"] = &Client::QUIT;
+	_messageFunctions["SQUIT"] = &Client::SQUIT;
+
 }
 
 Client::~Client()
@@ -23,44 +29,51 @@ Client::~Client()
 	return ;
 }
 
-Client::Client(struct pollfd poll) : _fds(poll)
-{
 
+Client::Client(Client const & rhs) : _serverRef(rhs.getServerRef()), _fds(rhs.getPollFds())
+
+{
+	this->_messageFunctions = rhs._messageFunctions;
+	this->_nickname = rhs._nickname;
 }
 
-// Client::Client(Client const & rhs)
-// {
 
-// }
-
-// Client &Client::operator=(client const & rhs)
-// {
-
-// }
-
-struct pollfd const &Client::getPoll()
+Client &Client::operator=(Client const & rhs)
 {
-	return this->_fds;
+	this->_fds = rhs._fds;
+	this->_messageFunctions = rhs._messageFunctions;
+	this->_nickname = rhs._nickname;
+	return (*this);
 }
 
-std::string const &Client::getNickname()
-{
-	return this->_nickname;
-}
+int Client::isDigit(char c) const
 
-int Client::isDigit(char c)
 {
 	return (c >= '0' && c <= '9');
 }
 
-int Client::isLetter(char c)
+int Client::isLetter(char c) const
 {
 	return ((c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A'));
 }
 
-int Client::isSpecial(char c)
+int Client::isSpecial(char c) const
 {
 	return ((c <= '}' && c >= '{') && (c >= '[' && c <= '`'));
+}
+
+std::string		Client::getNickname() const
+{
+	return (this->_nickname);
+}
+struct pollfd	Client::getPollFds() const
+{
+	return (this->_fds);
+}
+
+Server			&Client::getServerRef() const
+{
+	return (this->_serverRef);
 }
 
 void Client::treatMessage()

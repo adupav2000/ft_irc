@@ -1,26 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   operator.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/20 15:51:20 by adu-pavi          #+#    #+#             */
+/*   Updated: 2022/07/20 15:51:21 by adu-pavi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "operator.hpp"
 
-operator::operator()
-{
-
-}
-
-operator::~operator()
-{
-
-}
-
-operator::operator(operator const & rhs)
-{
-
-}
-
-operator::~operator()
-{
-
-}
-
-operator &operator::operator=(operator const & rhs)
+Operator::~Operator()
 {
 
 }

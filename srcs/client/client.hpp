@@ -6,73 +6,63 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/18 15:07:46 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/20 15:28:46 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+#ifndef Client_HPP
+#define Client_HPP
 #include <string>
 #include <iostream>
 #include <map>
+#include <poll.h>
 #include <utility>
 
 #include "../server/server.hpp"
 #include "../globals.hpp"
 #define BUFFER_SIZE 1024
 
-enum clientStatus {
-
-};
-
 class Client
 {
 public:
-    Client();
-    Client(struct pollfd poll);
+    Client(struct pollfd _fds, Server &serverRef);
     Client(Client const & rhs);
     ~Client();
     Client &operator=(Client const & rhs);
-	// Server &_serverRef;
 	int execCommand(std::string arguments);
 	
-	// GETTERS
+	/* Getters */
+	std::string		getNickname() const;
+	struct pollfd	getPollFds() const;
+	Server			&getServerRef() const;
 
-	struct pollfd const &getPoll();
-	std::string const &getNickname();
-
-
-	void treatMessage();
-	
 protected:
- 
+	/* Server side variables */
+	Server					&_serverRef;
+	typedef struct pollfd	t_pollfd;
+	t_pollfd				_fds;
+
 	/* Variables */
-	struct pollfd _fds;
-	std::string _nickname;
-
-	typedef std::map<std::string, int (*)(std::string)> t_messFuncMap;
-	typedef std::pair<std::string, int (*)(std::string)> t_messFuncPair;
-	// t_messFuncMap	_messageFunctions;
-	std::map<std::string, int (*)(std::string)> _messageFunctions;
-
-
+	typedef std::map<std::string, int (Client::*)(std::string)> t_messFuncMap;
+	t_messFuncMap	_messageFunctions;
+	std::string		_nickname;
 
 	/* Connection registration functions*/
-	int NICK(std::string arguments);
-	int USER(std::string arguments);
-	int MODE(std::string arguments);
-	int SERVICE(std::string arguments);
-	int QUIT(std::string arguments);
-	int SQUIT(std::string arguments);
+	int NICK(std::string);
+	int USER(std::string);
+	int MODE(std::string);
+	int SERVICE(std::string);
+	int QUIT(std::string);
+	int SQUIT(std::string);
 
 	/* Channel operations */
-	int JOIN(std::string arguments);
-	int PART(std::string arguments);
-	
+	int JOIN(std::string);
+	int PART(std::string);
+
 	/* Utils */
-	int isDigit(char c);
-	int isLetter(char c);
-	int isSpecial(char c);
+	int isDigit(char c) const;
+	int isLetter(char c) const;
+	int isSpecial(char c) const;
 
 };
 

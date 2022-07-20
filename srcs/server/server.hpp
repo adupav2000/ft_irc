@@ -32,6 +32,7 @@
 #include <fstream>
 #include "../client/client.hpp"
 
+
 class Client;
 
 class Server
@@ -63,9 +64,12 @@ public:
 
 private:
 	std::string _name;
-    struct pollfd _fds;
+
+	typedef struct pollfd	t_pollfd;
+	t_pollfd				_fds;
 	std::map<int, Client *> _clients;
 	unsigned int _nb_clients;
+
 	//Service map<int, std::string> service_list;
 	/* client operation */
 	int new_client(); // sends a PL_WELCOME and adds a client in map
