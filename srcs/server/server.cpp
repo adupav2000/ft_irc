@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 21:13:21 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/21 13:02:39 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void Server::removeClient(int fd)
 	this->_nb_clients -= 1;
 }
 
-bool Server::searchNickname(std::string nickname)
+bool Server::nickNameUsed(std::string nickname)
 {
 	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 	{
