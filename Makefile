@@ -4,23 +4,35 @@ CLIENT_FILE = channelOperations.cpp\
 			connectionRegistration.cpp\
 			service/service.cpp\
 			user/user.cpp\
-			user/operator/operator.cpp
+			user/operator/operator.cpp \
+
+UTILS_FILE = utils.cpp
 
 SERVER_FILE = server.cpp
+
+COMMAND_FILE = command.cpp
 
 CLIENT_INC = client.hpp\
 			  service/service.hpp\
 			  user/user.hpp\
-			  user/operator/operator.hpp
+			  user/operator/operator.hpp \
 
 SERVER_INC = server.hpp
 
-INCLUDE = $(addprefix srcs/client/, $(CLIENT_FILE))
-INCLUDE += $(addprefix srcs/server/, $(SERVER_FILE))
+COMMAND_INC = command.hpp
+
+GLOBAL_INC = global.hpp
+
+INCLUDE = $(addprefix srcs/client/, $(CLIENT_INC))
+INCLUDE += $(addprefix srcs/server/, $(SERVER_INC))
+INCLUDE += $(addprefix srcs/command/, $(COMMAND_INC))
+INCLUDE += $(addprefix srcs/, $(GLOBAL_INC))
 
 
 SOURCE = $(addprefix srcs/client/, $(CLIENT_FILE))
 SOURCE += $(addprefix srcs/server/, $(SERVER_FILE))
+SOURCE += $(addprefix srcs/command/, $(COMMAND_FILE))
+SOURCE += $(addprefix srcs/, $(UTILS_FILE))
 
 OBJ = $(addprefix obj/, $(notdir $(SOURCE:.cpp=.o)))
 
