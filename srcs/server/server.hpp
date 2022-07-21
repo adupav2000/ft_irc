@@ -61,6 +61,8 @@ public:
 
 	void rplWelcome(Client client);
 
+	/* utils for client */
+	bool nickNameUsed(std::string nickname);
 
 private:
 	std::string _name;
@@ -74,7 +76,6 @@ private:
 	/* client operation */
 	int new_client(); // sends a PL_WELCOME and adds a client in map
 	int new_service(); // sends a RPL_YOURESERVICE and adds a service in maps
-	bool searchNickname(std::string nickname);
 
 	/* A list of connection requirement variables */
 	int				_listenning_socket;
