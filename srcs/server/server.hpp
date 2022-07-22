@@ -32,6 +32,7 @@
 #include <fstream>
 #include "../client/client.hpp"
 
+#define NB_CLIENTS_MAX 5
 
 class Client;
 
@@ -56,10 +57,11 @@ public:
 	/* user opération */
 	void acceptClient();
 	void removeClient(int fd);
+	void changeClientClass(Client oldClient, Client *newClient);
 	
 	// COMMAND RESPONSE
 
-	void rplWelcome(Client client);
+	void rplWelcome(Client *client);
 
 	/* utils for client */
 	bool nickNameUsed(std::string nickname);
@@ -70,7 +72,7 @@ private:
 	typedef struct pollfd	t_pollfd;
 	t_pollfd				_fds;
 	std::map<int, Client *> _clients;
-	unsigned int _nb_clients;
+	unsigned int _nbClients;
 
 	//Service map<int, std::string> service_list;
 	/* client operation */

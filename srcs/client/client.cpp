@@ -12,7 +12,7 @@
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server &serverRef) : _serverRef(serverRef), _fds(fds), _mode("")  
+Client::Client(t_pollfd	fds, Server &serverRef) :  _clientStatus(PENDING), _serverRef(serverRef), _fds(fds), _mode("")  
 {
 	/* connection registration */
 	_messageFunctions["NICK"] = &Client::NICK;
@@ -76,13 +76,35 @@ Server			&Client::getServerRef() const
 	return (this->_serverRef);
 }
 
+
 int Client::executeCommands()
 {
 	while (this->_commands.size() != 0)
 	{
 		this->_messageFunctions[_commands.begin()->getPrefix()](_commands.begin());
-
 	}
+
+Status 			Client::getStatus()
+{
+	return _clientStatus;
+}
+
+
+
+void 			Client::setStatus(Status newStatus)
+{
+	_clientStatus = newStatus;
+}
+
+void 			Client::setPoll(t_pollfd newPoll)
+{
+	_fds = newPoll;
+}
+
+void Client::clearCommands()
+{
+	_commands.clear();
+
 }
 
 void Client::treatMessage()
@@ -95,7 +117,10 @@ void Client::treatMessage()
 	memset(buffer, 0, BUFFER_SIZE);
 	ret = recv(this->getPoll().fd, buffer, 1024, 0);
 	if (ret == 0)
+	{
+		_clientStatus = DISCONNECTED;
 		return;
+	}
 	buffer[ret] = 0;
 	message += buffer;
 	if (*(message.end() - 1) == '\n' && *(message.end() - 2) == '\r' && message.length() > 2)
@@ -114,6 +139,19 @@ void Client::treatMessage()
 			else
 				i++;
 		}
+		if (_clientStatus != CONNECTED)
+		{
+			if (_commands.size() > 0)
+			{
+				_nickname = (*_commands[1]).getParameters()[0];
+				_clientStatus = PENDING;
+			}
+			else
+				_clientStatus = REFUSED;
+			}
 	}
-	executeCommands();
+	else
+		if (_clientStatus != CONNECTED)
+			_clientStatus = REFUSED;
+   executeCommands();
 }

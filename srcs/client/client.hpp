@@ -25,6 +25,13 @@
 
 class Server;
 
+enum Status {
+	CONNECTED,
+	DISCONNECTED,
+	PENDING,
+	REFUSED
+};
+
 class Client
 {
 public:
@@ -32,6 +39,9 @@ public:
     Client(Client const & rhs);
     ~Client();
     Client &operator=(Client const & rhs);
+
+	typedef struct pollfd	t_pollfd;
+
 	int execCommand(std::string arguments);
 	
     /* handling messages and commands */
@@ -42,6 +52,14 @@ public:
 	std::string		getNickname() const;
 	struct pollfd	getPoll() const;
 	Server			&getServerRef() const;
+	Status 			getStatus();
+
+	/* Setters */
+	void 			setStatus(Status newStatus);
+	void 			setPoll(t_pollfd newPoll);
+
+	void clearCommands();
+
 
 protected:
 	/* Variables */
@@ -52,10 +70,10 @@ protected:
 	t_messFuncMap	_messageFunctions;
 	std::string		_nickname;
 	std::string		_mode;
+	Status 			_clientStatus;
 
 	/* Server side variables */
 	Server					&_serverRef;
-	typedef struct pollfd	t_pollfd;
 	t_pollfd				_fds;
 
 	/* Connection registration functions*/
