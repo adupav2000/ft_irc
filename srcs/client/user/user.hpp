@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 15:31:47 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 15:31:48 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/21 19:07:54 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ public:
     ~User();
 	int handle_command();
 
-private:
-
+protected:
+	
 // should first give the PASS
 // then NICK / User ...
 
