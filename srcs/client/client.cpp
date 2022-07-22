@@ -6,13 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 21:09:42 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/22 17:26:57 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server &serverRef) : _serverRef(serverRef), _fds(fds)  
+Client::Client(t_pollfd	fds, Server &serverRef) : _serverRef(serverRef), _fds(fds), _mode("")  
 {
 	/* connection registration */
 	_messageFunctions["NICK"] = &Client::NICK;
@@ -22,6 +22,7 @@ Client::Client(t_pollfd	fds, Server &serverRef) : _serverRef(serverRef), _fds(fd
 	_messageFunctions["QUIT"] = &Client::QUIT;
 	_messageFunctions["SQUIT"] = &Client::SQUIT;
 
+	_registered = false;
 }
 
 Client::~Client()
@@ -45,18 +46,18 @@ Client &Client::operator=(Client const & rhs)
 	return (*this);
 }
 
-int Client::isDigit(char c) const
+bool Client::isDigit(char c) const
 
 {
 	return (c >= '0' && c <= '9');
 }
 
-int Client::isLetter(char c) const
+bool Client::isLetter(char c) const
 {
 	return ((c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A'));
 }
 
-int Client::isSpecial(char c) const
+bool Client::isSpecial(char c) const
 {
 	return ((c <= '}' && c >= '{') && (c >= '[' && c <= '`'));
 }
@@ -73,6 +74,15 @@ struct pollfd	Client::getPoll() const
 Server			&Client::getServerRef() const
 {
 	return (this->_serverRef);
+}
+
+int Client::executeCommands()
+{
+	while (this->_commands.size() != 0)
+	{
+		this->_messageFunctions[_commands.begin()->getPrefix()](_commands.begin());
+
+	}
 }
 
 void Client::treatMessage()
@@ -105,5 +115,5 @@ void Client::treatMessage()
 				i++;
 		}
 	}
-
+	executeCommands();
 }

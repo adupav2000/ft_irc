@@ -30,16 +30,6 @@ Command::~Command()
 	return;
 }
 
-// Command::Command(Command const & rhs)
-// {
-
-// }
-
-// Command &Command::operator=(Command const & rhs)
-// {
-
-// }
-
 // GETTERS
 std::string Command::getPrefix()
 {
