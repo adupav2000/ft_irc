@@ -36,3 +36,5 @@
 
 #gitignore
 .DS_Store
+ft_irc.dSYM/*
+ft_irc
