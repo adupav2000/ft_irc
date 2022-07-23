@@ -80,7 +80,15 @@ Status 			Client::getStatus()
 	return _clientStatus;
 }
 
+std::map<std::string, void(*)(Command *)>	Client::getFunction()
+{
+	return _functionCmd;
+}
 
+std::vector<Command *> Client::getCommands()
+{
+	return _commands;
+}
 
 void 			Client::setStatus(Status newStatus)
 {

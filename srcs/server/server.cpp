@@ -58,6 +58,7 @@ void Server::init()
 	addr_size = sizeof(addr);
 	_fds.fd = socketfd;
 	_fds.events = POLLIN;
+	_fds.revents = POLLIN;
 	std::cout << "Welcome to IRCinator" << std::endl;
 }
 
@@ -66,6 +67,7 @@ void Server::launch()
 
 	std::vector<struct pollfd>		pollfds;
 	Client 							*client;
+
 
 	for (;;)
 	{
@@ -77,29 +79,31 @@ void Server::launch()
 			std::cout << "client tab fd : " << (*it).second->getPoll().fd << std::endl;
 			pollfds.push_back((*it).second->getPoll());
 		}
-		if (pollfds[0].revents & POLLIN)
+		std::cout << "fds fd : " << pollfds[0].revents << "revents " << POLLIN << std::endl;
+		std::vector<pollfd>::iterator beg = pollfds.begin();
+		std::vector<pollfd>::iterator end = pollfds.end();
+		while (beg != end)
 		{
-			std::cout << "server :" << std::endl;
-			if (_nbClients < NB_CLIENTS_MAX )
-				acceptClient();
-			std::cout << "nb client : " << _nbClients << std::endl;
-			std::cout << "fd : " << pollfds[0].fd << std::endl;
-		}
-		else {
-			std::vector<pollfd>::iterator beg = pollfds.begin();
-			std::vector<pollfd>::iterator end = pollfds.end();
-			while (beg != end)
+			// if (beg->revents & POLLHUP && beg->fd != _fds.fd)
+			// {
+			// 	removeClient(beg->fd);
+			// }
+			if (beg->revents & POLLIN)
 			{
-				// if (beg->revents & POLLHUP && beg->fd != _fds.fd)
+				// for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 				// {
-				// 	removeClient(beg->fd);
+				// 	std::cout << "client status " << it->second->getStatus() << std::endl;
 				// }
-				if (beg->revents & POLLIN)
+				if (beg->fd == _fds.fd)
 				{
-					// for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-					// {
-					// 	std::cout << "client status " << it->second->getStatus() << std::endl;
-					// }
+					std::cout << "server :" << std::endl;
+					if (_nbClients < NB_CLIENTS_MAX )
+						acceptClient();
+					std::cout << "nb client : " << _nbClients << std::endl;
+					std::cout << "fd : " << pollfds[0].fd << std::endl;
+				}
+				else
+				{
 					client = _clients[beg->fd];
 					if (client == NULL)
 						return ;
@@ -110,16 +114,24 @@ void Server::launch()
 					else if (client->getStatus() == PENDING)
 						rplWelcome(client);
 					else if (client->getStatus() == CONNECTED)
-						// std::cout << "status :" << client->getStatus() << std::endl;
+					{
+						std::cout << "status :" << client->getStatus() << std::endl;
+						// std::map<std::string, void(*)(Command *)> functionCmd = client->getFunction();
+						// std::vector<Command *> commands = client->getCommands();
+						// for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)
+						// {
+						// 	functionCmd[(*it)->getPrefix]()
+						// }
+					}
 					client->clearCommands();
 					std::cout << "fd : " << client->getPoll().fd << std::endl;
-
+	
 				}
-					// else{
-					// 	std::cout << "else" << std::endl;
-					// }
-				beg++;
 			}
+				// else{
+				// 	std::cout << "else" << std::endl;
+				// }
+			beg++;
 		}
 		pollfds.clear();
 	}

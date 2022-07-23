@@ -41,6 +41,8 @@ public:
     Client &operator=(Client const & rhs);
 
 	typedef struct pollfd	t_pollfd;
+	typedef std::map<std::string, int (Client::*)(std::string)> t_messFuncMap;
+
 
 	int execCommand(std::string arguments);
 	
@@ -52,6 +54,8 @@ public:
 	struct pollfd	getPoll() const;
 	Server			&getServerRef() const;
 	Status 			getStatus();
+	std::map<std::string, void(*)(Command *)>	getFunction();
+	std::vector<Command *> getCommands();
 
 	/* Setters */
 	void 			setStatus(Status newStatus);
@@ -63,8 +67,7 @@ public:
 protected:
 	/* Variables */
 	std::vector<Command *> _commands;
-	std::map<std::string, void(*)(Command *)> functionCmd;
-	typedef std::map<std::string, int (Client::*)(std::string)> t_messFuncMap;
+	std::map<std::string, void(*)(Command *)> _functionCmd;
 	t_messFuncMap	_messageFunctions;
 	std::string		_nickname;
 	Status 			_clientStatus;
