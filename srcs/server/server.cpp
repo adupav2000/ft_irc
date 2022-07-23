@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 21:13:21 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/22 19:31:08 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,13 +115,18 @@ void Server::launch()
 						rplWelcome(client);
 					else if (client->getStatus() == CONNECTED)
 					{
-						std::cout << "status :" << client->getStatus() << std::endl;
-						// std::map<std::string, void(*)(Command *)> functionCmd = client->getFunction();
-						// std::vector<Command *> commands = client->getCommands();
-						// for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)
-						// {
-						// 	functionCmd[(*it)->getPrefix]()
-						// }
+						std::vector<Command *> commands = client->getCommands();
+						for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)
+						{
+							std::string reply;
+							std::cout << "prefix " << (*it)->getPrefix() << std::endl;
+							if ((*it)->getPrefix() == "NICK")
+							{
+								reply += ":" + client->getNickname() + "!" + client->getUsername() + "@localhost NICK " + (*it)->getParameters()[0] + "\r\n";
+								client->setNickname((*it)->getParameters()[0]);
+								send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+							}		
+						}
 					}
 					client->clearCommands();
 					std::cout << "fd : " << client->getPoll().fd << std::endl;
@@ -165,7 +170,7 @@ void Server::removeClient(int fd)
 	this->_nbClients -= 1;
 }
 
-bool Server::searchNickname(std::string nickname)
+bool Server::nickNameUsed(std::string nickname)
 {
 	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 	{

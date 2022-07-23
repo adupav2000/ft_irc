@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 21:10:15 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/22 17:47:19 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,29 +47,37 @@ public:
 	int execCommand(std::string arguments);
 	
     /* handling messages and commands */
-    void treatMessage();
+    void	treatMessage();
+	int		executeCommands();
 
 	/* Getters */
 	std::string		getNickname() const;
+	std::string		getUsername() const;
 	struct pollfd	getPoll() const;
 	Server			&getServerRef() const;
 	Status 			getStatus();
-	std::map<std::string, void(*)(Command *)>	getFunction();
+	
+	// std::map<std::string, int(Client*)(Command)>	getFunction();
 	std::vector<Command *> getCommands();
 
 	/* Setters */
 	void 			setStatus(Status newStatus);
 	void 			setPoll(t_pollfd newPoll);
+	void			setNickname(std::string newNickname);
 
 	void clearCommands();
 
 
 protected:
 	/* Variables */
+	bool 	_registered;
 	std::vector<Command *> _commands;
-	std::map<std::string, void(*)(Command *)> _functionCmd;
+	std::map<std::string, int(Client::*)(Command)> _functionCmd;
+	// typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
 	t_messFuncMap	_messageFunctions;
 	std::string		_nickname;
+	std::string		_username;
+	std::string		_mode;
 	Status 			_clientStatus;
 
 	/* Server side variables */
@@ -77,21 +85,22 @@ protected:
 	t_pollfd				_fds;
 
 	/* Connection registration functions*/
-	int NICK(std::string);
-	int USER(std::string);
-	int MODE(std::string);
-	int SERVICE(std::string);
-	int QUIT(std::string);
-	int SQUIT(std::string);
+	int NICK(Command);
+	int USER(Command);
+	int OPER(Command);
+	int MODE(Command);
+	int SERVICE(Command);
+	int QUIT(Command);
+	int SQUIT(Command);
 
 	/* Channel operations */
-	int JOIN(std::string);
-	int PART(std::string);
+	int JOIN(Command);
+	int PART(Command);
 
 	/* Utils */
-	int isDigit(char c) const;
-	int isLetter(char c) const;
-	int isSpecial(char c) const;
+	bool isDigit(char c) const;
+	bool isLetter(char c) const;
+	bool isSpecial(char c) const;
 
 };
 

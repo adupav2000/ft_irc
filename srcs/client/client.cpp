@@ -6,22 +6,23 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 21:09:42 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/22 17:26:57 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server &serverRef) :  _clientStatus(PENDING), _serverRef(serverRef), _fds(fds)
+Client::Client(t_pollfd	fds, Server &serverRef) : _mode(""), _clientStatus(PENDING), _serverRef(serverRef), _fds(fds) 
 {
 	/* connection registration */
-	_messageFunctions["NICK"] = &Client::NICK;
-	_messageFunctions["USER"] = &Client::USER;
-	_messageFunctions["MODE"] = &Client::MODE;
-	_messageFunctions["SERVICE"] = &Client::SERVICE;
-	_messageFunctions["QUIT"] = &Client::QUIT;
-	_messageFunctions["SQUIT"] = &Client::SQUIT;
+	_functionCmd["NICK"] = &Client::NICK;
+	_functionCmd["USER"] = &Client::USER;
+	_functionCmd["MODE"] = &Client::MODE;
+	_functionCmd["SERVICE"] = &Client::SERVICE;
+	_functionCmd["QUIT"] = &Client::QUIT;
+	_functionCmd["SQUIT"] = &Client::SQUIT;
 
+	_registered = false;
 }
 
 Client::~Client()
@@ -45,18 +46,18 @@ Client &Client::operator=(Client const & rhs)
 	return (*this);
 }
 
-int Client::isDigit(char c) const
+bool Client::isDigit(char c) const
 
 {
 	return (c >= '0' && c <= '9');
 }
 
-int Client::isLetter(char c) const
+bool Client::isLetter(char c) const
 {
 	return ((c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A'));
 }
 
-int Client::isSpecial(char c) const
+bool Client::isSpecial(char c) const
 {
 	return ((c <= '}' && c >= '{') && (c >= '[' && c <= '`'));
 }
@@ -65,6 +66,12 @@ std::string		Client::getNickname() const
 {
 	return (this->_nickname);
 }
+
+std::string		Client::getUsername() const
+{
+	return (this->_username);
+}
+
 struct pollfd	Client::getPoll() const
 {
 	return (this->_fds);
@@ -75,15 +82,25 @@ Server			&Client::getServerRef() const
 	return (this->_serverRef);
 }
 
+
+int Client::executeCommands()
+{
+	// while (this->_commands.size() != 0)
+	// {
+	// 	this->_messageFunctions[_commands.begin()->getPrefix()](_commands.begin());
+	// }
+	return 0;
+}
+
 Status 			Client::getStatus()
 {
 	return _clientStatus;
 }
 
-std::map<std::string, void(*)(Command *)>	Client::getFunction()
-{
-	return _functionCmd;
-}
+// std::map<std::string, int(Client*)(Command)>	Client::getFunction()
+// {
+// 	return _functionCmd;
+// }
 
 std::vector<Command *> Client::getCommands()
 {
@@ -100,9 +117,15 @@ void 			Client::setPoll(t_pollfd newPoll)
 	_fds = newPoll;
 }
 
+void			Client::setNickname(std::string newNickname)
+{
+	_nickname = newNickname;
+}
+
 void Client::clearCommands()
 {
 	_commands.clear();
+
 }
 
 void Client::treatMessage()
@@ -142,6 +165,7 @@ void Client::treatMessage()
 			if (_commands.size() > 0)
 			{
 				_nickname = (*_commands[1]).getParameters()[0];
+				_username = (*_commands[2]).getParameters()[0];
 				_clientStatus = PENDING;
 			}
 			else
@@ -151,4 +175,5 @@ void Client::treatMessage()
 	else
 		if (_clientStatus != CONNECTED)
 			_clientStatus = REFUSED;
+   executeCommands();
 }

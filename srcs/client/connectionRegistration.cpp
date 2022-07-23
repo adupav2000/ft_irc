@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/20 13:58:27 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/22 18:45:07 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,33 @@
 
    Numeric Replies:
 
-           ERR_NONICKNAMEGIVEN             ERR_ERRONEUSNICKNAME
-           ERR_NICKNAMEINUSE               ERR_NICKCOLLISION
-           ERR_UNAVAILRESOURCE             ERR_RESTRICTED
+        [X]   ERR_NONICKNAMEGIVEN             [X] ERR_ERRONEUSNICKNAME
+        [X]   ERR_NICKNAMEINUSE                [] ERR_NICKCOLLISION
+        []   ERR_UNAVAILRESOURCE              [X] ERR_RESTRICTED
 */
-int Client::NICK(std::string arguments)
+int Client::NICK(Command arguments)
 {
-	// int false_synthax = 1;
-	if (!arguments.size())
-		return (ERR_NONICKNAMEGIVEN);
-	// if (_serverRef.nickNameUsed(arguments))
+        (void)arguments;
+	// if (!arguments.getParameters().size() < 2)
+	// 	return (ERR_NONICKNAMEGIVEN);
+	// if (_serverRef.nickNameUsed(arguments.getParameters()[1]))
 	// 	return (ERR_NICKNAMEINUSE);	
-	// if (arguments.size() > 9 || )
+	// if (_mode.find('r'))
+	// 	return (ERR_RESTRICTED);
+	// std::string nTmp = arguments.getParameters()[1];
+	// /* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
+	// y a un espace */
+	// if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
 	// 	return (ERR_ERRONEUSNICKNAME);
+	// for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
+	// {
+	// 	if (it == nTmp.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
+	// 		return (ERR_ERRONEUSNICKNAME);
+	// 	if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
+	// 		return (ERR_ERRONEUSNICKNAME);
+	// }
+        // this->_nickname = arguments.getParameters()[0];
 	return (0);
-
 }
 
 /*
@@ -61,11 +73,43 @@ int Client::NICK(std::string arguments)
 
            ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
 */
-int Client::USER(std::string arguments)
+int Client::USER(Command arguments)
 {
-	(void)arguments;
+	if (arguments.getParameters().size() < 5)
+		return (ERR_NEEDMOREPARAMS);
+	if (_registered)
+		return (ERR_ALREADYREGISTRED);
+	// change the type with the needed function
 	return (0);
 }
+
+/* Command: OPER
+   Parameters: <name> <password>
+
+   A normal user uses the OPER command to obtain operator privileges.
+   The combination of <name> and <password> are REQUIRED to gain
+   Operator privileges.  Upon success, the user will receive a MODE
+   message (see section 3.1.5) indicating the new user modes.
+
+   Numeric Replies:
+
+           ERR_NEEDMOREPARAMS              RPL_YOUREOPER
+           ERR_NOOPERHOST                  ERR_PASSWDMISMATCH
+
+   Example:
+
+   OPER foo bar                    ; Attempt to register as an operator
+                                   using a username of "foo" and "bar"
+                                   as the password.
+ */
+// int Client::OPER(Command arguments)
+// {
+// 	if (arguments.getParameters().size() < 3)
+// 		return (ERR_NEEDMOREPARAMS);
+// 	if (arguments.getCommand()[2] != )
+// 		return ();
+// 	return (0);
+// }
 
 /* Command: MODE
    Parameters: <nickname>
@@ -97,7 +141,7 @@ int Client::USER(std::string arguments)
            ERR_UMODEUNKNOWNFLAG            RPL_UMODEIS
 
 */
-int Client::MODE(std::string arguments)
+int Client::MODE(Command arguments)
 {
 	(void)arguments;
 	return (0);
@@ -128,7 +172,7 @@ int Client::MODE(std::string arguments)
 		   RPL_YOURESERVICE                RPL_YOURHOST
 		   RPL_MYINFO
 */
-int Client::SERVICE(std::string arguments)
+int Client::SERVICE(Command arguments)
 {
 	(void)arguments;
 	return (0);
@@ -145,7 +189,7 @@ Command: QUIT
 
            None.
 */
-int Client::QUIT(std::string arguments)
+int Client::QUIT(Command arguments)
 {
 	(void)arguments;
 	return (0);
@@ -173,7 +217,7 @@ Command: SQUIT
            ERR_NOPRIVILEGES                ERR_NOSUCHSERVER
            ERR_NEEDMOREPARAMS
 */
-int Client::SQUIT(std::string arguments)
+int Client::SQUIT(Command arguments)
 {
 	(void)arguments;
 	return (0);
