@@ -8,7 +8,7 @@ class Operator : public User
 {
 public:
     Operator();
-    Operator(Operator const & rhs);
+    Operator(Client const & rhs);
     ~Operator();
     Operator &operator=(Operator const & rhs);
 

@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/22 17:47:19 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/24 19:32:19 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #define BUFFER_SIZE 1024
 
 class Server;
+class Command;
 
 enum Status {
 	CONNECTED,
@@ -41,18 +42,20 @@ public:
     Client &operator=(Client const & rhs);
 
 	typedef struct pollfd	t_pollfd;
+	typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
 
-	int execCommand(std::string arguments);
 	
     /* handling messages and commands */
+	int		execCommand(std::string arguments);
     void	treatMessage();
 	int		executeCommands();
 
 	/* Getters */
-	std::string		getNickname() const;
-	struct pollfd	getPoll() const;
-	Server			&getServerRef() const;
-	Status 			getStatus();
+	std::string				getNickname() const;
+	struct pollfd			getPoll() const;
+	Server					&getServerRef() const;
+	Client::t_messFuncMap	getMessageFunctions() const;
+	Status 					getStatus();
 
 	/* Setters */
 	void 			setStatus(Status newStatus);
@@ -63,18 +66,17 @@ public:
 
 protected:
 	/* Variables */
-	bool 	_registered;
-	std::vector<Command *> _commands;
-	std::map<std::string, void(*)(Command *)> functionCmd;
-	typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
+	bool 					_registered;
+	std::vector<Command *>	_commands;
+	std::map<std::string, int(*)(Command *)> functionCmd;
 	t_messFuncMap	_messageFunctions;
 	std::string		_nickname;
 	std::string		_mode;
 	Status 			_clientStatus;
 
 	/* Server side variables */
-	Server					&_serverRef;
-	t_pollfd				_fds;
+	Server			&_serverRef;
+	t_pollfd		_fds;
 
 	/* Connection registration functions*/
 	int NICK(Command);
@@ -88,6 +90,11 @@ protected:
 	/* Channel operations */
 	int JOIN(Command);
 	int PART(Command);
+	int TOPIC(Command);
+	int NAME(Command);
+	int LIST(Command);
+	int INVITE(Command);
+	int KICK(Command);
 
 	/* Utils */
 	bool isDigit(char c) const;

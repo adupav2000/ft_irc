@@ -6,14 +6,17 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/22 18:45:07 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/24 16:14:30 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
+#include "user/user.hpp"
+#include "user/operator/operator.hpp"
 #include "../server/server.hpp"
 #include "../globals.hpp"
 
+class User;
 /*
    RFC 2812
    Command: NICK
@@ -30,7 +33,7 @@
 */
 int Client::NICK(Command arguments)
 {
-	if (!arguments.getParameters().size() < 2)
+	if (arguments.getParameters().size() < 2)
 		return (ERR_NONICKNAMEGIVEN);
 	if (_serverRef.nickNameUsed(arguments.getParameters()[1]))
 		return (ERR_NICKNAMEINUSE);	
@@ -78,7 +81,8 @@ int Client::USER(Command arguments)
 		return (ERR_NEEDMOREPARAMS);
 	if (_registered)
 		return (ERR_ALREADYREGISTRED);
-	// change the type with the needed function
+	_registered = true;
+	this->_serverRef.changeClientClass(this, (new User(*this)));
 	return (0);
 }
 
@@ -105,8 +109,10 @@ int Client::OPER(Command arguments)
 {
 	if (arguments.getParameters().size() < 3)
 		return (ERR_NEEDMOREPARAMS);
-	if (arguments.getCommand()[2] != )
-		return ();
+	// if (arguments.getCommand()[2] != )
+		// return ();
+	_registered = true;
+	this->_serverRef.changeClientClass(this, (new Operator(*this)));
 	return (0);
 }
 

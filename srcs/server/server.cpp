@@ -6,13 +6,11 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/22 19:31:08 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/23 15:37:19 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./server.hpp"
-#
-
 
 Server::Server() : _name("ircServer"), _fds()
 {
@@ -178,10 +176,15 @@ void Server::rplWelcome(Client *client)
 	send(client->getPoll().fd, reply2.c_str(), reply2.size(), 0);
 }
 
-void Server::changeClientClass(Client oldClient, Client *newClient)
+void Server::changeClientClass(Client *oldClient, Client *newClient)
 {
 	t_pollfd newPoll;
-	newPoll = oldClient.getPoll();
+	newPoll = oldClient->getPoll();
 	newClient->setPoll(newPoll);
-	_clients[oldClient.getPoll().fd] = newClient; 
+	_clients[oldClient->getPoll().fd] = newClient; 
+}
+
+std::string Server::getName()
+{
+	return (this->_name);
 }

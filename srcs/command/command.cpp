@@ -166,6 +166,18 @@ Command::Command(std::string message) : _recv(message)
 	// std::cout << "prefix : " << _prefix << std::endl;
 }
 
+Command::Command(Command const & rhs)
+{
+	this->_errMess = rhs._errMess;
+	this->_prefix = rhs._prefix;
+	this->_command = rhs._command;
+	this->_parameters = rhs._parameters;
+	this->_message = rhs._message;
+	this->_recv = rhs._recv;
+	this->_client = rhs._client;
+	this->_serverRef = rhs._serverRef;
+}
+
 Command::~Command()
 {
 	return;
@@ -195,7 +207,7 @@ std::string Command::getErrorString(int num)
 	str = "<server name>";
 	ret.replace(ret.find(str), str.length(), _serverRef->getName());
 	str = "<command>";
-	.replace(ret.find(str), str.length(), this->getPrefix());
+	ret.replace(ret.find(str), str.length(), this->getPrefix());
 	/* KWAME to be set up wth functions */
 	/*
 	EXAMPLE
