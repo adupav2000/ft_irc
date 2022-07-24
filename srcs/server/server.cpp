@@ -34,6 +34,12 @@ Server::~Server()
 //     return _null;
 // }
 
+std::string Server::getName()
+{
+	return _name;
+}
+
+
 void Server::init()
 {
     int					socketfd, on;

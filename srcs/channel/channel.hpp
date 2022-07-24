@@ -25,8 +25,17 @@ class Channel
 		std::string getKey();
         unsigned int getNbClients();
 		std::map<int, Client *> getClients();
-		std::string getMaxUsers();
+		std::string getMaxClients();
 
+        /* CHANNEL OPERATION */
+        void JOIN(Command arguments);
+        void PART(Command arguments);
+        void MODE();
+        void TOPIC();
+        void NAMES();
+        void LIST();
+        void INVITE();
+        void QUIT();
 
     private:
 		std::string _name;
@@ -35,7 +44,7 @@ class Channel
 		std::string _key;
         unsigned int _nbClients;
 		std::map<int, Client *> _clients;
-		std::string _maxUsers;
+		std::string _maxClients;
 };
 
 #endif

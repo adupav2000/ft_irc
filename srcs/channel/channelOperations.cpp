@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "client.hpp"
+#include "channel.hpp"
 
 /*
 Command: JOIN
@@ -48,10 +48,9 @@ Command: JOIN
 		   ERR_TOOMANYTARGETS              ERR_UNAVAILRESOURCE
 		   RPL_TOPIC
 */
-int Client::JOIN(Command arguments)
+void Channel::JOIN(Command arguments)
 {
 	(void)arguments;
-	return (0);
 }
 
 
@@ -74,8 +73,7 @@ int Client::JOIN(Command arguments)
            ERR_NEEDMOREPARAMS              ERR_NOSUCHCHANNEL
            ERR_NOTONCHANNEL
 */
-int Client::PART(Command arguments)
+void Channel::PART(Command arguments)
 {
 	(void)arguments;
-	return (0);
 }

@@ -55,3 +55,9 @@ std::string Channel::getMaxClients()
 {
     return _maxClients;
 }
+
+void Channel::addToChannel(Client *client)
+{
+    _clients.insert(std::pair<int, Client * >(client->getPoll().fd, client));
+    _nbClients++;
+}

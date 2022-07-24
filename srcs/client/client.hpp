@@ -64,6 +64,7 @@ public:
 	void 			setStatus(Status newStatus);
 	void 			setPoll(t_pollfd newPoll);
 	void			setNickname(std::string newNickname);
+	void			setChannel(Channel *channel);
 
 	void clearCommands();
 
@@ -73,6 +74,7 @@ protected:
 	bool 	_registered;
 	std::vector<Command *> _commands;
 	std::map<std::string, int(Client::*)(Command)> _functionCmd;
+	std::vector<Channel *> _channels;
 	// typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
 	t_messFuncMap	_messageFunctions;
 	std::string		_nickname;
