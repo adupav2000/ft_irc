@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:13:02 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 19:25:57 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,8 @@ int Client::MODE(Command arguments)
 	if (arguments.getParameters().size() < 3)
 		return (ERR_NEEDMOREPARAMS);
 	/* check if the parameters are correct (existing nickname, correctly writen params (exsting..))) */
+	if (arguments.getParameters()[1][0] == '#')
+		return (this->modeChannel(arguments));
 	if (_nickname != arguments.getParameters()[1])
 		return (ERR_USERSDONTMATCH);
 	/* check if you can add them (are they already set) right user */
