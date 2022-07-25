@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/23 15:37:19 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 19:40:40 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void Server::launch()
 					else if (client->getStatus() == PENDING)
 						rplWelcome(client);
 					else if (client->getStatus() == CONNECTED)
-						// std::cout << "status :" << client->getStatus() << std::endl;
+						client->executeCommands();
 					client->clearCommands();
 					std::cout << "fd : " << client->getPoll().fd << std::endl;
 

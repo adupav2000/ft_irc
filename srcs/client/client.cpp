@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 18:01:13 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 19:39:56 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,5 +182,4 @@ void Client::treatMessage()
 	else
 		if (_clientStatus != CONNECTED)
 			_clientStatus = REFUSED;
-   this->executeCommands();
 }
