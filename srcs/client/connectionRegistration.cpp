@@ -6,13 +6,45 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/22 18:45:07 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 20:32:17 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
+#include "user/user.hpp"
+#include "user/operator/operator.hpp"
 #include "../server/server.hpp"
 #include "../globals.hpp"
+
+class User;
+/*
+Command: PASS
+   Parameters: <password>
+
+   The PASS command is used to set a 'connection password'.  The
+   optional password can and MUST be set before any attempt to register
+   the connection is made.  Currently this requires that user send a
+   PASS command before sending the NICK/USER combination.
+
+   Numeric Replies:
+
+           ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
+
+   Example:
+
+           PASS secretpasswordhere
+*/
+int Client::PASS(Command arguments)
+{
+	if (arguments.getParameters().size() < 2)
+		return (ERR_NEEDMOREPARAMS);
+	if (_clientType > TYPE_ZERO)
+		return (ERR_ALREADYREGISTRED);
+	/* Le passe est stocké ou ? */
+	/* Est ce que qu'il doit correspondre a quelque chose ?*/
+	_clientType = TYPE_PASS;
+	return (0);
+}
 
 /*
    RFC 2812
@@ -28,19 +60,9 @@
         [X]   ERR_NICKNAMEINUSE                [] ERR_NICKCOLLISION
         []   ERR_UNAVAILRESOURCE              [X] ERR_RESTRICTED
 */
-int Client::NICK(Command arguments)
+int	Client::checkNickname(std::string name) const
 {
-        (void)arguments;
-	if (!arguments.getParameters().size() < 2)
-		return (ERR_NONICKNAMEGIVEN);
-	 if (_serverRef.nickNameUsed(arguments.getParameters()[1]))
-	 	return (ERR_NICKNAMEINUSE);	
-	 if (_mode.find('r'))
-		return (ERR_RESTRICTED);
-	std::string nTmp = arguments.getParameters()[1];
-	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
-	y a un espace */
-	if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
+    if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
 		return (ERR_ERRONEUSNICKNAME);
 	for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
 	{
@@ -49,7 +71,25 @@ int Client::NICK(Command arguments)
 		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
 			return (ERR_ERRONEUSNICKNAME);
 	}
-        this->_nickname = arguments.getParameters()[0];
+	return (0);
+}
+
+int Client::NICK(Command arguments)
+{
+	if (arguments.getParameters().size() < 2)
+		return (ERR_NONICKNAMEGIVEN);
+	if (_serverRef.nickNameUsed(arguments.getParameters()[1]))
+		return (ERR_NICKNAMEINUSE);	
+	if (_mode.find('r'))
+		return (ERR_RESTRICTED);
+	std::string nTmp = arguments.getParameters()[1];
+	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
+	y a un espace */
+	int retValNickname = this->checkNickname(nTmp);
+	if (retValNickname != 0)
+		return (retValNickname);
+	_clientType = TYPE_CLIENT;
+	this->_nickname = arguments.getParameters()[1];
 	return (0);
 }
 
@@ -79,7 +119,9 @@ int Client::USER(Command arguments)
 		return (ERR_NEEDMOREPARAMS);
 	if (_registered)
 		return (ERR_ALREADYREGISTRED);
-	// change the type with the needed function
+	_registered = true;
+	_clientType = TYPE_USER;
+	this->_serverRef.changeClientClass(this, (new User(*this)));
 	return (0);
 }
 
@@ -106,8 +148,9 @@ int Client::OPER(Command arguments)
 {
 	if (arguments.getParameters().size() < 3)
 		return (ERR_NEEDMOREPARAMS);
-	if (arguments.getCommand()[2] != )
-		return ();
+	_registered = true;
+	_clientType = TYPE_OPERATOR;
+	this->_serverRef.changeClientClass(this, (new Operator(*this)));
 	return (0);
 }
 
@@ -143,7 +186,32 @@ int Client::OPER(Command arguments)
 */
 int Client::MODE(Command arguments)
 {
-	(void)arguments;
+	// TODO : add the option for channels : redefinition in services responses
+	/* Check params if enough */
+	if (arguments.getParameters().size() < 3)
+		return (ERR_NEEDMOREPARAMS);
+	/* check if the parameters are correct (existing nickname, correctly writen params (exsting..))) */
+	if (arguments.getParameters()[1][0] == '#')
+		return (this->modeChannel(arguments));
+	if (_nickname != arguments.getParameters()[1])
+		return (ERR_USERSDONTMATCH);
+	/* check if you can add them (are they already set) right user */
+	if (arguments.getParameters()[2][0] == '-')
+	{
+		if ((_mode.begin() + _mode.find(arguments.getParameters()[2][1], 0)) == _mode.end())
+			return (0);
+		if (_availableModes.begin() + _availableModes.find(arguments.getParameters()[2][1], 0) == _availableModes.end())
+			return (ERR_UMODEUNKNOWNFLAG);
+		_mode.erase(_mode.find(arguments.getParameters()[2][1]), 1);
+	}
+	else if (arguments.getParameters()[2][0] == '+')
+	{
+		if ((_mode.begin() + _mode.find(arguments.getParameters()[2][1], 0)) != _mode.end())
+			return (0);	
+		if (_availableModes.begin() + _availableModes.find(arguments.getParameters()[2][1], 0) == _availableModes.end())
+			return (ERR_UMODEUNKNOWNFLAG);
+		_mode.push_back((arguments.getParameters()[2][1]));
+	}
 	return (0);
 }
 
@@ -174,8 +242,15 @@ int Client::MODE(Command arguments)
 */
 int Client::SERVICE(Command arguments)
 {
-	(void)arguments;
-	return (0);
+	if (arguments.getParameters().size() < 7)	
+		return (ERR_NEEDMOREPARAMS);
+	if (_clientType == TYPE_SERVICE || _clientType == TYPE_USER)
+		return (ERR_ALREADYREGISTRED);
+	int retValNickname = this->checkNickname(arguments.getCommand());
+	if (retValNickname != 0)
+		return (retValNickname);
+	_clientType = TYPE_SERVICE;
+	return (RPL_YOURESERVICE);
 }
 
 /*
@@ -192,6 +267,7 @@ Command: QUIT
 int Client::QUIT(Command arguments)
 {
 	(void)arguments;
+	/* has to kill the obj, to avoid other commands to get executed*/
 	return (0);
 }
 

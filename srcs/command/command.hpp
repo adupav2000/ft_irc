@@ -21,7 +21,7 @@ public:
     ~Command();
     Command &operator=(Command const & rhs);
 
-    // GETTERS
+    /* Getters */
     std::string getPrefix();
     std::string getCommand();
     Client *getClient();
@@ -37,9 +37,9 @@ private:
     std::string _message;
     std::string _recv;
 
-	Server		*_serverRef;
-	Client		*_client;
-	Channel		*_channel;
+	Server	const	*_serverRef;
+	Client *_client;
+	Channel *_channel;
 };
 
 #endif
