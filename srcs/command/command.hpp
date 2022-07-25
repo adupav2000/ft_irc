@@ -19,7 +19,7 @@ public:
     ~Command();
     Command &operator=(Command const & rhs);
 
-    // GETTERS
+    /* Getters */
     std::string getPrefix();
     std::string getCommand();
     std::vector<std::string> getParameters();

@@ -125,7 +125,7 @@ Command::Command()
 		this->_errMess[RPL_ENDOFSTATS] = "<stats letter> :End of STATS report";
 		this->_errMess[RPL_STATSUPTIME] = ":Server Up %d days %d:%02d:%02d";
 		this->_errMess[RPL_STATSOLINE] = "O <hostmask> * <name>";
-		this->_errMess[RPL_UMODEIS] = "<user mode string>";
+		this->_errMess[RPL_UMODEIS] = "<server address> 221 <nickname> :<new_mode_string>";
 		this->_errMess[RPL_SERVLIST] = "<name> <server> <mask> <type> <hopcount> <info>";
 		this->_errMess[RPL_SERVLISTEND] = "<mask> <type> :End of service listing";
 		this->_errMess[RPL_LUSERCLIENT] = ":There are <integer> users and <integer>";

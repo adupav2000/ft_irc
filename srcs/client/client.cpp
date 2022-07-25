@@ -6,13 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/24 20:31:57 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 18:01:13 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server &serverRef) : _mode(""),  _clientStatus(PENDING), _serverRef(serverRef), _fds(fds)  
+Client::Client(t_pollfd	fds, Server &serverRef) : _mode(""),  _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
 {
 	/* connection registration */
 	_messageFunctions["NICK"] = &Client::NICK;
@@ -33,6 +33,9 @@ Client::Client(t_pollfd	fds, Server &serverRef) : _mode(""),  _clientStatus(PEND
 	_messageFunctions["CAP"] = &Client::SQUIT;
 
 	_registered = false;
+	_clientType = TYPE_ZERO;
+	_nickname = "";
+	_availableModes = "aiwroOs";
 }
 
 Client::~Client()
@@ -56,7 +59,6 @@ Client &Client::operator=(Client const & rhs)
 }
 
 bool Client::isDigit(char c) const
-
 {
 	return (c >= '0' && c <= '9');
 }

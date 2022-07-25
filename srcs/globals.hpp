@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:37:01 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/23 16:19:41 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 17:37:00 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -826,6 +826,7 @@ std::vector<std::string> split(std::string str, std::string delimiter);
 
 #define RPL_UMODEIS 221 
 	/*		"<user mode string>"
+		irc.example.org 221 foo :+i
 
 		- To answer a query about a client's own mode,
 		RPL_UMODEIS is sent back.

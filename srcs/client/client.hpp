@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/24 19:32:19 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 19:00:42 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <sys/stat.h>
 #include <poll.h>
 #include <utility>
 
@@ -33,6 +34,15 @@ enum Status {
 	REFUSED
 };
 
+enum Type{
+	TYPE_ZERO,
+	TYPE_PASS,
+	TYPE_CLIENT,
+	TYPE_SERVICE,
+	TYPE_USER,
+	TYPE_OPERATOR
+};
+
 class Client
 {
 public:
@@ -43,7 +53,6 @@ public:
 
 	typedef struct pollfd	t_pollfd;
 	typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
-
 	
     /* handling messages and commands */
 	int		execCommand(std::string arguments);
@@ -63,7 +72,6 @@ public:
 
 	void clearCommands();
 
-
 protected:
 	/* Variables */
 	bool 					_registered;
@@ -73,12 +81,17 @@ protected:
 	std::string		_nickname;
 	std::string		_mode;
 	Status 			_clientStatus;
+	Type			_clientType;
+
+	std::string _availableModes;
 
 	/* Server side variables */
 	Server			&_serverRef;
 	t_pollfd		_fds;
+	std::string 	_text;/* used to store text */
 
 	/* Connection registration functions*/
+	int PASS(Command);
 	int NICK(Command);
 	int USER(Command);
 	int OPER(Command);
@@ -96,10 +109,15 @@ protected:
 	int INVITE(Command);
 	int KICK(Command);
 
+	int	MOTD(Command);
+	int LUSERS(Command);
+	
+
 	/* Utils */
 	bool isDigit(char c) const;
 	bool isLetter(char c) const;
 	bool isSpecial(char c) const;
+	int	checkNickname(std::string) const;
 
 };
 
