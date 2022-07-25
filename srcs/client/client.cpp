@@ -6,13 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/22 17:26:57 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 19:39:56 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server &serverRef) :  _clientStatus(PENDING), _serverRef(serverRef), _fds(fds), _mode("")  
+Client::Client(t_pollfd	fds, Server &serverRef) : _mode(""),  _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
 {
 	/* connection registration */
 	_messageFunctions["NICK"] = &Client::NICK;
@@ -22,7 +22,20 @@ Client::Client(t_pollfd	fds, Server &serverRef) :  _clientStatus(PENDING), _serv
 	_messageFunctions["QUIT"] = &Client::QUIT;
 	_messageFunctions["SQUIT"] = &Client::SQUIT;
 
+	_messageFunctions["JOIN"] = &Client::JOIN;
+	_messageFunctions["PART"] = &Client::PART;
+	_messageFunctions["TOPIC"] = &Client::TOPIC;
+	_messageFunctions["NAME"] = &Client::NAME;
+	_messageFunctions["LIST"] = &Client::LIST;
+	_messageFunctions["INVITE"] = &Client::INVITE;
+	_messageFunctions["KICK"] = &Client::KICK;
+
+	_messageFunctions["CAP"] = &Client::SQUIT;
+
 	_registered = false;
+	_clientType = TYPE_ZERO;
+	_nickname = "";
+	_availableModes = "aiwroOs";
 }
 
 Client::~Client()
@@ -37,7 +50,6 @@ Client::Client(Client const & rhs) : _serverRef(rhs.getServerRef()), _fds(rhs.ge
 	this->_nickname = rhs._nickname;
 }
 
-
 Client &Client::operator=(Client const & rhs)
 {
 	this->_fds = rhs._fds;
@@ -47,7 +59,6 @@ Client &Client::operator=(Client const & rhs)
 }
 
 bool Client::isDigit(char c) const
-
 {
 	return (c >= '0' && c <= '9');
 }
@@ -76,20 +87,38 @@ Server			&Client::getServerRef() const
 	return (this->_serverRef);
 }
 
+Client::t_messFuncMap			Client::getMessageFunctions() const
+{
+	return (this->_messageFunctions);
+}
 
 int Client::executeCommands()
 {
+	int			ret;
+	std::string errorStr;
+
 	while (this->_commands.size() != 0)
 	{
-		this->_messageFunctions[_commands.begin()->getPrefix()](_commands.begin());
+		//(this->*_messageFunctions.find((*_commands.begin())->getPrefix()) != this->*_messageFunctions->end())) &&
+		if ((ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())))) != 0)
+		{
+			errorStr = (*_commands.begin())->getErrorString(ret);
+			send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
+		}
+		else
+		{
+			//TODO ? CHANGE
+			std::cout << "Command: " << (*_commands.begin())->getPrefix() << " failed" <<  std::endl;
+		}
+		_commands.erase(_commands.begin());
 	}
+	return (0);
+}
 
 Status 			Client::getStatus()
 {
 	return _clientStatus;
 }
-
-
 
 void 			Client::setStatus(Status newStatus)
 {
@@ -153,5 +182,4 @@ void Client::treatMessage()
 	else
 		if (_clientStatus != CONNECTED)
 			_clientStatus = REFUSED;
-   executeCommands();
 }

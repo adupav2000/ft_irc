@@ -57,7 +57,7 @@ public:
 	/* user opération */
 	void acceptClient();
 	void removeClient(int fd);
-	void changeClientClass(Client oldClient, Client *newClient);
+	void changeClientClass(Client *oldClient, Client *newClient);
 	
 	// COMMAND RESPONSE
 
@@ -66,6 +66,9 @@ public:
 	/* utils for client */
 	bool nickNameUsed(std::string nickname);
 
+
+	/* Getters */
+	std::string getName();
 private:
 	std::string _name;
 
