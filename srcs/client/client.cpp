@@ -85,10 +85,10 @@ Server			*Client::getServer() const
 
 int Client::executeCommands()
 {
-	// while (this->_commands.size() != 0)
-	// {
-	// 	this->_messageFunctions[_commands.begin()->getPrefix()](_commands.begin());
-	// }
+	while (this->_commands.size() != 0)
+	{
+	 	this->_messageFunctions[_commands.begin()->getPrefix()](_commands.begin());
+	}
 	return 0;
 }
 
