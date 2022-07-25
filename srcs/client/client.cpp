@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:39:56 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 20:33:47 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ Client::~Client()
 }
 
 
-Client::Client(Client const & rhs) : _serverRef(rhs.getServerRef()), _fds(rhs.getPoll())
+Client::Client(Client const & rhs) : _serverRef(rhs.getServer()), _fds(rhs.getPoll())
 {
 	this->_messageFunctions = rhs._messageFunctions;
 	this->_nickname = rhs._nickname;
@@ -77,12 +77,18 @@ std::string		Client::getNickname() const
 {
 	return (this->_nickname);
 }
+
+std::string		Client::getUsername() const
+{
+	return (this->_username);
+}
+
 struct pollfd	Client::getPoll() const
 {
 	return (this->_fds);
 }
 
-Server			&Client::getServerRef() const
+Server			*Client::getServer() const
 {
 	return (this->_serverRef);
 }
@@ -120,6 +126,16 @@ Status 			Client::getStatus()
 	return _clientStatus;
 }
 
+// std::map<std::string, int(Client*)(Command)>	Client::getFunction()
+// {
+// 	return _functionCmd;
+// }
+
+std::vector<Command *> Client::getCommands()
+{
+	return _commands;
+}
+
 void 			Client::setStatus(Status newStatus)
 {
 	_clientStatus = newStatus;
@@ -128,6 +144,16 @@ void 			Client::setStatus(Status newStatus)
 void 			Client::setPoll(t_pollfd newPoll)
 {
 	_fds = newPoll;
+}
+
+void			Client::setNickname(std::string newNickname)
+{
+	_nickname = newNickname;
+}
+
+void			Client::setChannel(Channel *channel)
+{
+	_channels.push_back(channel);
 }
 
 void Client::clearCommands()
@@ -161,7 +187,7 @@ void Client::treatMessage()
 			if (message[i] ==  '\r' && message[i + 1] == '\n')
 			{
 				// std::cout << i << message.substr(start, i - start) << std::endl;
-				_commands.push_back(new Command(message.substr(start, i - start)));
+				_commands.push_back(new Command(message.substr(start, i - start), getServer(), this));
 				start = i + 2;
 				i += 2;
 			}
@@ -173,6 +199,7 @@ void Client::treatMessage()
 			if (_commands.size() > 0)
 			{
 				_nickname = (*_commands[1]).getParameters()[0];
+				_username = (*_commands[2]).getParameters()[0];
 				_clientStatus = PENDING;
 			}
 			else

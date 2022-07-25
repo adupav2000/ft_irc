@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:25:57 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 20:32:17 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int Client::PASS(Command arguments)
 */
 int	Client::checkNickname(std::string name) const
 {
-	if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
+    if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
 		return (ERR_ERRONEUSNICKNAME);
 	for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
 	{

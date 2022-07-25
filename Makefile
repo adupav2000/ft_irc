@@ -1,6 +1,5 @@
 NAME = ft_irc
-CLIENT_FILE = channelOperations.cpp\
-			client.cpp\
+CLIENT_FILE = client.cpp\
 			connectionRegistration.cpp\
 			service/service.cpp\
 			user/user.cpp\
@@ -11,6 +10,9 @@ UTILS_FILE = utils.cpp
 SERVER_FILE = server.cpp
 
 COMMAND_FILE = command.cpp
+
+CHANNEL_FILE = channelOperations.cpp\
+				channel.cpp
 
 CLIENT_INC = client.hpp\
 			  service/service.hpp\
@@ -23,15 +25,19 @@ COMMAND_INC = command.hpp
 
 GLOBAL_INC = global.hpp
 
+CHANNEL_INC = channel.hpp
+
 INCLUDE = $(addprefix srcs/client/, $(CLIENT_INC))
 INCLUDE += $(addprefix srcs/server/, $(SERVER_INC))
 INCLUDE += $(addprefix srcs/command/, $(COMMAND_INC))
+INCLUDE += $(addprefix srcs/channel/, $(CHANNEL_INC))
 INCLUDE += $(addprefix srcs/, $(GLOBAL_INC))
 
 
 SOURCE = $(addprefix srcs/client/, $(CLIENT_FILE))
 SOURCE += $(addprefix srcs/server/, $(SERVER_FILE))
 SOURCE += $(addprefix srcs/command/, $(COMMAND_FILE))
+SOURCE += $(addprefix srcs/channel/, $(CHANNEL_FILE))
 SOURCE += $(addprefix srcs/, $(UTILS_FILE))
 
 OBJ = $(addprefix obj/, $(notdir $(SOURCE:.cpp=.o)))

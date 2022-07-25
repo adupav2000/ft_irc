@@ -3,7 +3,7 @@
 Command::Command()
 {
 	{
-		this->_errMess[ERR_NOSUCHNICK] = "<nickname> :No such nick/channel";
+        this->_errMess[ERR_NOSUCHNICK] = "<nickname> :No such nick/channel";
 		this->_errMess[ERR_NOSUCHSERVER] = "<server name> :No such server";
 		this->_errMess[ERR_NOSUCHCHANNEL] = "<channel name> :No such channel";
 		this->_errMess[ERR_CANNOTSENDTOCHAN] = "<channel name> :Cannot send to channel";
@@ -55,7 +55,6 @@ Command::Command()
 		this->_errMess[ERR_NOOPERHOST] = ":No O-lines for your host";
 		this->_errMess[ERR_UMODEUNKNOWNFLAG] = ":Unknown MODE flag";
 		this->_errMess[ERR_USERSDONTMATCH] = ":Cannot change mode for other users";
-
 		this->_errMess[RPL_WELCOME] = "Welcome to the Internet Relay Network\n <nick>!<user>@<host>";
 		this->_errMess[RPL_YOURHOST] = "Your host is <servername>, running version <ver>";
 		this->_errMess[RPL_CREATED] = "This server was created <date>";
@@ -142,7 +141,9 @@ Command::Command()
 	return;
 }
 
-Command::Command(std::string message) : _recv(message)
+
+
+Command::Command(std::string message, Server *server, Client *client) : _recv(message), _serverRef(server), _client(client)
 {
 	std::vector<std::string> tmp;
 	// std::cout << "message " << message << std::endl;
@@ -194,6 +195,16 @@ std::string Command::getCommand()
 	return _command;
 }
 
+Client *Command::getClient()
+{
+	return _client;
+}
+
+Server *Command::getServer()
+{
+	return _serverRef;
+}
+
 std::vector<std::string> Command::getParameters()
 {
 	return _parameters;
@@ -213,7 +224,6 @@ std::string Command::getErrorString(int num)
 	EXAMPLE
 	std::string str = "<channel name>";
 	ret.replace(ret.find(str), str.length(), _channel->getName());
-
 	std::string str = "<target>";
 	std::string str = "<error code>";
 	std::string str = "<mask>";

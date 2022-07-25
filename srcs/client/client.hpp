@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:00:42 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 20:37:52 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 
 class Server;
 class Command;
+class Channel;
 
 enum Status {
 	CONNECTED,
@@ -46,7 +47,7 @@ enum Type{
 class Client
 {
 public:
-    Client(struct pollfd _fds, Server &serverRef);
+    Client(struct pollfd _fds, Server *serverRef);
     Client(Client const & rhs);
     ~Client();
     Client &operator=(Client const & rhs);
@@ -61,24 +62,33 @@ public:
 
 	/* Getters */
 	std::string				getNickname() const;
+	std::string     		getUsername() const;
 	struct pollfd			getPoll() const;
-	Server					&getServerRef() const;
+	Server		        	*getServer() const;
 	Client::t_messFuncMap	getMessageFunctions() const;
 	Status 					getStatus();
+	std::vector<Command *>  getCommands();
 
 	/* Setters */
 	void 			setStatus(Status newStatus);
 	void 			setPoll(t_pollfd newPoll);
+	void			setNickname(std::string newNickname);
+	void			setChannel(Channel *channel);
 
 	void clearCommands();
 
 protected:
 	/* Variables */
+	bool 	_registered;
+	std::vector<Command *> _commands;
+	//std::map<std::string, int(Client::*)(Command)> _functionCmd;
+	typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
 	bool 					_registered;
 	std::vector<Command *>	_commands;
-	std::map<std::string, int(*)(Command *)> functionCmd;
+	std::vector<Channel *> _channels;
 	t_messFuncMap	_messageFunctions;
 	std::string		_nickname;
+	std::string		_username;
 	std::string		_mode;
 	Status 			_clientStatus;
 	Type			_clientType;
@@ -86,8 +96,8 @@ protected:
 	std::string _availableModes;
 
 	/* Server side variables */
-	Server			&_serverRef;
-	t_pollfd		_fds;
+	Server					*_serverRef;
+	t_pollfd				_fds;
 	std::string 	_text;/* used to store text */
 
 	/* Connection registration functions*/

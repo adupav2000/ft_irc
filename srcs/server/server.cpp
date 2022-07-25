@@ -6,13 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:40:40 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 20:26:40 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./server.hpp"
 
-Server::Server() : _name("ircServer"), _fds()
+Server::Server() : _name("ircServer"), _fds(), _nbClients(0) 
 {
     return ;
 }
@@ -31,6 +31,22 @@ Server::~Server()
 // {
 //     return _null;
 // }
+
+std::string Server::getName()
+{
+	return _name;
+}
+
+std::map<std::string, Channel *> Server::getChannel()
+{
+	return _channel;
+}
+
+void Server::addChannel(Channel *channel)
+{
+	this->_channel.insert(std::pair<std::string, Channel *>(channel->getName(), channel));
+
+}
 
 void Server::init()
 {
@@ -56,6 +72,7 @@ void Server::init()
 	addr_size = sizeof(addr);
 	_fds.fd = socketfd;
 	_fds.events = POLLIN;
+	_fds.revents = POLLIN;
 	std::cout << "Welcome to IRCinator" << std::endl;
 }
 
@@ -64,6 +81,7 @@ void Server::launch()
 
 	std::vector<struct pollfd>		pollfds;
 	Client 							*client;
+
 
 	for (;;)
 	{
@@ -75,29 +93,31 @@ void Server::launch()
 			std::cout << "client tab fd : " << (*it).second->getPoll().fd << std::endl;
 			pollfds.push_back((*it).second->getPoll());
 		}
-		if (pollfds[0].revents & POLLIN)
+		std::cout << "fds fd : " << pollfds[0].revents << "revents " << POLLIN << std::endl;
+		std::vector<pollfd>::iterator beg = pollfds.begin();
+		std::vector<pollfd>::iterator end = pollfds.end();
+		while (beg != end)
 		{
-			std::cout << "server :" << std::endl;
-			if (_nbClients < NB_CLIENTS_MAX )
-				acceptClient();
-			std::cout << "nb client : " << _nbClients << std::endl;
-			std::cout << "fd : " << pollfds[0].fd << std::endl;
-		}
-		else {
-			std::vector<pollfd>::iterator beg = pollfds.begin();
-			std::vector<pollfd>::iterator end = pollfds.end();
-			while (beg != end)
+			// if (beg->revents & POLLHUP && beg->fd != _fds.fd)
+			// {
+			// 	removeClient(beg->fd);
+			// }
+			if (beg->revents & POLLIN)
 			{
-				// if (beg->revents & POLLHUP && beg->fd != _fds.fd)
+				// for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 				// {
-				// 	removeClient(beg->fd);
+				// 	std::cout << "client status " << it->second->getStatus() << std::endl;
 				// }
-				if (beg->revents & POLLIN)
+				if (beg->fd == _fds.fd)
 				{
-					// for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-					// {
-					// 	std::cout << "client status " << it->second->getStatus() << std::endl;
-					// }
+					std::cout << "server :" << std::endl;
+					if (_nbClients < NB_CLIENTS_MAX )
+						acceptClient();
+					std::cout << "nb client : " << _nbClients << std::endl;
+					std::cout << "fd : " << pollfds[0].fd << std::endl;
+				}
+				else
+				{
 					client = _clients[beg->fd];
 					if (client == NULL)
 						return ;
@@ -108,18 +128,54 @@ void Server::launch()
 					else if (client->getStatus() == PENDING)
 						rplWelcome(client);
 					else if (client->getStatus() == CONNECTED)
-						client->executeCommands();
+					{
+						std::vector<Command *> commands = client->getCommands();
+						for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)
+						{
+							std::string reply;
+							std::cout << "prefix " << (*it)->getPrefix() << std::endl;
+							std::vector<std::string> params = (*it)->getParameters();
+							for (size_t i = 0; i < params.size(); i++)
+							{
+								std::cout << "params : " << (*it)->getParameters()[i] << std::endl;
+							}
+							if ((*it)->getPrefix() == "NICK")
+							{
+								reply += ":" + client->getNickname() + "!" + client->getUsername() + "@localhost NICK " + (*it)->getParameters()[0] + "\r\n";
+								std::string nick = (*it)->getParameters()[0];
+								for (std::map<int, Client *>::iterator cli = _clients.begin(); cli != _clients.end(); cli++)
+								{
+									if (cli->second->getNickname() == nick)
+										nick += "_";
+								}
+								client->setNickname(nick);
+								send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+							}
+							if ((*it)->getPrefix() == "JOIN")
+							{
+								JOIN(*it);
+								std::map<std::string, Channel *> chann = getChannel();
+								// for (std::map<std::string, Channel *>::iterator ite = chann.begin(); ite != chann.end(); ite++)
+								// {
+								// 	std::cout << "channels : " << (*ite).first << std::endl;
+								// 	// std::cout << "channels client : " << (*ite).second->getClients()[client->getPoll().fd]->getNickname() << std::endl;
+								// }
+							}
+						}
+					}
+					//	client->executeCommands();
 					client->clearCommands();
 					std::cout << "fd : " << client->getPoll().fd << std::endl;
-
+	
 				}
-					// else{
-					// 	std::cout << "else" << std::endl;
-					// }
-				beg++;
 			}
+				// else{
+				// 	std::cout << "else" << std::endl;
+				// }
+			beg++;
 		}
 		pollfds.clear();
+		std::cout << "size after clear : " << pollfds.size() << std::endl;
 	}
 }
 
@@ -140,7 +196,7 @@ void Server::acceptClient()
 	fds.fd = client_sock;
 	fds.events = POLLIN;
 	fds.revents = POLLIN;
-	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, static_cast<Server &>(*this))));
+	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, this)));
 	this->_nbClients += 1;
 }
 
@@ -184,7 +240,3 @@ void Server::changeClientClass(Client *oldClient, Client *newClient)
 	_clients[oldClient->getPoll().fd] = newClient; 
 }
 
-std::string Server::getName()
-{
-	return (this->_name);
-}
