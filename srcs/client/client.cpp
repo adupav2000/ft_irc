@@ -12,17 +12,15 @@
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server *serverRef) : _mode(""), _clientStatus(PENDING), _serverRef(serverRef), _fds(fds) 
+Client::Client(t_pollfd	fds, Server &serverRef) :  _clientStatus(PENDING), _serverRef(serverRef), _fds(fds), _mode("")  
 {
 	/* connection registration */
-	_functionCmd["NICK"] = &Client::NICK;
-	_functionCmd["USER"] = &Client::USER;
-	_functionCmd["MODE"] = &Client::MODE;
-	_functionCmd["SERVICE"] = &Client::SERVICE;
-	_functionCmd["QUIT"] = &Client::QUIT;
-	_functionCmd["SQUIT"] = &Client::SQUIT;
-
-	_registered = false;
+	_messageFunctions["NICK"] = &Client::NICK;
+	_messageFunctions["USER"] = &Client::USER;
+	_messageFunctions["MODE"] = &Client::MODE;
+	_messageFunctions["SERVICE"] = &Client::SERVICE;
+	_messageFunctions["QUIT"] = &Client::QUIT;
+	_messageFunctions["SQUIT"] = &Client::SQUIT;
 }
 
 Client::~Client()
