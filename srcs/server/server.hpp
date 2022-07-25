@@ -53,12 +53,15 @@ public:
 	/* GETTERS */
 
 	std::string getName();
+	std::map<std::string, Channel *> getChannel();
+
+
 
 	/* Handle incomming strings */
 	// in charge of calling the right function
 
 	/* channel operation */
-	int createChannel();
+	void addChannel(Channel *channel);
 	int destroyChannel();
 
 	/* user opération */
@@ -80,9 +83,8 @@ private:
 	t_pollfd				_fds;
 	std::map<int, Client *> _clients;
 	unsigned int _nbClients;
-	std::map<std::string, Channel> channel;
+	std::map<std::string, Channel *> _channel;
 	/* Error types */
-	
 };
 
 #endif

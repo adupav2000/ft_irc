@@ -12,7 +12,7 @@
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server &serverRef) : _mode(""), _clientStatus(PENDING), _serverRef(serverRef), _fds(fds) 
+Client::Client(t_pollfd	fds, Server *serverRef) : _mode(""), _clientStatus(PENDING), _serverRef(serverRef), _fds(fds) 
 {
 	/* connection registration */
 	_functionCmd["NICK"] = &Client::NICK;
@@ -31,7 +31,7 @@ Client::~Client()
 }
 
 
-Client::Client(Client const & rhs) : _serverRef(rhs.getServerRef()), _fds(rhs.getPoll())
+Client::Client(Client const & rhs) : _serverRef(rhs.getServer()), _fds(rhs.getPoll())
 {
 	this->_messageFunctions = rhs._messageFunctions;
 	this->_nickname = rhs._nickname;
@@ -77,7 +77,7 @@ struct pollfd	Client::getPoll() const
 	return (this->_fds);
 }
 
-Server			&Client::getServerRef() const
+Server			*Client::getServer() const
 {
 	return (this->_serverRef);
 }
@@ -122,6 +122,11 @@ void			Client::setNickname(std::string newNickname)
 	_nickname = newNickname;
 }
 
+void			Client::setChannel(Channel *channel)
+{
+	_channels.push_back(channel);
+}
+
 void Client::clearCommands()
 {
 	_commands.clear();
@@ -153,7 +158,7 @@ void Client::treatMessage()
 			if (message[i] ==  '\r' && message[i + 1] == '\n')
 			{
 				// std::cout << i << message.substr(start, i - start) << std::endl;
-				_commands.push_back(new Command(message.substr(start, i - start)));
+				_commands.push_back(new Command(message.substr(start, i - start), getServer(), this));
 				start = i + 2;
 				i += 2;
 			}

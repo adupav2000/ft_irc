@@ -142,7 +142,9 @@ Command::Command()
 	return;
 }
 
-Command::Command(std::string message) : _recv(message)
+
+
+Command::Command(std::string message, Server *server, Client *client) : _recv(message), _serverRef(server), _client(client)
 {
 	std::vector<std::string> tmp;
 	// std::cout << "message " << message << std::endl;
@@ -182,10 +184,21 @@ std::string Command::getCommand()
 	return _command;
 }
 
+Client *Command::getClient()
+{
+	return _client;
+}
+
+Server *Command::getServer()
+{
+	return _serverRef;
+}
+
 std::vector<std::string> Command::getParameters()
 {
 	return _parameters;
 }
+
 
 std::string Command::getErrorString(int num)
 {
@@ -195,7 +208,7 @@ std::string Command::getErrorString(int num)
 	str = "<server name>";
 	ret.replace(ret.find(str), str.length(), _serverRef->getName());
 	str = "<command>";
-	.replace(ret.find(str), str.length(), this->getPrefix());
+	ret.replace(ret.find(str), str.length(), this->getPrefix());
 	/* KWAME to be set up wth functions */
 	/*
 	EXAMPLE

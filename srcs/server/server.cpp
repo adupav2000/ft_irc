@@ -14,7 +14,7 @@
 #
 
 
-Server::Server() : _name("ircServer"), _fds()
+Server::Server() : _name("ircServer"), _fds(), _nbClients(0) 
 {
     return ;
 }
@@ -39,6 +39,16 @@ std::string Server::getName()
 	return _name;
 }
 
+std::map<std::string, Channel *> Server::getChannel()
+{
+	return _channel;
+}
+
+void Server::addChannel(Channel *channel)
+{
+	this->_channel.insert(std::pair<std::string, Channel *>(channel->getName(), channel));
+
+}
 
 void Server::init()
 {
@@ -126,12 +136,33 @@ void Server::launch()
 						{
 							std::string reply;
 							std::cout << "prefix " << (*it)->getPrefix() << std::endl;
+							std::vector<std::string> params = (*it)->getParameters();
+							for (size_t i = 0; i < params.size(); i++)
+							{
+								std::cout << "params : " << (*it)->getParameters()[i] << std::endl;
+							}
 							if ((*it)->getPrefix() == "NICK")
 							{
 								reply += ":" + client->getNickname() + "!" + client->getUsername() + "@localhost NICK " + (*it)->getParameters()[0] + "\r\n";
-								client->setNickname((*it)->getParameters()[0]);
+								std::string nick = (*it)->getParameters()[0];
+								for (std::map<int, Client *>::iterator cli = _clients.begin(); cli != _clients.end(); cli++)
+								{
+									if (cli->second->getNickname() == nick)
+										nick += "_";
+								}
+								client->setNickname(nick);
 								send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
-							}		
+							}
+							if ((*it)->getPrefix() == "JOIN")
+							{
+								JOIN(*it);
+								std::map<std::string, Channel *> chann = getChannel();
+								// for (std::map<std::string, Channel *>::iterator ite = chann.begin(); ite != chann.end(); ite++)
+								// {
+								// 	std::cout << "channels : " << (*ite).first << std::endl;
+								// 	// std::cout << "channels client : " << (*ite).second->getClients()[client->getPoll().fd]->getNickname() << std::endl;
+								// }
+							}
 						}
 					}
 					client->clearCommands();
@@ -145,6 +176,7 @@ void Server::launch()
 			beg++;
 		}
 		pollfds.clear();
+		std::cout << "size after clear : " << pollfds.size() << std::endl;
 	}
 }
 
@@ -165,7 +197,7 @@ void Server::acceptClient()
 	fds.fd = client_sock;
 	fds.events = POLLIN;
 	fds.revents = POLLIN;
-	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, static_cast<Server &>(*this))));
+	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, this)));
 	this->_nbClients += 1;
 }
 

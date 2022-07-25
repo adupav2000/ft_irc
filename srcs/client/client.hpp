@@ -24,6 +24,8 @@
 #define BUFFER_SIZE 1024
 
 class Server;
+class Command;
+class Channel;
 
 enum Status {
 	CONNECTED,
@@ -35,7 +37,7 @@ enum Status {
 class Client
 {
 public:
-    Client(struct pollfd _fds, Server &serverRef);
+    Client(struct pollfd _fds, Server *serverRef);
     Client(Client const & rhs);
     ~Client();
     Client &operator=(Client const & rhs);
@@ -54,7 +56,7 @@ public:
 	std::string		getNickname() const;
 	std::string		getUsername() const;
 	struct pollfd	getPoll() const;
-	Server			&getServerRef() const;
+	Server			*getServer() const;
 	Status 			getStatus();
 	
 	// std::map<std::string, int(Client*)(Command)>	getFunction();
@@ -83,7 +85,7 @@ protected:
 	Status 			_clientStatus;
 
 	/* Server side variables */
-	Server					&_serverRef;
+	Server					*_serverRef;
 	t_pollfd				_fds;
 
 	/* Connection registration functions*/
