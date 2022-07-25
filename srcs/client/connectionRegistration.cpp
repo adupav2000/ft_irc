@@ -102,14 +102,14 @@ int Client::USER(Command arguments)
                                    using a username of "foo" and "bar"
                                    as the password.
  */
-// int Client::OPER(Command arguments)
-// {
-// 	if (arguments.getParameters().size() < 3)
-// 		return (ERR_NEEDMOREPARAMS);
-// 	if (arguments.getCommand()[2] != )
-// 		return ();
-// 	return (0);
-// }
+int Client::OPER(Command arguments)
+{
+	if (arguments.getParameters().size() < 3)
+		return (ERR_NEEDMOREPARAMS);
+	if (arguments.getCommand()[2] != )
+		return ();
+	return (0);
+}
 
 /* Command: MODE
    Parameters: <nickname>
