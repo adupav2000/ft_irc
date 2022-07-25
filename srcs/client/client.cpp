@@ -21,6 +21,8 @@ Client::Client(t_pollfd	fds, Server &serverRef) :  _clientStatus(PENDING), _serv
 	_messageFunctions["SERVICE"] = &Client::SERVICE;
 	_messageFunctions["QUIT"] = &Client::QUIT;
 	_messageFunctions["SQUIT"] = &Client::SQUIT;
+	
+	_registered = false;
 }
 
 Client::~Client()
