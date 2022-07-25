@@ -31,25 +31,25 @@
 int Client::NICK(Command arguments)
 {
         (void)arguments;
-	// if (!arguments.getParameters().size() < 2)
-	// 	return (ERR_NONICKNAMEGIVEN);
-	// if (_serverRef.nickNameUsed(arguments.getParameters()[1]))
-	// 	return (ERR_NICKNAMEINUSE);	
-	// if (_mode.find('r'))
-	// 	return (ERR_RESTRICTED);
-	// std::string nTmp = arguments.getParameters()[1];
-	// /* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
-	// y a un espace */
-	// if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
-	// 	return (ERR_ERRONEUSNICKNAME);
-	// for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
-	// {
-	// 	if (it == nTmp.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
-	// 		return (ERR_ERRONEUSNICKNAME);
-	// 	if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
-	// 		return (ERR_ERRONEUSNICKNAME);
-	// }
-        // this->_nickname = arguments.getParameters()[0];
+	if (!arguments.getParameters().size() < 2)
+		return (ERR_NONICKNAMEGIVEN);
+	 if (_serverRef.nickNameUsed(arguments.getParameters()[1]))
+	 	return (ERR_NICKNAMEINUSE);	
+	 if (_mode.find('r'))
+		return (ERR_RESTRICTED);
+	std::string nTmp = arguments.getParameters()[1];
+	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
+	y a un espace */
+	if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
+		return (ERR_ERRONEUSNICKNAME);
+	for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
+	{
+		if (it == nTmp.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
+			return (ERR_ERRONEUSNICKNAME);
+		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
+			return (ERR_ERRONEUSNICKNAME);
+	}
+        this->_nickname = arguments.getParameters()[0];
 	return (0);
 }
 
