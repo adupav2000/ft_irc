@@ -75,9 +75,9 @@ protected:
 	/* Variables */
 	bool 	_registered;
 	std::vector<Command *> _commands;
-	std::map<std::string, int(Client::*)(Command)> _functionCmd;
+	//std::map<std::string, int(Client::*)(Command)> _functionCmd;
 	std::vector<Channel *> _channels;
-	// typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
+	typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
 	t_messFuncMap	_messageFunctions;
 	std::string		_nickname;
 	std::string		_username;
