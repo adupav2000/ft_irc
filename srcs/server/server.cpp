@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:40:40 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 11:46:06 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ void Server::launch()
 	for (;;)
 	{
 		pollfds.push_back(_fds);
+		std::cout << "Helloo " << std::endl;
 		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
 			strerror(errno);
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
@@ -84,38 +85,48 @@ void Server::launch()
 			std::cout << "fd : " << pollfds[0].fd << std::endl;
 		}
 		else {
+			std::cout << "C'est ici "<< std::endl;
 			std::vector<pollfd>::iterator beg = pollfds.begin();
 			std::vector<pollfd>::iterator end = pollfds.end();
 			while (beg != end)
 			{
-				// if (beg->revents & POLLHUP && beg->fd != _fds.fd)
-				// {
-				// 	removeClient(beg->fd);
-				// }
+				if (beg->revents & POLLHUP && beg->fd != _fds.fd)
+				{
+					removeClient(beg->fd);
+				}
 				if (beg->revents & POLLIN)
 				{
-					// for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-					// {
-					// 	std::cout << "client status " << it->second->getStatus() << std::endl;
-					// }
+					for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+					{
+						std::cout << "client status " << it->second->getStatus() << std::endl;
+					}
 					client = _clients[beg->fd];
 					if (client == NULL)
 						return ;
 					client->treatMessage();
-					// std::cout << "status 1:" << client->getStatus() << std::endl;
+					std::cout << "status 1:" << client->getStatus() << std::endl;
 					if (client->getStatus() == DISCONNECTED)
+					{
+						std::cout << "status is disconnected" << std::endl;
 						removeClient(client->getPoll().fd);
+					}
 					else if (client->getStatus() == PENDING)
+					{
+						std::cout << "status is pending" << std::endl;
 						rplWelcome(client);
+					}
 					else if (client->getStatus() == CONNECTED)
+					{
+						std::cout << "status is connected" << std::endl;
 						client->executeCommands();
+						std::cout << "Just making sure its not here" << std::endl;
+					}
 					client->clearCommands();
 					std::cout << "fd : " << client->getPoll().fd << std::endl;
-
 				}
-					// else{
-					// 	std::cout << "else" << std::endl;
-					// }
+				else{
+					std::cout << "else" << std::endl;
+				}
 				beg++;
 			}
 		}
