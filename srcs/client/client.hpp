@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 20:37:52 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/26 16:56:28 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ public:
 	Status 					getStatus();
 	std::vector<Command *>  getCommands();
 
+	
 	/* Setters */
 	void 			setStatus(Status newStatus);
 	void 			setPoll(t_pollfd newPoll);
@@ -79,7 +80,6 @@ public:
 
 protected:
 	/* Variables */
-	//std::map<std::string, int(Client::*)(Command)> _functionCmd;
 	bool 					_registered;
 	std::vector<Command *>	_commands;
 	std::vector<Channel *> _channels;
@@ -118,13 +118,16 @@ protected:
 
 	int	MOTD(Command);
 	int LUSERS(Command);
+	int VERSION(Command);
 	
+	/* Channel function */
+	int modeChannel(Command arguments);
 
 	/* Utils */
 	bool isDigit(char c) const;
 	bool isLetter(char c) const;
 	bool isSpecial(char c) const;
-	int	checkNickname(std::string) const;
+	int	checkNickname(Command *, std::string) const;
 
 };
 

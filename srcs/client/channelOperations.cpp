@@ -6,11 +6,12 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 13:59:57 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:27:18 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 16:57:52 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "channel.hpp"
+#include "client.hpp"
+#include "../channel/channel.hpp"
 
 /*
 Command: JOIN
@@ -48,13 +49,13 @@ Command: JOIN
 		   ERR_TOOMANYTARGETS              ERR_UNAVAILRESOURCE
 		   RPL_TOPIC
 */
-int JOIN(Command *arguments)
+int Client::JOIN(Command arguments)
 {
 	std::string reply;
 	Server *server = arguments->getServer();
 	Client *client = arguments->getClient();
 	Channel *channel;
-	std::vector<std::string> names = split(arguments->getParameters()[0], ",");
+	std::vector<std::string> names = split(arguments.getParameters()[0], ",");
 	for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++)
 	{
 		if (server->getChannel().size() == 0 || server->getChannel().find((*it)) == server->getChannel().end())
@@ -67,9 +68,9 @@ int JOIN(Command *arguments)
 		channel->addToChannel(client);
 		client->setChannel(channel);
 	}
-	if (arguments->getParameters().size() > 1)
+	if (arguments.getParameters().size() > 1)
 	{
-		std::vector<std::string> keys = split(arguments->getParameters()[1], ",");
+		std::vector<std::string> keys = split(arguments.getParameters()[1], ",");
 		for (size_t i = 0; i < keys.size(); i++)
 		{
 			std::cout << "keys" << keys[i] << std::endl;
@@ -90,6 +91,7 @@ int JOIN(Command *arguments)
 	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 	return (0);
 }
+
 /*
   Command: PART
    Parameters: <channel> *( "," <channel> ) [ <Part Message> ]
@@ -109,7 +111,7 @@ int JOIN(Command *arguments)
            ERR_NEEDMOREPARAMS              ERR_NOSUCHCHANNEL
            ERR_NOTONCHANNEL
 */
-int Channel::PART(Command *arguments)
+int Client::PART(Command arguments)
 {
 	(void)arguments;
 	return (0);
@@ -138,10 +140,13 @@ int Channel::PART(Command *arguments)
            RPL_UNIQOPIS
 */
 // a faire si c'est un channel
-// int Client::modeChannel(Command arguments)
-// {
-// 	_channels.changeMode(arguments);
-// }
+int Client::modeChannel(Command arguments)
+{
+	//_channel->changeMode(arguments);
+	(void)arguments;
+	return (0);
+}
+
 /*
 int Client::MODE(Command arguments)
 {

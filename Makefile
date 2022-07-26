@@ -1,7 +1,11 @@
 NAME = ft_irc
 CLIENT_FILE = client.cpp\
+			channelOperations.cpp\
 			connectionRegistration.cpp\
-			sendingMessages.cpp \
+			miscellaneousMessages.cpp\
+			sendingMessages.cpp\
+			serverQueriesAndCommands.cpp\
+			serviceQueriesAndCommands.cpp\
 			service/service.cpp\
 			user/user.cpp\
 			user/operator/operator.cpp \
@@ -12,8 +16,7 @@ SERVER_FILE = server.cpp
 
 COMMAND_FILE = command.cpp
 
-CHANNEL_FILE = channelOperations.cpp\
-				channel.cpp
+CHANNEL_FILE = channel.cpp
 
 CLIENT_INC = client.hpp\
 			  service/service.hpp\
@@ -43,7 +46,7 @@ SOURCE += $(addprefix srcs/, $(UTILS_FILE))
 
 OBJ = $(addprefix obj/, $(notdir $(SOURCE:.cpp=.o)))
 
-FLAGS = -std=c++98 -Wall -Wextra -Werror -g 
+FLAGS = -std=c++98 -Wall -Wextra -Werror 
 COMPILER = clang++
 
 # Colors

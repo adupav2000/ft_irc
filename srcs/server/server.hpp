@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 11:02:06 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/14 10:20:57by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 16:49:41 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@
 #define NB_CLIENTS_MAX 5
 
 class Client;
-class Channel;
 
 class Server
 {
@@ -52,17 +51,14 @@ public:
 
 	/* GETTERS */
 
-	std::string getName();
+	std::string getName() const;
 	std::map<int, Client *> getClients();
 	std::map<std::string, Channel *> getChannel();
-
-
 
 	/* Handle incomming strings */
 	// in charge of calling the right function
 
 	/* channel operation */
-	void addChannel(Channel *channel);
 	int destroyChannel();
 
 	/* user opération */
@@ -77,16 +73,22 @@ public:
 	/* utils for client */
 	bool nickNameUsed(std::string nickname);
 
+	/* channel operation */
+	std::map<std::string, Channel *> getChannel();
+	void addChannel(Channel *channel);
 
 private:
 	std::string _name;
+	std::map<std::string, Channel *> _channel;
 
 	typedef struct pollfd	t_pollfd;
 	t_pollfd				_fds;
 	std::map<int, Client *> _clients;
 	unsigned int _nbClients;
-	std::map<std::string, Channel *> _channel;
+
+
 	/* Error types */
+	
 };
 
 #endif

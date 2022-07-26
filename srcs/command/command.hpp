@@ -22,16 +22,16 @@ public:
     Command &operator=(Command const & rhs);
 
     /* Getters */
-    std::string getPrefix();
-    std::string getMessage();
-    std::string getCommand();
-    Client *getClient();
-    Server *getServer();
+    std::string getPrefix() const;
+    std::string getCommand() const;
+    Client *getClient() const;
+    Server *getServer() const;
     std::vector<std::string> getParameters();
 	std::string getErrorString(int num);
 
 
 private:
+	void insertAllMess();
 	std::map<int, std::string> _errMess;
     std::string _prefix;
     std::string _command;

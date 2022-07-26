@@ -33,7 +33,7 @@ class Channel
         void setKey(std::string key);
 
         /* CHANNEL OPERATION */
-        int PART(Command *arguments);
+        // int PART(Command *arguments);
         void MODE();
         void TOPIC();
         void NAMES();
@@ -58,6 +58,6 @@ class Channel
 		std::string _maxClients;
 };
 
-int JOIN(Command *arguments);
+// int JOIN(Command *arguments);
 
 #endif
