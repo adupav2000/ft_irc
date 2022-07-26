@@ -22,10 +22,10 @@ public:
     Command &operator=(Command const & rhs);
 
     /* Getters */
-    std::string getPrefix();
-    std::string getCommand();
-    Client *getClient();
-    Server *getServer();
+    std::string getPrefix() const;
+    std::string getCommand() const;
+    Client *getClient() const;
+    Server *getServer() const;
     std::vector<std::string> getParameters();
 	std::string getErrorString(int num);
 
@@ -38,7 +38,7 @@ private:
     std::string _message;
     std::string _recv;
 
-	Server	const	*_serverRef;
+	Server	*_serverRef;
 	Client *_client;
 	Channel *_channel;
 };

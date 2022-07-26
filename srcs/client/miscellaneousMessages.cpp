@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 22:23:58 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:15:11 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 13:48:36 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ int Client::MOTD(Command arguments)
 */
 int Client::LUSERS(Command arguments)
 {
+	(void)arguments;
 	return (RPL_LUSERCLIENT);
 	return (RPL_LUSERUNKNOWN);
 	return (RPL_LUSERME);
@@ -118,6 +119,7 @@ int Client::LUSERS(Command arguments)
 */
 int Client::VERSION(Command arguments)
 {
+	(void)arguments;
 	return (ERR_NOSUCHSERVER);
 	return (RPL_VERSION);
 }

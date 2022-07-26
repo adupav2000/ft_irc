@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 12:45:06 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/26 13:49:05 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ public:
 	Status 					getStatus();
 	std::vector<Command *>  getCommands();
 
+	
 	/* Setters */
 	void 			setStatus(Status newStatus);
 	void 			setPoll(t_pollfd newPoll);
@@ -81,10 +82,6 @@ protected:
 	/* Variables */
 	bool 	_registered;
 	std::vector<Command *> _commands;
-	//std::map<std::string, int(Client::*)(Command)> _functionCmd;
-	typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
-	bool 					_registered;
-	std::vector<Command *>	_commands;
 	std::vector<Channel *> _channels;
 	t_messFuncMap	_messageFunctions;
 	std::string		_nickname;
@@ -121,6 +118,7 @@ protected:
 
 	int	MOTD(Command);
 	int LUSERS(Command);
+	int VERSION(Command);
 	
 	/* Channel function */
 	int modeChannel(Command arguments);

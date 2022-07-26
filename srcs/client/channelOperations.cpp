@@ -6,11 +6,12 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 13:59:57 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 22:08:22 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 14:06:16by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "channel.hpp"
+#include "client.hpp"
+#include "../channel/channel.hpp"
 
 /*
 Command: JOIN
@@ -48,14 +49,14 @@ Command: JOIN
 		   ERR_TOOMANYTARGETS              ERR_UNAVAILRESOURCE
 		   RPL_TOPIC
 */
-int JOIN(Command *arguments)
+int Client::JOIN(Command arguments)
 {
 	std::string reply;
-	Server *server = arguments->getServer();
+	Server *server = arguments.getServer();
 	std::cout << "server : " << server->getChannel().size() <<std::endl;
-	Client *client = arguments->getClient();
+	Client *client = arguments.getClient();
 	Channel *channel;
-	std::vector<std::string> names = split(arguments->getParameters()[0], ",");
+	std::vector<std::string> names = split(arguments.getParameters()[0], ",");
 	for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++)
 	{
 		std::cout << "channel name : " << (*it) << std::endl;
@@ -64,9 +65,9 @@ int JOIN(Command *arguments)
 		channel->addToChannel(client);
 		client->setChannel(channel);
 	}
-	if (arguments->getParameters().size() > 1)
+	if (arguments.getParameters().size() > 1)
 	{
-		std::vector<std::string> keys = split(arguments->getParameters()[1], ",");
+		std::vector<std::string> keys = split(arguments.getParameters()[1], ",");
 		for (size_t i = 0; i < keys.size(); i++)
 		{
 			std::cout << "keys" << keys[i] << std::endl;
@@ -108,7 +109,7 @@ int JOIN(Command *arguments)
            ERR_NEEDMOREPARAMS              ERR_NOSUCHCHANNEL
            ERR_NOTONCHANNEL
 */
-int Channel::PART(Command *arguments)
+int Client::PART(Command arguments)
 {
 	(void)arguments;
 	return (0);

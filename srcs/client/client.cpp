@@ -6,13 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 12:45:30 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/26 15:59:32 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server &serverRef) : _mode(""),  _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
+Client::Client(t_pollfd	fds, Server *serverRef) : _mode(""),  _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
 {
 	/* connection registration */
 	_messageFunctions["NICK"] = &Client::NICK;

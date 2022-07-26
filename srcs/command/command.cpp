@@ -191,22 +191,22 @@ Command::~Command()
 }
 
 // GETTERS
-std::string Command::getPrefix()
+std::string Command::getPrefix() const
 {
 	return _prefix;
 }
 
-std::string Command::getCommand()
+std::string Command::getCommand() const 
 {
 	return _command;
 }
 
-Client *Command::getClient()
+Client *Command::getClient() const
 {
 	return _client;
 }
 
-Server *Command::getServer()
+Server *Command::getServer() const
 {
 	return _serverRef;
 }

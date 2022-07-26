@@ -1,6 +1,11 @@
 NAME = ft_irc
 CLIENT_FILE = client.cpp\
+			channelOperations.cpp\
 			connectionRegistration.cpp\
+			miscellaneousMessages.cpp\
+			sendingMessages.cpp\
+			serverQueriesAndCommands.cpp\
+			serviceQueriesAndCommands.cpp\
 			service/service.cpp\
 			user/user.cpp\
 			user/operator/operator.cpp \
@@ -11,8 +16,7 @@ SERVER_FILE = server.cpp
 
 COMMAND_FILE = command.cpp
 
-CHANNEL_FILE = channelOperations.cpp\
-				channel.cpp
+CHANNEL_FILE = channel.cpp
 
 CLIENT_INC = client.hpp\
 			  service/service.hpp\

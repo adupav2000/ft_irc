@@ -31,6 +31,7 @@
 #include <fcntl.h>
 #include <fstream>
 #include "../client/client.hpp"
+#include "../channel/channel.hpp"
 
 #define NB_CLIENTS_MAX 5
 
@@ -66,11 +67,15 @@ public:
 	/* utils for client */
 	bool nickNameUsed(std::string nickname);
 
+	/* channel operation */
+	std::map<std::string, Channel *> getChannel();
+	void addChannel(Channel *channel);
 
 	/* Getters */
-	std::string getName();
+	std::string getName() const;
 private:
 	std::string _name;
+	std::map<std::string, Channel *> _channel;
 
 	typedef struct pollfd	t_pollfd;
 	t_pollfd				_fds;

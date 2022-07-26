@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 12:42:29 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/26 15:58:08 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ Server::~Server()
 //     return _null;
 // }
 
-std::string Server::getName()
+std::string Server::getName() const
 {
 	return _name;
 }
@@ -41,6 +41,7 @@ std::map<std::string, Channel *> Server::getChannel()
 {
 	return _channel;
 }
+
 
 void Server::addChannel(Channel *channel)
 {
@@ -79,7 +80,7 @@ void Server::init()
 void Server::launch()
 {
 
-	std::vector<struct pollfd>		pollfds;
+		std::vector<struct pollfd>		pollfds;
 	Client 							*client;
 
 
@@ -91,6 +92,8 @@ void Server::launch()
 			std::cout << "client tab fd : " << (*it).second->getPoll().fd << std::endl;
 			pollfds.push_back((*it).second->getPoll());
 		}
+		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
+			strerror(errno);
 		std::cout << "fds fd : " << pollfds[0].revents << "revents " << POLLIN << std::endl;
 		std::vector<pollfd>::iterator beg = pollfds.begin();
 		std::vector<pollfd>::iterator end = pollfds.end();
@@ -127,6 +130,7 @@ void Server::launch()
 						rplWelcome(client);
 					else if (client->getStatus() == CONNECTED)
 					{
+						/*
 						std::vector<Command *> commands = client->getCommands();
 						for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)
 						{
@@ -151,7 +155,7 @@ void Server::launch()
 							}
 							if ((*it)->getPrefix() == "JOIN")
 							{
-								JOIN(*it);
+								client->JOIN(**it);
 								std::map<std::string, Channel *> chann = getChannel();
 								// for (std::map<std::string, Channel *>::iterator ite = chann.begin(); ite != chann.end(); ite++)
 								// {
@@ -159,9 +163,9 @@ void Server::launch()
 								// 	// std::cout << "channels client : " << (*ite).second->getClients()[client->getPoll().fd]->getNickname() << std::endl;
 								// }
 							}
-						}
+						}*/
+						client->executeCommands();
 					}
-					//	client->executeCommands();
 					client->clearCommands();
 					std::cout << "fd : " << client->getPoll().fd << std::endl;
 	
@@ -194,8 +198,8 @@ void Server::acceptClient()
 	fds.fd = client_sock;
 	fds.events = POLLIN;
 	fds.revents = POLLIN;
-	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, this)));
-	this->_nbClients += 1;
+	if (this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, this))).second)
+		this->_nbClients += 1;
 }
 
 void Server::removeClient(int fd)

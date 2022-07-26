@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 12:44:26 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/26 13:06:51 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,25 +60,11 @@ int Client::PASS(Command arguments)
         [X]   ERR_NICKNAMEINUSE                [] ERR_NICKCOLLISION
         []   ERR_UNAVAILRESOURCE              [X] ERR_RESTRICTED
 */
-int	Client::checkNickname(std::string name) const
-{
-    if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
-		return (ERR_ERRONEUSNICKNAME);
-	for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
-	{
-		if (it == nTmp.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
-			return (ERR_ERRONEUSNICKNAME);
-		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
-			return (ERR_ERRONEUSNICKNAME);
-	}
-	return (0);
-}
-
 int Client::NICK(Command arguments)
 {
 	if (arguments.getParameters().size() < 2)
 		return (ERR_NONICKNAMEGIVEN);
-	if (_serverRef.nickNameUsed(arguments.getParameters()[1]))
+	if (_serverRef->nickNameUsed(arguments.getParameters()[1]))
 		return (ERR_NICKNAMEINUSE);	
 	if (_mode.find('r'))
 		return (ERR_RESTRICTED);
@@ -135,7 +121,7 @@ int Client::USER(Command arguments)
 		return (ERR_ALREADYREGISTRED);
 	_registered = true;
 	_clientType = TYPE_USER;
-	this->_serverRef.changeClientClass(this, (new User(*this)));
+	this->_serverRef->changeClientClass(this, (new User(*this)));
 	return (0);
 }
 
@@ -164,7 +150,7 @@ int Client::OPER(Command arguments)
 		return (ERR_NEEDMOREPARAMS);
 	_registered = true;
 	_clientType = TYPE_OPERATOR;
-	this->_serverRef.changeClientClass(this, (new Operator(*this)));
+	this->_serverRef->changeClientClass(this, (new Operator(*this)));
 	return (0);
 }
 
@@ -201,6 +187,7 @@ int Client::OPER(Command arguments)
 int Client::MODE(Command arguments)
 {
 	// TODO : add the option for channels : redefinition in services responses
+
 	/* Check params if enough */
 	if (arguments.getParameters().size() < 3)
 		return (ERR_NEEDMOREPARAMS);
