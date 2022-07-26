@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 12:31:24 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 12:42:29 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,6 @@ void Server::launch()
 			std::cout << "client tab fd : " << (*it).second->getPoll().fd << std::endl;
 			pollfds.push_back((*it).second->getPoll());
 		}
-		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
-			strerror(errno);
 		std::cout << "fds fd : " << pollfds[0].revents << "revents " << POLLIN << std::endl;
 		std::vector<pollfd>::iterator beg = pollfds.begin();
 		std::vector<pollfd>::iterator end = pollfds.end();

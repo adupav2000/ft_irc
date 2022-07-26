@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "client.hpp"
+#include "channel.hpp"
 
 /*
 Command: JOIN
@@ -48,9 +48,43 @@ Command: JOIN
 		   ERR_TOOMANYTARGETS              ERR_UNAVAILRESOURCE
 		   RPL_TOPIC
 */
-int Client::JOIN(Command arguments)
+int JOIN(Command *arguments)
 {
-	(void)arguments;
+	std::string reply;
+	Server *server = arguments->getServer();
+	std::cout << "server : " << server->getChannel().size() <<std::endl;
+	Client *client = arguments->getClient();
+	Channel *channel;
+	std::vector<std::string> names = split(arguments->getParameters()[0], ",");
+	for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++)
+	{
+		std::cout << "channel name : " << (*it) << std::endl;
+		channel = new Channel((*it), server, client);
+		server->addChannel(channel);
+		channel->addToChannel(client);
+		client->setChannel(channel);
+	}
+	if (arguments->getParameters().size() > 1)
+	{
+		std::vector<std::string> keys = split(arguments->getParameters()[1], ",");
+		for (size_t i = 0; i < keys.size(); i++)
+		{
+			std::cout << "keys" << keys[i] << std::endl;
+			(server->getChannel()[names[i]])->setKey(keys[i]);
+		}
+	}
+	reply += ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " JOIN " + names[0] + "\r\n";
+	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+	channel = server->getChannel()[names[0]];
+	if (channel->getTopic().size() > 0)
+	{
+		reply = names[0] + " :" + channel->getTopic();
+		send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+	}
+	reply = channel->getMode() + " " + names[0] + " :" + channel->getClientsName(channel) + "\r\n";
+	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+	reply = channel->getName() + ":End of /NAMES list\r\n";
+	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 	return (0);
 }
 
@@ -74,7 +108,7 @@ int Client::JOIN(Command arguments)
            ERR_NEEDMOREPARAMS              ERR_NOSUCHCHANNEL
            ERR_NOTONCHANNEL
 */
-int Client::PART(Command arguments)
+int Channel::PART(Command *arguments)
 {
 	(void)arguments;
 	return (0);

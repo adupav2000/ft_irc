@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 22:12:47 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 12:44:26 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,20 @@ int Client::PASS(Command arguments)
         [X]   ERR_NICKNAMEINUSE                [] ERR_NICKCOLLISION
         []   ERR_UNAVAILRESOURCE              [X] ERR_RESTRICTED
 */
+int	Client::checkNickname(std::string name) const
+{
+    if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
+		return (ERR_ERRONEUSNICKNAME);
+	for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
+	{
+		if (it == nTmp.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
+			return (ERR_ERRONEUSNICKNAME);
+		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
+			return (ERR_ERRONEUSNICKNAME);
+	}
+	return (0);
+}
+
 int Client::NICK(Command arguments)
 {
 	if (arguments.getParameters().size() < 2)

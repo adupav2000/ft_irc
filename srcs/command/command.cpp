@@ -146,7 +146,9 @@ Command::Command()
 	return;
 }
 
-Command::Command(std::string message) : _recv(message)
+
+
+Command::Command(std::string message, Server *server, Client *client) : _recv(message), _serverRef(server), _client(client)
 {
 	this->insertAllMess();
 	std::vector<std::string> tmp;
@@ -199,6 +201,16 @@ std::string Command::getCommand()
 	return _command;
 }
 
+Client *Command::getClient()
+{
+	return _client;
+}
+
+Server *Command::getServer()
+{
+	return _serverRef;
+}
+
 std::vector<std::string> Command::getParameters()
 {
 	return _parameters;
@@ -235,7 +247,7 @@ std::string Command::getErrorString(int num)
 	EXAMPLE
 	std::string str = "<channel name>";
 	ret.replace(ret.find(str), str.length(), _channel->getName());
-
+	std::string str = "<target>";
 	std::string str = "<error code>";
 	std::string str = "<mask>";
 	std::string str = "<service name>";
