@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 11:02:06 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 17:52:47 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 22:37:57 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ public:
 
 	/* utils for client */
 	bool nickNameUsed(std::string nickname);
+	bool correctPassword(std::string password);
 
 	/* channel operation */
 	void addChannel(Channel *channel);
@@ -78,6 +79,7 @@ public:
 private:
 	std::string _name;
 	std::map<std::string, Channel *> _channel;
+	std::string	_password;
 
 	typedef struct pollfd	t_pollfd;
 	t_pollfd				_fds;
