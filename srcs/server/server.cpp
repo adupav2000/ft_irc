@@ -86,13 +86,13 @@ void Server::launch()
 	for (;;)
 	{
 		pollfds.push_back(_fds);
-		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
-			strerror(errno);
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 		{
 			std::cout << "client tab fd : " << (*it).second->getPoll().fd << std::endl;
 			pollfds.push_back((*it).second->getPoll());
 		}
+		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
+			strerror(errno);
 		std::cout << "fds fd : " << pollfds[0].revents << "revents " << POLLIN << std::endl;
 		std::vector<pollfd>::iterator beg = pollfds.begin();
 		std::vector<pollfd>::iterator end = pollfds.end();
