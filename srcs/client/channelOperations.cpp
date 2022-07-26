@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 13:59:57 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:27:18 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 22:08:22 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,9 @@ int Client::PART(Command arguments)
 // a faire si c'est un channel
 int Client::modeChannel(Command arguments)
 {
-	_channel->changeMode(arguments);
+	//_channel->changeMode(arguments);
+	(void)arguments;
+	return (0);
 }
 /*
 int Client::MODE(Command arguments)

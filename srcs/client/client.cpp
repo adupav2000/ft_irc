@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:39:56 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 00:27:31 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,17 @@ int Client::executeCommands()
 
 	while (this->_commands.size() != 0)
 	{
+		std::cout << "it break here" << std::endl;
+		std::cout << "Showing the content (*_commands.begin())->getPrefix())";
+		std::cout << (*_commands.begin())->getPrefix() << std::endl;
+		// std::cout << "(**(_commands.begin()))";
+		// std::cout << (**(_commands.begin())) << std::endl;
 		//(this->*_messageFunctions.find((*_commands.begin())->getPrefix()) != this->*_messageFunctions->end())) &&
 		if ((ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())))) != 0)
 		{
+			std::cout << "it break here1" << std::endl;
 			errorStr = (*_commands.begin())->getErrorString(ret);
+			std::cout << " (*_commands.begin())->getErrorString(ret) "  << errorStr << "|" << std::endl;
 			send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 		}
 		else
@@ -144,6 +151,7 @@ void Client::treatMessage()
 	int i, start;	
 
 	memset(buffer, 0, BUFFER_SIZE);
+	std::cout << "Comment ça marche." << std::endl;
 	ret = recv(this->getPoll().fd, buffer, 1024, 0);
 	if (ret == 0)
 	{

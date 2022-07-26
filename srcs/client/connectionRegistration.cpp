@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 19:25:57 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/25 22:12:47 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,20 +60,6 @@ int Client::PASS(Command arguments)
         [X]   ERR_NICKNAMEINUSE                [] ERR_NICKCOLLISION
         []   ERR_UNAVAILRESOURCE              [X] ERR_RESTRICTED
 */
-int	Client::checkNickname(std::string name) const
-{
-	if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
-		return (ERR_ERRONEUSNICKNAME);
-	for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
-	{
-		if (it == nTmp.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
-			return (ERR_ERRONEUSNICKNAME);
-		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
-			return (ERR_ERRONEUSNICKNAME);
-	}
-	return (0);
-}
-
 int Client::NICK(Command arguments)
 {
 	if (arguments.getParameters().size() < 2)
@@ -85,11 +71,25 @@ int Client::NICK(Command arguments)
 	std::string nTmp = arguments.getParameters()[1];
 	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
 	y a un espace */
-	int retValNickname = this->checkNickname(nTmp);
+	int retValNickname = this->checkNickname(&arguments, nTmp);
 	if (retValNickname != 0)
 		return (retValNickname);
 	_clientType = TYPE_CLIENT;
 	this->_nickname = arguments.getParameters()[1];
+	return (0);
+}
+
+int	Client::checkNickname(Command *arguments, std::string name) const
+{
+	if (arguments->getParameters().size() != 2 || name.length() > 9)
+		return (ERR_ERRONEUSNICKNAME);
+	for (std::string::iterator it = name.begin(), end = name.end(); it != end; ++it)
+	{
+		if (it == name.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
+			return (ERR_ERRONEUSNICKNAME);
+		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
+			return (ERR_ERRONEUSNICKNAME);
+	}
 	return (0);
 }
 
@@ -246,7 +246,7 @@ int Client::SERVICE(Command arguments)
 		return (ERR_NEEDMOREPARAMS);
 	if (_clientType == TYPE_SERVICE || _clientType == TYPE_USER)
 		return (ERR_ALREADYREGISTRED);
-	int retValNickname = this->checkNickname(arguments.getCommand());
+	int retValNickname = this->checkNickname(&arguments, arguments.getCommand());
 	if (retValNickname != 0)
 		return (retValNickname);
 	_clientType = TYPE_SERVICE;

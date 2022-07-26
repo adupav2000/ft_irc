@@ -26,6 +26,7 @@ public:
 	std::string getErrorString(int num);
 
 private:
+	void insertAllMess();
 	std::map<int, std::string> _errMess;
     std::string _prefix;
     std::string _command;
