@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 19:23:20 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 20:15:56 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,12 +116,30 @@ protected:
 	int INVITE(Command);
 	int KICK(Command);
 
+	/* Sever Queries and Messages*/
 	int	MOTD(Command);
 	int LUSERS(Command);
 	int VERSION(Command);
+	int STATS(Command);
+	int LINKS(Command);
+	int TIME(Command);
+	int CONNECT(Command);
+	int TRACE(Command);
+	int ADMIN(Command);
+	int INFO(Command);
+
+	/* Miscellaneous Message */
+	int KILL(Command);
+	int PING(Command);
+	int PONG(Command);
+
+	/* Service Queries and commands */
+	int SERVLIST(Command);
+	int SQUERY(Command);
 
 
 	int PRIVMSG(Command);
+	int NOTICE(Command);
 	
 	/* Channel function */
 	int modeChannel(Command arguments);

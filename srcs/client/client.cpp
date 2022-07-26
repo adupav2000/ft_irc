@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 19:24:01 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 20:18:29 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,28 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(PENDI
 	_messageFunctions["LIST"] = &Client::LIST;
 	_messageFunctions["INVITE"] = &Client::INVITE;
 	_messageFunctions["KICK"] = &Client::KICK;
+
+	/* Sever Queries and Messages*/
+	_messageFunctions["MOTD"] = &Client::MOTD;
+	_messageFunctions["LUSERS"] = &Client::LUSERS;
+	_messageFunctions["VERSION"] = &Client::VERSION;
+	_messageFunctions["STATS"] = &Client::STATS;
+	_messageFunctions["LINKS"] = &Client::LINKS;
+	_messageFunctions["TIME"] = &Client::TIME;
+	_messageFunctions["CONNECT"] = &Client::CONNECT;
+	_messageFunctions["TRACE"] = &Client::TRACE;
+	_messageFunctions["ADMIN"] = &Client::ADMIN;
+	_messageFunctions["INFO"] = &Client::INFO;
+
+	/* Miscellaneous Message */
+	_messageFunctions["KILL"] = &Client::KILL;
+	_messageFunctions["PING"] = &Client::PING;
+	_messageFunctions["PONG"] = &Client::PONG;
+
+	/* Service Queries and commands */
+	_messageFunctions["SERVLIST"] = &Client::SERVLIST;
+	_messageFunctions["SQUERY"] = &Client::SQUERY;
+
 
 	_messageFunctions["CAP"] = &Client::SQUIT;
 

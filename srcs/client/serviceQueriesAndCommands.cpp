@@ -6,9 +6,11 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 22:27:47 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/25 12:35:45 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 20:14:31 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "client.hpp"
 
 /*
  Command: SERVLIST
@@ -23,6 +25,11 @@
 
            RPL_SERVLIST                  RPL_SERVLISTEND
 */
+int Client::SERVLIST(Command argument)
+{
+	(void)argument;
+	return (0);
+}
 
 /*
 
@@ -45,3 +52,8 @@
                                    ; Message to the service with name
                                    dict@irc.fr.
 */
+int Client::SQUERY(Command argument)
+{
+	(void)argument;
+	return (0);
+}
