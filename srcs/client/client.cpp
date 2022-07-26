@@ -6,13 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 17:43:29 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 18:57:48 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server *serverRef) : _mode(""),  _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
+Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
 {
 	/* connection registration */
 	_messageFunctions["NICK"] = &Client::NICK;
@@ -40,17 +40,16 @@ Client::Client(t_pollfd	fds, Server *serverRef) : _mode(""),  _clientStatus(PEND
 
 Client::~Client()
 {
-	return ;
+	return;
 }
 
-
-Client::Client(Client const & rhs) : _serverRef(rhs.getServer()), _fds(rhs.getPoll())
+Client::Client(Client const &rhs) : _serverRef(rhs.getServer()), _fds(rhs.getPoll())
 {
 	this->_messageFunctions = rhs._messageFunctions;
 	this->_nickname = rhs._nickname;
 }
 
-Client &Client::operator=(Client const & rhs)
+Client &Client::operator=(Client const &rhs)
 {
 	this->_fds = rhs._fds;
 	this->_messageFunctions = rhs._messageFunctions;
@@ -73,62 +72,64 @@ bool Client::isSpecial(char c) const
 	return ((c <= '}' && c >= '{') && (c >= '[' && c <= '`'));
 }
 
-std::string		Client::getNickname() const
+std::string Client::getNickname() const
 {
 	return (this->_nickname);
 }
 
-std::string		Client::getUsername() const
+std::string Client::getUsername() const
 {
 	return (this->_username);
 }
 
-struct pollfd	Client::getPoll() const
+struct pollfd Client::getPoll() const
 {
 	return (this->_fds);
 }
 
-Server			*Client::getServer() const
+Server *Client::getServer() const
 {
 	return (this->_serverRef);
 }
 
-Client::t_messFuncMap			Client::getMessageFunctions() const
+Client::t_messFuncMap Client::getMessageFunctions() const
 {
 	return (this->_messageFunctions);
 }
 
 int Client::executeCommands()
 {
-	int			ret;
+	int ret;
 	std::string errorStr;
 
 	while (this->_commands.size() != 0)
 	{
-		std::cout << "it break here" << std::endl;
-		std::cout << "Showing the content (*_commands.begin())->getPrefix())";
-		std::cout << (*_commands.begin())->getPrefix() << std::endl;
 		// std::cout << "(**(_commands.begin()))";
 		// std::cout << (**(_commands.begin())) << std::endl;
 		//(this->*_messageFunctions.find((*_commands.begin())->getPrefix()) != this->*_messageFunctions->end())) &&
-		if ((ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())))) != 0)
+		try
 		{
-			std::cout << "it break here1" << std::endl;
-			errorStr = (*_commands.begin())->getErrorString(ret);
-			std::cout << " (*_commands.begin())->getErrorString(ret) "  << errorStr << "|" << std::endl;
-			send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
+			if ((ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())))) != 0)
+			{
+				errorStr = (*_commands.begin())->getErrorString(ret);
+				send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
+			}
+			else
+			{
+				// TODO ? CHANGE
+				std::cout << "Command: " << (*_commands.begin())->getPrefix() << " failed" << std::endl;
+			}
 		}
-		else
+		catch (const std::exception &e)
 		{
-			//TODO ? CHANGE
-			std::cout << "Command: " << (*_commands.begin())->getPrefix() << " failed" <<  std::endl;
+			std::cerr << e.what() << '\n';
 		}
 		_commands.erase(_commands.begin());
 	}
 	return (0);
 }
 
-Status 			Client::getStatus()
+Status Client::getStatus()
 {
 	return _clientStatus;
 }
@@ -143,22 +144,22 @@ std::vector<Command *> Client::getCommands()
 	return _commands;
 }
 
-void 			Client::setStatus(Status newStatus)
+void Client::setStatus(Status newStatus)
 {
 	_clientStatus = newStatus;
 }
 
-void 			Client::setPoll(t_pollfd newPoll)
+void Client::setPoll(t_pollfd newPoll)
 {
 	_fds = newPoll;
 }
 
-void			Client::setNickname(std::string newNickname)
+void Client::setNickname(std::string newNickname)
 {
 	_nickname = newNickname;
 }
 
-void			Client::setChannel(Channel *channel)
+void Client::setChannel(Channel *channel)
 {
 	_channels.push_back(channel);
 }
@@ -166,7 +167,6 @@ void			Client::setChannel(Channel *channel)
 void Client::clearCommands()
 {
 	_commands.clear();
-
 }
 
 void Client::treatMessage()
@@ -174,12 +174,10 @@ void Client::treatMessage()
 	char buffer[BUFFER_SIZE + 1];
 	std::string message;
 	int ret;
-	int i, start;	
+	int i, start;
 
 	memset(buffer, 0, BUFFER_SIZE);
-	std::cout << "Comment ça marche." << std::endl;
 	ret = recv(this->getPoll().fd, buffer, 1024, 0);
-		std::cout << "buufferrr : " << std::endl;
 
 	if (ret == 0)
 	{
@@ -193,9 +191,9 @@ void Client::treatMessage()
 	{
 		i = 0;
 		start = 0;
-		while (message[i] && message[i+1])
+		while (message[i] && message[i + 1])
 		{
-			if (message[i] ==  '\r' && message[i + 1] == '\n')
+			if (message[i] == '\r' && message[i + 1] == '\n')
 			{
 				// std::cout << i << message.substr(start, i - start) << std::endl;
 				_commands.push_back(new Command(message.substr(start, i - start), getServer(), this));
@@ -227,9 +225,8 @@ void Client::treatMessage()
 				std::cout << "REFUSED : " << std::endl;
 				_clientStatus = REFUSED;
 			}
-			}
+		}
 	}
-	else
-		if (_clientStatus != CONNECTED)
-			_clientStatus = REFUSED;
+	else if (_clientStatus != CONNECTED)
+		_clientStatus = REFUSED;
 }

@@ -223,10 +223,8 @@ std::vector<std::string> Command::getParameters() const
 std::string findAndReplace(std::string toBeFound, std::string toBeSearchedThrought, std::string toReplaceWith)
 {
 	std::string ret = toBeSearchedThrought;
-	std::cout << "Star = " << std::endl;
 	if (ret.find(toBeFound) != std::string::npos && toReplaceWith != "")
 	{
-		std::cout << "HERE : " << std::endl;
 		ret.replace(ret.find(toBeFound), toBeFound.length(), toReplaceWith);
 	}
 	return (ret);
@@ -234,18 +232,10 @@ std::string findAndReplace(std::string toBeFound, std::string toBeSearchedThroug
 
 std::string Command::getErrorString(int num) const
 {
-	std::cout << "Check the num : " << num << std::endl;
 	std::string ret = this->_errMess.at(num);
-	std::cout << "Check the mess" << ret << std::endl;
-	std::cout << "Check the rep " << _client->getNickname() << std::endl;
-	std::cout << " The ret is the problem " << std::endl;
 	findAndReplace("<nickname>", ret, _client->getNickname());
-	std::cout << " The ret is the problem " << std::endl;
 	findAndReplace("<server name>", ret, _serverRef->getName());
-	std::cout << " The ret is the problem " << std::endl;
 	findAndReplace("<command>", ret, this->getPrefix());
-	std::cout << " The ret is the problem " << std::endl;
-	std::cout << "Ah no" << std::endl;
 	/* KWAME to be set up wth functions */
 	/*
 	EXAMPLE

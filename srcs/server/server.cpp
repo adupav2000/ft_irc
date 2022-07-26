@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 18:42:26 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 19:00:13 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void Server::launch()
 		pollfds.push_back(_fds);
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 		{
-			std::cout << "client tab fd : " << (*it).second->getPoll().fd << std::endl;
+			// std::cout << "client tab fd : " << (*it).second->getPoll().fd << std::endl;
 			pollfds.push_back((*it).second->getPoll());
 		}
 		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
@@ -124,7 +124,6 @@ void Server::launch()
 						return ;
 	
 					client->treatMessage();
-					std::cout << "status 1:" << client->getStatus() << std::endl;
 					if (client->getStatus() == DISCONNECTED)
 						removeClient(client->getPoll().fd);
 					else if (client->getStatus() == PENDING)
@@ -182,7 +181,6 @@ void Server::launch()
 			beg++;
 		}
 		pollfds.clear();
-		std::cout << "size after clear : " << pollfds.size() << std::endl;
 	}
 }
 
