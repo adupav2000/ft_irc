@@ -5,10 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/24 22:30:48 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/24 22:35:35 by adu-pavi         ###   ########.fr       */
+/*   Created: 2022/07/24 22:23:58 by adu-pavi          #+#    #+#             */
+/*   Updated: 2022/07/26 20:14:26 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "client.hpp"
 
 /*
 Command: MOTD
@@ -20,18 +22,58 @@ Command: MOTD
    Wildcards are allowed in the <target> parameter.
 
    Numeric Replies:
-           RPL_MOTDSTART                   RPL_MOTD
-           RPL_ENDOFMOTD                   ERR_NOMOTD
+		   RPL_MOTDSTART                   RPL_MOTD
+		   RPL_ENDOFMOTD                   ERR_NOMOTD
+
 */
+int Client::MOTD(Command arguments)
+{
+	std::string errorStr;
+	/* Need a MOTD file */
+	if (arguments.getParameters().size() < 2)
+		return (RPL_MOTD);
+	struct stat buffer;
+	if (stat((arguments.getParameters()[0]).c_str(), &buffer) != 0)
+		return (ERR_NOMOTD);
+	else
+	{
+		errorStr = (*_commands.begin())->getErrorString(RPL_MOTDSTART);
+		send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
+		/*
+		char buffer[128];
+		std::string result = "";
+		FILE *pipe = popen("./motd", "r");
+		if (!pipe)
+			throw std::runtime_error("popen() failed!");
+		try
+		{
+			while (fgets(buffer, sizeof buffer, pipe) != NULL)
+			{
+				result += buffer;
+			}
+		}
+		catch ()
+		{
+			pclose(pipe);
+			throw;
+		}
+		pclose(pipe);
+		_text = result;
+		*/
+		errorStr = (*_commands.begin())->getErrorString(RPL_MOTD);
+		send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
+		/* "Echo the content of all files in */
+	}
+	return (0);
+}
+
 /*
-   Command: LUSERS
+	  Command: LUSERS
    Parameters: [ <mask> [ <target> ] ]
 
    The LUSERS command is used to get statistics about the size of the
    IRC network.  If no parameter is given, the reply will be about the
    whole net.  If a <mask> is specified, then the reply will only
-
-
    concern the part of the network formed by the servers matching the
    mask.  Finally, if the <target> parameter is specified, the request
    is forwarded to that server which will generate the reply.
@@ -40,12 +82,24 @@ Command: MOTD
 
    Numeric Replies:
 
-           RPL_LUSERCLIENT                 RPL_LUSEROP
-           RPL_LUSERUNKOWN                 RPL_LUSERCHANNELS
-           RPL_LUSERME                     ERR_NOSUCHSERVER
+		   RPL_LUSERCLIENT                 RPL_LUSEROP
+		   RPL_LUSERUNKOWN                 RPL_LUSERCHANNELS
+		   RPL_LUSERME                     ERR_NOSUCHSERVER
+
 */
+int Client::LUSERS(Command arguments)
+{
+	(void)arguments;
+	return (RPL_LUSERCLIENT);
+	return (RPL_LUSERUNKNOWN);
+	return (RPL_LUSERME);
+	return (RPL_LUSEROP);
+	return (RPL_LUSERCHANNELS);
+	return (ERR_NOSUCHSERVER);
+}
+
 /*
-      Command: VERSION
+   Command: VERSION
    Parameters: [ <target> ]
 
    The VERSION command is used to query the version of the server
@@ -56,15 +110,22 @@ Command: MOTD
 
    Numeric Replies:
 
-           ERR_NOSUCHSERVER                RPL_VERSION
+		   ERR_NOSUCHSERVER                RPL_VERSION
 
    Examples:
 
    VERSION tolsun.oulu.fi          ; Command to check the version of
-                                   server "tolsun.oulu.fi".
+								   server "tolsun.oulu.fi".
 */
+int Client::VERSION(Command arguments)
+{
+	(void)arguments;
+	return (ERR_NOSUCHSERVER);
+	return (RPL_VERSION);
+}
+
 /*
-      Command: STATS
+   Command: STATS
    Parameters: [ <query> [ <target> ] ]
 
    The stats command is used to query statistics of certain server.  If
@@ -81,36 +142,41 @@ Command: MOTD
    implementation dependent.  The standard queries below SHOULD be
    supported by the server:
 
-            l - returns a list of the server's connections, showing how
-                long each connection has been established and the
-                traffic over that connection in Kbytes and messages for
-                each direction;
-            m - returns the usage count for each of commands supported
-                by the server; commands for which the usage count is
-                zero MAY be omitted;
-            o - returns a list of configured privileged users,
-                operators;
-            u - returns a string showing how long the server has been
-                up.
+			l - returns a list of the server's connections, showing how
+				long each connection has been established and the
+				traffic over that connection in Kbytes and messages for
+				each direction;
+			m - returns the usage count for each of commands supported
+				by the server; commands for which the usage count is
+				zero MAY be omitted;
+			o - returns a list of configured privileged users,
+				operators;
+			u - returns a string showing how long the server has been
+				up.
 
    It is also RECOMMENDED that client and server access configuration be
    published this way.
 
    Numeric Replies:
 
-           ERR_NOSUCHSERVER
-           RPL_STATSLINKINFO                RPL_STATSUPTIME
-           RPL_STATSCOMMANDS                RPL_STATSOLINE
-           RPL_ENDOFSTATS
+		   ERR_NOSUCHSERVER
+		   RPL_STATSLINKINFO                RPL_STATSUPTIME
+		   RPL_STATSCOMMANDS                RPL_STATSOLINE
+		   RPL_ENDOFSTATS
 
    Examples:
 
    STATS m                         ; Command to check the command usage
-                                   for the server you are connected to
-
+								   for the server you are connected to
 */
+int Client::STATS(Command argument)
+{
+	(void)argument;
+	return (0);
+}
+
 /*
-      Command: LINKS
+   Command: LINKS
    Parameters: [ [ <remote server> ] <server mask> ]
 
    With LINKS, a user can list all servernames, which are known by the
@@ -123,18 +189,24 @@ Command: MOTD
 
    Numeric Replies:
 
-           ERR_NOSUCHSERVER
-           RPL_LINKS                        RPL_ENDOFLINKS
+		   ERR_NOSUCHSERVER
+		   RPL_LINKS                        RPL_ENDOFLINKS
 
    Examples:
 
    LINKS *.au                      ; Command to list all servers which
-                                   have a name that matches *.au;
+								   have a name that matches *.au;
 
    LINKS *.edu *.bu.edu            ; Command to list servers matching
-                                   *.bu.edu as seen by the first server
-                                   matching *.edu.
+								   *.bu.edu as seen by the first server
+								   matching *.edu.
 */
+int Client::LINKS(Command argument)
+{
+	(void)argument;
+	return (0);
+}
+
 /*
    Command: TIME
    Parameters: [ <target> ]
@@ -147,15 +219,21 @@ Command: MOTD
 
    Numeric Replies:
 
-           ERR_NOSUCHSERVER              RPL_TIME
+		   ERR_NOSUCHSERVER              RPL_TIME
 
    Examples:
    TIME tolsun.oulu.fi             ; check the time on the server
-                                   "tolson.oulu.fi"
+								   "tolson.oulu.fi"
 
 */
+int Client::TIME(Command argument)
+{
+	(void)argument;
+	return (0);
+}
+
 /*
-      Command: CONNECT
+   Command: CONNECT
    Parameters: <target server> <port> [ <remote server> ]
 
    The CONNECT command can be used to request a server to try to
@@ -171,16 +249,21 @@ Command: MOTD
 
    Numeric Replies:
 
-           ERR_NOSUCHSERVER              ERR_NOPRIVILEGES
-           ERR_NEEDMOREPARAMS
-
+		   ERR_NOSUCHSERVER              ERR_NOPRIVILEGES
+		   ERR_NEEDMOREPARAMS
    Examples:
 
    CONNECT tolsun.oulu.fi 6667     ; Command to attempt to connect local
-                                   server to tolsun.oulu.fi on port 6667
+								   server to tolsun.oulu.fi on port 6667
 */
+int Client::CONNECT(Command argument)
+{
+	(void)argument;
+	return (0);
+}
+
 /*
-      Command: TRACE
+   Command: TRACE
    Parameters: [ <target> ]
 
    TRACE command is used to find the route to specific server and
@@ -212,33 +295,36 @@ Command: MOTD
 
    Numeric Replies:
 
-           ERR_NOSUCHSERVER
+		   ERR_NOSUCHSERVER
 
-      If the TRACE message is destined for another server, all
-      intermediate servers must return a RPL_TRACELINK reply to indicate
-      that the TRACE passed through it and where it is going next.
+	  If the TRACE message is destined for another server, all
+	  intermediate servers must return a RPL_TRACELINK reply to indicate
+	  that the TRACE passed through it and where it is going next.
 
-           RPL_TRACELINK
+		   RPL_TRACELINK
 
-      A TRACE reply may be composed of any number of the following
-      numeric replies.
+	  A TRACE reply may be composed of any number of the following
+	  numeric replies.
 
-           RPL_TRACECONNECTING           RPL_TRACEHANDSHAKE
-           RPL_TRACEUNKNOWN              RPL_TRACEOPERATOR
-           RPL_TRACEUSER                 RPL_TRACESERVER
-           RPL_TRACESERVICE              RPL_TRACENEWTYPE
-           RPL_TRACECLASS                RPL_TRACELOG
-           RPL_TRACEEND
-
+		   RPL_TRACECONNECTING           RPL_TRACEHANDSHAKE
+		   RPL_TRACEUNKNOWN              RPL_TRACEOPERATOR
+		   RPL_TRACEUSER                 RPL_TRACESERVER
+		   RPL_TRACESERVICE              RPL_TRACENEWTYPE
+		   RPL_TRACECLASS                RPL_TRACELOG
+		   RPL_TRACEEND
    Examples:
 
    TRACE *.oulu.fi                 ; TRACE to a server matching
-                                   *.oulu.fi
-
+								   *.oulu.fi
 */
-/*
+int Client::TRACE(Command argument)
+{
+	(void)argument;
+	return (0);
+}
 
-      Command: ADMIN
+/*
+   Command: ADMIN
    Parameters: [ <target> ]
 
    The admin command is used to find information about the administrator
@@ -250,21 +336,26 @@ Command: MOTD
 
    Numeric Replies:
 
-           ERR_NOSUCHSERVER
-           RPL_ADMINME                   RPL_ADMINLOC1
-           RPL_ADMINLOC2                 RPL_ADMINEMAIL
+		   ERR_NOSUCHSERVER
+		   RPL_ADMINME                   RPL_ADMINLOC1
+		   RPL_ADMINLOC2                 RPL_ADMINEMAIL
 
    Examples:
 
    ADMIN tolsun.oulu.fi            ; request an ADMIN reply from
-                                   tolsun.oulu.fi
+								   tolsun.oulu.fi
 
    ADMIN syrk                      ; ADMIN request for the server to
-                                   which the user syrk is connected
-
+								   which the user syrk is connected
 */
+int Client::ADMIN(Command argument)
+{
+	(void)argument;
+	return (0);
+}
+
 /*
-     Command: INFO
+   Command: INFO
    Parameters: [ <target> ]
 
    The INFO command is REQUIRED to return information describing the
@@ -276,15 +367,19 @@ Command: MOTD
 
    Numeric Replies:
 
-           ERR_NOSUCHSERVER
-           RPL_INFO                      RPL_ENDOFINFO
+		   ERR_NOSUCHSERVER
+		   RPL_INFO                      RPL_ENDOFINFO
 
    Examples:
 
    INFO csd.bu.edu                 ; request an INFO reply from
-                                   csd.bu.edu
+								   csd.bu.edu
 
    INFO Angel                      ; request info from the server that
-                                   Angel is connected to.
-
+								   Angel is connected to.
 */
+int Client::INFO(Command argument)
+{
+	(void)argument;
+	return (0);
+}
