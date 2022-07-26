@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 11:02:06 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/14 10:20:57by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 16:49:41 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,13 @@ public:
 	void init();
 	void launch();
 
+
+	/* GETTERS */
+
+	std::string getName() const;
+	std::map<int, Client *> getClients();
+	std::map<std::string, Channel *> getChannel();
+
 	/* Handle incomming strings */
 	// in charge of calling the right function
 
@@ -70,8 +77,6 @@ public:
 	std::map<std::string, Channel *> getChannel();
 	void addChannel(Channel *channel);
 
-	/* Getters */
-	std::string getName() const;
 private:
 	std::string _name;
 	std::map<std::string, Channel *> _channel;

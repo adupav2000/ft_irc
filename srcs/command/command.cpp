@@ -201,7 +201,12 @@ std::string Command::getCommand() const
 	return _command;
 }
 
-Client *Command::getClient() const
+std::string Command::getMessage()
+{
+	return _message;
+}
+
+Client *Command::getClient()
 {
 	return _client;
 }

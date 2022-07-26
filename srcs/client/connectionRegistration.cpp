@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 13:06:51 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 16:55:42 by AlainduPa        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int Client::NICK(Command arguments)
 	std::string nTmp = arguments.getParameters()[1];
 	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
 	y a un espace */
-	int retValNickname = this->checkNickname(&arguments, nTmp);
+	int retValNickname = this->checkNickname(nTmp);
 	if (retValNickname != 0)
 		return (retValNickname);
 	_clientType = TYPE_CLIENT;

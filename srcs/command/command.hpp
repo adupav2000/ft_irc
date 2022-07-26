@@ -29,6 +29,7 @@ public:
     std::vector<std::string> getParameters();
 	std::string getErrorString(int num);
 
+
 private:
 	void insertAllMess();
 	std::map<int, std::string> _errMess;
