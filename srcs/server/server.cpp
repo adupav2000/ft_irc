@@ -6,13 +6,13 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 22:39:02 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 22:48:56 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./server.hpp"
 
-Server::Server() : _name("ircServer"), _fds(), _nbClients(0), _password("password")
+Server::Server() : _name("ircServer"), _password("password"), _fds(), _nbClients(0)
 {
     return ;
 }
