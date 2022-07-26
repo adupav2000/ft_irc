@@ -53,6 +53,7 @@ public:
 	/* GETTERS */
 
 	std::string getName();
+	std::map<int, Client *> getClients();
 	std::map<std::string, Channel *> getChannel();
 
 
@@ -77,8 +78,6 @@ public:
 	bool nickNameUsed(std::string nickname);
 
 
-	/* Getters */
-	std::string getName();
 private:
 	std::string _name;
 

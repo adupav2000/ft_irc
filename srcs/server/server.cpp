@@ -42,6 +42,11 @@ std::map<std::string, Channel *> Server::getChannel()
 	return _channel;
 }
 
+std::map<int, Client *> Server::getClients()
+{
+	return _clients;
+}
+
 void Server::addChannel(Channel *channel)
 {
 	this->_channel.insert(std::pair<std::string, Channel *>(channel->getName(), channel));
@@ -93,7 +98,6 @@ void Server::launch()
 		}
 		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
 			strerror(errno);
-		std::cout << "fds fd : " << pollfds[0].revents << "revents " << POLLIN << std::endl;
 		std::vector<pollfd>::iterator beg = pollfds.begin();
 		std::vector<pollfd>::iterator end = pollfds.end();
 		while (beg != end)
@@ -110,19 +114,17 @@ void Server::launch()
 				// }
 				if (beg->fd == _fds.fd)
 				{
-					std::cout << "server :" << std::endl;
 					if (_nbClients < NB_CLIENTS_MAX )
 						acceptClient();
-					std::cout << "nb client : " << _nbClients << std::endl;
-					std::cout << "fd : " << pollfds[0].fd << std::endl;
 				}
 				else
 				{
 					client = _clients[beg->fd];
 					if (client == NULL)
 						return ;
+	
 					client->treatMessage();
-					// std::cout << "status 1:" << client->getStatus() << std::endl;
+					std::cout << "status 1:" << client->getStatus() << std::endl;
 					if (client->getStatus() == DISCONNECTED)
 						removeClient(client->getPoll().fd);
 					else if (client->getStatus() == PENDING)
@@ -133,7 +135,6 @@ void Server::launch()
 						for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)
 						{
 							std::string reply;
-							std::cout << "prefix " << (*it)->getPrefix() << std::endl;
 							std::vector<std::string> params = (*it)->getParameters();
 							for (size_t i = 0; i < params.size(); i++)
 							{
@@ -155,11 +156,16 @@ void Server::launch()
 							{
 								JOIN(*it);
 								std::map<std::string, Channel *> chann = getChannel();
+								std::cout << "channel elem : " << chann.size() << std::endl;
 								// for (std::map<std::string, Channel *>::iterator ite = chann.begin(); ite != chann.end(); ite++)
 								// {
 								// 	std::cout << "channels : " << (*ite).first << std::endl;
 								// 	// std::cout << "channels client : " << (*ite).second->getClients()[client->getPoll().fd]->getNickname() << std::endl;
 								// }
+							}
+							if ((*it)->getPrefix() == "PRIVMSG")
+							{
+								PRIVMSG(*it);
 							}
 						}
 					}

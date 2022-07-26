@@ -1,6 +1,7 @@
 NAME = ft_irc
 CLIENT_FILE = client.cpp\
 			connectionRegistration.cpp\
+			sendingMessages.cpp \
 			service/service.cpp\
 			user/user.cpp\
 			user/operator/operator.cpp \

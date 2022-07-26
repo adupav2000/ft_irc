@@ -52,15 +52,18 @@ int JOIN(Command *arguments)
 {
 	std::string reply;
 	Server *server = arguments->getServer();
-	std::cout << "server : " << server->getChannel().size() <<std::endl;
 	Client *client = arguments->getClient();
 	Channel *channel;
 	std::vector<std::string> names = split(arguments->getParameters()[0], ",");
 	for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++)
 	{
-		std::cout << "channel name : " << (*it) << std::endl;
-		channel = new Channel((*it), server, client);
-		server->addChannel(channel);
+		if (server->getChannel().size() == 0 || server->getChannel().find((*it)) == server->getChannel().end())
+		{
+			channel = new Channel((*it), server, client);
+			server->addChannel(channel);
+		}
+		else
+			channel = server->getChannel()[(*it)];		
 		channel->addToChannel(client);
 		client->setChannel(channel);
 	}
@@ -87,8 +90,6 @@ int JOIN(Command *arguments)
 	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 	return (0);
 }
-
-
 /*
   Command: PART
    Parameters: <channel> *( "," <channel> ) [ <Part Message> ]
@@ -137,10 +138,10 @@ int Channel::PART(Command *arguments)
            RPL_UNIQOPIS
 */
 // a faire si c'est un channel
-int Client::modeChannel(Command arguments)
-{
-	_channel->changeMode(arguments);
-}
+// int Client::modeChannel(Command arguments)
+// {
+// 	_channels.changeMode(arguments);
+// }
 /*
 int Client::MODE(Command arguments)
 {

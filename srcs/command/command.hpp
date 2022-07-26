@@ -23,11 +23,13 @@ public:
 
     /* Getters */
     std::string getPrefix();
+    std::string getMessage();
     std::string getCommand();
     Client *getClient();
     Server *getServer();
     std::vector<std::string> getParameters();
 	std::string getErrorString(int num);
+
 
 private:
 	std::map<int, std::string> _errMess;
@@ -37,7 +39,7 @@ private:
     std::string _message;
     std::string _recv;
 
-	Server	const	*_serverRef;
+	Server	*_serverRef;
 	Client *_client;
 	Channel *_channel;
 };

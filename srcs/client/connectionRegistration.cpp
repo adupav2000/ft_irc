@@ -60,38 +60,38 @@ int Client::PASS(Command arguments)
         [X]   ERR_NICKNAMEINUSE                [] ERR_NICKCOLLISION
         []   ERR_UNAVAILRESOURCE              [X] ERR_RESTRICTED
 */
-int	Client::checkNickname(std::string name) const
-{
-    if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
-		return (ERR_ERRONEUSNICKNAME);
-	for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
-	{
-		if (it == nTmp.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
-			return (ERR_ERRONEUSNICKNAME);
-		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
-			return (ERR_ERRONEUSNICKNAME);
-	}
-	return (0);
-}
+// int	Client::checkNickname(std::string name) const
+// {
+//     if (arguments.getParameters().size() != 2 || nTmp.length() > 9)
+// 		return (ERR_ERRONEUSNICKNAME);
+// 	for (std::string::iterator it = nTmp.begin(), end = nTmp.end(); it != end; ++it)
+// 	{
+// 		if (it == nTmp.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
+// 			return (ERR_ERRONEUSNICKNAME);
+// 		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
+// 			return (ERR_ERRONEUSNICKNAME);
+// 	}
+// 	return (0);
+// }
 
-int Client::NICK(Command arguments)
-{
-	if (arguments.getParameters().size() < 2)
-		return (ERR_NONICKNAMEGIVEN);
-	if (_serverRef.nickNameUsed(arguments.getParameters()[1]))
-		return (ERR_NICKNAMEINUSE);	
-	if (_mode.find('r'))
-		return (ERR_RESTRICTED);
-	std::string nTmp = arguments.getParameters()[1];
-	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
-	y a un espace */
-	int retValNickname = this->checkNickname(nTmp);
-	if (retValNickname != 0)
-		return (retValNickname);
-	_clientType = TYPE_CLIENT;
-	this->_nickname = arguments.getParameters()[1];
-	return (0);
-}
+// int Client::NICK(Command arguments)
+// {
+// 	if (arguments.getParameters().size() < 2)
+// 		return (ERR_NONICKNAMEGIVEN);
+// 	if (_serverRef->nickNameUsed(arguments.getParameters()[1]))
+// 		return (ERR_NICKNAMEINUSE);	
+// 	if (_mode.find('r'))
+// 		return (ERR_RESTRICTED);
+// 	std::string nTmp = arguments.getParameters()[1];
+// 	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
+// 	y a un espace */
+// 	int retValNickname = this->checkNickname(nTmp);
+// 	if (retValNickname != 0)
+// 		return (retValNickname);
+// 	_clientType = TYPE_CLIENT;
+// 	this->_nickname = arguments.getParameters()[1];
+// 	return (0);
+// }
 
 /*
  Command: USER
@@ -113,17 +113,17 @@ int Client::NICK(Command arguments)
 
            ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
 */
-int Client::USER(Command arguments)
-{
-	if (arguments.getParameters().size() < 5)
-		return (ERR_NEEDMOREPARAMS);
-	if (_registered)
-		return (ERR_ALREADYREGISTRED);
-	_registered = true;
-	_clientType = TYPE_USER;
-	this->_serverRef.changeClientClass(this, (new User(*this)));
-	return (0);
-}
+// int Client::USER(Command arguments)
+// {
+// 	if (arguments.getParameters().size() < 5)
+// 		return (ERR_NEEDMOREPARAMS);
+// 	if (_registered)
+// 		return (ERR_ALREADYREGISTRED);
+// 	_registered = true;
+// 	_clientType = TYPE_USER;
+// 	this->_serverRef->changeClientClass(this, (new User(*this)));
+// 	return (0);
+// }
 
 /* Command: OPER
    Parameters: <name> <password>
@@ -150,7 +150,7 @@ int Client::OPER(Command arguments)
 		return (ERR_NEEDMOREPARAMS);
 	_registered = true;
 	_clientType = TYPE_OPERATOR;
-	this->_serverRef.changeClientClass(this, (new Operator(*this)));
+	this->_serverRef->changeClientClass(this, (new Operator(*this)));
 	return (0);
 }
 
@@ -184,36 +184,36 @@ int Client::OPER(Command arguments)
            ERR_UMODEUNKNOWNFLAG            RPL_UMODEIS
 
 */
-int Client::MODE(Command arguments)
-{
-	// TODO : add the option for channels : redefinition in services responses
-	/* Check params if enough */
-	if (arguments.getParameters().size() < 3)
-		return (ERR_NEEDMOREPARAMS);
-	/* check if the parameters are correct (existing nickname, correctly writen params (exsting..))) */
-	if (arguments.getParameters()[1][0] == '#')
-		return (this->modeChannel(arguments));
-	if (_nickname != arguments.getParameters()[1])
-		return (ERR_USERSDONTMATCH);
-	/* check if you can add them (are they already set) right user */
-	if (arguments.getParameters()[2][0] == '-')
-	{
-		if ((_mode.begin() + _mode.find(arguments.getParameters()[2][1], 0)) == _mode.end())
-			return (0);
-		if (_availableModes.begin() + _availableModes.find(arguments.getParameters()[2][1], 0) == _availableModes.end())
-			return (ERR_UMODEUNKNOWNFLAG);
-		_mode.erase(_mode.find(arguments.getParameters()[2][1]), 1);
-	}
-	else if (arguments.getParameters()[2][0] == '+')
-	{
-		if ((_mode.begin() + _mode.find(arguments.getParameters()[2][1], 0)) != _mode.end())
-			return (0);	
-		if (_availableModes.begin() + _availableModes.find(arguments.getParameters()[2][1], 0) == _availableModes.end())
-			return (ERR_UMODEUNKNOWNFLAG);
-		_mode.push_back((arguments.getParameters()[2][1]));
-	}
-	return (0);
-}
+// int Client::MODE(Command arguments)
+// {
+// 	// TODO : add the option for channels : redefinition in services responses
+// 	/* Check params if enough */
+// 	if (arguments.getParameters().size() < 3)
+// 		return (ERR_NEEDMOREPARAMS);
+// 	/* check if the parameters are correct (existing nickname, correctly writen params (exsting..))) */
+// 	if (arguments.getParameters()[1][0] == '#')
+// 		return (this->modeChannel(arguments));
+// 	if (_nickname != arguments.getParameters()[1])
+// 		return (ERR_USERSDONTMATCH);
+// 	/* check if you can add them (are they already set) right user */
+// 	if (arguments.getParameters()[2][0] == '-')
+// 	{
+// 		if ((_mode.begin() + _mode.find(arguments.getParameters()[2][1], 0)) == _mode.end())
+// 			return (0);
+// 		if (_availableModes.begin() + _availableModes.find(arguments.getParameters()[2][1], 0) == _availableModes.end())
+// 			return (ERR_UMODEUNKNOWNFLAG);
+// 		_mode.erase(_mode.find(arguments.getParameters()[2][1]), 1);
+// 	}
+// 	else if (arguments.getParameters()[2][0] == '+')
+// 	{
+// 		if ((_mode.begin() + _mode.find(arguments.getParameters()[2][1], 0)) != _mode.end())
+// 			return (0);	
+// 		if (_availableModes.begin() + _availableModes.find(arguments.getParameters()[2][1], 0) == _availableModes.end())
+// 			return (ERR_UMODEUNKNOWNFLAG);
+// 		_mode.push_back((arguments.getParameters()[2][1]));
+// 	}
+// 	return (0);
+// }
 
 /*
   Command: SERVICE
@@ -240,18 +240,18 @@ int Client::MODE(Command arguments)
 		   RPL_YOURESERVICE                RPL_YOURHOST
 		   RPL_MYINFO
 */
-int Client::SERVICE(Command arguments)
-{
-	if (arguments.getParameters().size() < 7)	
-		return (ERR_NEEDMOREPARAMS);
-	if (_clientType == TYPE_SERVICE || _clientType == TYPE_USER)
-		return (ERR_ALREADYREGISTRED);
-	int retValNickname = this->checkNickname(arguments.getCommand());
-	if (retValNickname != 0)
-		return (retValNickname);
-	_clientType = TYPE_SERVICE;
-	return (RPL_YOURESERVICE);
-}
+// int Client::SERVICE(Command arguments)
+// {
+// 	if (arguments.getParameters().size() < 7)	
+// 		return (ERR_NEEDMOREPARAMS);
+// 	if (_clientType == TYPE_SERVICE || _clientType == TYPE_USER)
+// 		return (ERR_ALREADYREGISTRED);
+// 	int retValNickname = this->checkNickname(arguments.getCommand());
+// 	if (retValNickname != 0)
+// 		return (retValNickname);
+// 	_clientType = TYPE_SERVICE;
+// 	return (RPL_YOURESERVICE);
+// }
 
 /*
 Command: QUIT
