@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 18:57:48 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 19:24:01 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(PENDI
 	_messageFunctions["KICK"] = &Client::KICK;
 
 	_messageFunctions["CAP"] = &Client::SQUIT;
+
+	_messageFunctions["PRIVMSG"] = &Client::PRIVMSG;
 
 	_registered = false;
 	_clientType = TYPE_ZERO;
@@ -113,11 +115,6 @@ int Client::executeCommands()
 			{
 				errorStr = (*_commands.begin())->getErrorString(ret);
 				send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
-			}
-			else
-			{
-				// TODO ? CHANGE
-				std::cout << "Command: " << (*_commands.begin())->getPrefix() << " failed" << std::endl;
 			}
 		}
 		catch (const std::exception &e)

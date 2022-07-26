@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 17:20:01 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 19:23:20 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,9 @@ protected:
 	int	MOTD(Command);
 	int LUSERS(Command);
 	int VERSION(Command);
+
+
+	int PRIVMSG(Command);
 	
 	/* Channel function */
 	int modeChannel(Command arguments);

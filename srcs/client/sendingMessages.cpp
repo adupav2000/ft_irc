@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 22:21:48 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/24 22:22:52 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 19:23:05 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,11 +122,11 @@ void privmsgChannel(Command *arguments, std::string receiver, Server *server, st
     return;
 }
 
-int PRIVMSG(Command *arguments)
+int Client::PRIVMSG(Command arguments)
 {
-	if (arguments->getParameters().size() == 0)
+	if (arguments.getParameters().size() == 0)
 		return ERR_NEEDMOREPARAMS;
-	else if (arguments->getParameters().size() == 1)
+	else if (arguments.getParameters().size() == 1)
 		return ERR_NOTEXTTOSEND;
 	// std::string message;
 	// for (size_t i = 1; i < arguments->getParameters().size(); i++)
@@ -136,13 +136,13 @@ int PRIVMSG(Command *arguments)
 	// 	message += arguments->getParameters()[i];
 	// 	message += " ";
 	// }
-	std::string receiver = arguments->getParameters()[0];
-	Server *server = arguments->getServer();
+	std::string receiver = arguments.getParameters()[0];
+	Server *server = arguments.getServer();
 	std::cout << "receiver : " << receiver << std::endl;
     if (receiver.find("#") != std::string::npos)
-        privmsgChannel(arguments, receiver, server, arguments->getMessage());
+        privmsgChannel(&arguments, receiver, server, arguments.getMessage());
     else 
-        privmsgUser(arguments, receiver, server, arguments->getMessage());
+        privmsgUser(&arguments, receiver, server, arguments.getMessage());
 	return 0;
 }
 
