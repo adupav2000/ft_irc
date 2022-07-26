@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 15:59:32 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 17:43:29 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,22 @@
 Client::Client(t_pollfd	fds, Server *serverRef) : _mode(""),  _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
 {
 	/* connection registration */
-	// _messageFunctions["NICK"] = &Client::NICK;
-	// _messageFunctions["USER"] = &Client::USER;
-	// _messageFunctions["MODE"] = &Client::MODE;
-	// _messageFunctions["SERVICE"] = &Client::SERVICE;
-	// _messageFunctions["QUIT"] = &Client::QUIT;
-	// _messageFunctions["SQUIT"] = &Client::SQUIT;
+	_messageFunctions["NICK"] = &Client::NICK;
+	_messageFunctions["USER"] = &Client::USER;
+	_messageFunctions["MODE"] = &Client::MODE;
+	_messageFunctions["SERVICE"] = &Client::SERVICE;
+	_messageFunctions["QUIT"] = &Client::QUIT;
+	_messageFunctions["SQUIT"] = &Client::SQUIT;
 
-	// _messageFunctions["JOIN"] = &Client::JOIN;
-	// _messageFunctions["PART"] = &Client::PART;
-	// _messageFunctions["TOPIC"] = &Client::TOPIC;
-	// _messageFunctions["NAME"] = &Client::NAME;
-	// _messageFunctions["LIST"] = &Client::LIST;
-	// _messageFunctions["INVITE"] = &Client::INVITE;
-	// _messageFunctions["KICK"] = &Client::KICK;
+	_messageFunctions["JOIN"] = &Client::JOIN;
+	_messageFunctions["PART"] = &Client::PART;
+	_messageFunctions["TOPIC"] = &Client::TOPIC;
+	_messageFunctions["NAME"] = &Client::NAME;
+	_messageFunctions["LIST"] = &Client::LIST;
+	_messageFunctions["INVITE"] = &Client::INVITE;
+	_messageFunctions["KICK"] = &Client::KICK;
 
-	// _messageFunctions["CAP"] = &Client::SQUIT;
+	_messageFunctions["CAP"] = &Client::SQUIT;
 
 	_registered = false;
 	_clientType = TYPE_ZERO;

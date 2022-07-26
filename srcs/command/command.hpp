@@ -24,10 +24,11 @@ public:
     /* Getters */
     std::string getPrefix() const;
     std::string getCommand() const;
+	std::string getMessage() const;
     Client *getClient() const;
     Server *getServer() const;
-    std::vector<std::string> getParameters();
-	std::string getErrorString(int num);
+    std::vector<std::string> getParameters() const;
+	std::string getErrorString(int num) const;
 
 
 private:

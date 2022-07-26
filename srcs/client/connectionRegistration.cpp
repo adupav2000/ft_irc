@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 16:55:42 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/26 17:33:26 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int Client::NICK(Command arguments)
 	std::string nTmp = arguments.getParameters()[1];
 	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
 	y a un espace */
-	int retValNickname = this->checkNickname(nTmp);
+	int retValNickname = this->checkNickname(arguments, nTmp);
 	if (retValNickname != 0)
 		return (retValNickname);
 	_clientType = TYPE_CLIENT;
@@ -79,9 +79,9 @@ int Client::NICK(Command arguments)
 	return (0);
 }
 
-int	Client::checkNickname(Command *arguments, std::string name) const
+int	Client::checkNickname(Command arguments, std::string name) const
 {
-	if (arguments->getParameters().size() != 2 || name.length() > 9)
+	if (arguments.getParameters().size() != 2 || name.length() > 9)
 		return (ERR_ERRONEUSNICKNAME);
 	for (std::string::iterator it = name.begin(), end = name.end(); it != end; ++it)
 	{
@@ -187,7 +187,6 @@ int Client::OPER(Command arguments)
 int Client::MODE(Command arguments)
 {
 	// TODO : add the option for channels : redefinition in services responses
-
 	/* Check params if enough */
 	if (arguments.getParameters().size() < 3)
 		return (ERR_NEEDMOREPARAMS);
@@ -247,7 +246,7 @@ int Client::SERVICE(Command arguments)
 		return (ERR_NEEDMOREPARAMS);
 	if (_clientType == TYPE_SERVICE || _clientType == TYPE_USER)
 		return (ERR_ALREADYREGISTRED);
-	int retValNickname = this->checkNickname(&arguments, arguments.getCommand());
+	int retValNickname = this->checkNickname(arguments, arguments.getCommand());
 	if (retValNickname != 0)
 		return (retValNickname);
 	_clientType = TYPE_SERVICE;

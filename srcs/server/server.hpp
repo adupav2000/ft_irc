@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 11:02:06 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 16:49:41 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/26 17:52:47 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ public:
 	/* GETTERS */
 
 	std::string getName() const;
-	std::map<int, Client *> getClients();
-	std::map<std::string, Channel *> getChannel();
+	std::map<int, Client *> getClients() const;
+	std::map<std::string, Channel *> getChannel() const;
 
 	/* Handle incomming strings */
 	// in charge of calling the right function
@@ -67,14 +67,12 @@ public:
 	void changeClientClass(Client *oldClient, Client *newClient);
 	
 	// COMMAND RESPONSE
-
 	void rplWelcome(Client *client);
 
 	/* utils for client */
 	bool nickNameUsed(std::string nickname);
 
 	/* channel operation */
-	std::map<std::string, Channel *> getChannel();
 	void addChannel(Channel *channel);
 
 private:

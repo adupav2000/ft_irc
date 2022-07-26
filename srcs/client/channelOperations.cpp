@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 13:59:57 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 16:57:52 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/07/26 14:06:16by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,19 +52,16 @@ Command: JOIN
 int Client::JOIN(Command arguments)
 {
 	std::string reply;
-	Server *server = arguments->getServer();
-	Client *client = arguments->getClient();
+	Server *server = arguments.getServer();
+	std::cout << "server : " << server->getChannel().size() <<std::endl;
+	Client *client = arguments.getClient();
 	Channel *channel;
 	std::vector<std::string> names = split(arguments.getParameters()[0], ",");
 	for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++)
 	{
-		if (server->getChannel().size() == 0 || server->getChannel().find((*it)) == server->getChannel().end())
-		{
-			channel = new Channel((*it), server, client);
-			server->addChannel(channel);
-		}
-		else
-			channel = server->getChannel()[(*it)];		
+		std::cout << "channel name : " << (*it) << std::endl;
+		channel = new Channel((*it), server, client);
+		server->addChannel(channel);
 		channel->addToChannel(client);
 		client->setChannel(channel);
 	}
@@ -91,6 +88,7 @@ int Client::JOIN(Command arguments)
 	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 	return (0);
 }
+
 
 /*
   Command: PART
@@ -146,16 +144,6 @@ int Client::modeChannel(Command arguments)
 	(void)arguments;
 	return (0);
 }
-
-/*
-int Client::MODE(Command arguments)
-{
-	(void)arguments;
-	return (0);
-}
-*/
-
-
 
 /*
     Command: TOPIC

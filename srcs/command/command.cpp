@@ -146,8 +146,6 @@ Command::Command()
 	return;
 }
 
-
-
 Command::Command(std::string message, Server *server, Client *client) : _recv(message), _serverRef(server), _client(client)
 {
 	this->insertAllMess();
@@ -196,17 +194,17 @@ std::string Command::getPrefix() const
 	return _prefix;
 }
 
-std::string Command::getCommand() const 
+std::string Command::getCommand() const
 {
 	return _command;
 }
 
-std::string Command::getMessage()
+std::string Command::getMessage() const
 {
 	return _message;
 }
 
-Client *Command::getClient()
+Client *Command::getClient() const
 {
 	return _client;
 }
@@ -216,7 +214,8 @@ Server *Command::getServer() const
 	return _serverRef;
 }
 
-std::vector<std::string> Command::getParameters()
+
+std::vector<std::string> Command::getParameters() const
 {
 	return _parameters;
 }
@@ -233,7 +232,7 @@ std::string findAndReplace(std::string toBeFound, std::string toBeSearchedThroug
 	return (ret);
 }
 
-std::string Command::getErrorString(int num)
+std::string Command::getErrorString(int num) const
 {
 	std::cout << "Check the num : " << num << std::endl;
 	std::string ret = this->_errMess.at(num);
