@@ -14,7 +14,7 @@
 
 User::User(Client const & rhs) : Client(rhs)
 {
-	_serverRef = rhs.getServerRef();
+	_serverRef = rhs.getServer();
 	_fds = rhs.getPoll();
 	this->_messageFunctions = rhs.getMessageFunctions();
 	this->_nickname = rhs.getNickname();

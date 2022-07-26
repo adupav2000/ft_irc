@@ -79,10 +79,7 @@ public:
 
 protected:
 	/* Variables */
-	bool 	_registered;
-	std::vector<Command *> _commands;
 	//std::map<std::string, int(Client::*)(Command)> _functionCmd;
-	typedef std::map<std::string, int (Client::*)(Command)> t_messFuncMap;
 	bool 					_registered;
 	std::vector<Command *>	_commands;
 	std::vector<Channel *> _channels;
@@ -130,5 +127,7 @@ protected:
 	int	checkNickname(std::string) const;
 
 };
+
+int PRIVMSG(Command *arguments);
 
 #endif

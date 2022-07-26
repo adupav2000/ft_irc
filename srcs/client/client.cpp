@@ -12,25 +12,25 @@
 
 #include "client.hpp"
 
-Client::Client(t_pollfd	fds, Server &serverRef) : _mode(""),  _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
+Client::Client(t_pollfd	fds, Server *serverRef) : _mode(""),  _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
 {
 	/* connection registration */
-	_messageFunctions["NICK"] = &Client::NICK;
-	_messageFunctions["USER"] = &Client::USER;
-	_messageFunctions["MODE"] = &Client::MODE;
-	_messageFunctions["SERVICE"] = &Client::SERVICE;
-	_messageFunctions["QUIT"] = &Client::QUIT;
-	_messageFunctions["SQUIT"] = &Client::SQUIT;
+	// _messageFunctions["NICK"] = &Client::NICK;
+	// _messageFunctions["USER"] = &Client::USER;
+	// _messageFunctions["MODE"] = &Client::MODE;
+	// _messageFunctions["SERVICE"] = &Client::SERVICE;
+	// _messageFunctions["QUIT"] = &Client::QUIT;
+	// _messageFunctions["SQUIT"] = &Client::SQUIT;
 
-	_messageFunctions["JOIN"] = &Client::JOIN;
-	_messageFunctions["PART"] = &Client::PART;
-	_messageFunctions["TOPIC"] = &Client::TOPIC;
-	_messageFunctions["NAME"] = &Client::NAME;
-	_messageFunctions["LIST"] = &Client::LIST;
-	_messageFunctions["INVITE"] = &Client::INVITE;
-	_messageFunctions["KICK"] = &Client::KICK;
+	// _messageFunctions["JOIN"] = &Client::JOIN;
+	// _messageFunctions["PART"] = &Client::PART;
+	// _messageFunctions["TOPIC"] = &Client::TOPIC;
+	// _messageFunctions["NAME"] = &Client::NAME;
+	// _messageFunctions["LIST"] = &Client::LIST;
+	// _messageFunctions["INVITE"] = &Client::INVITE;
+	// _messageFunctions["KICK"] = &Client::KICK;
 
-	_messageFunctions["CAP"] = &Client::SQUIT;
+	// _messageFunctions["CAP"] = &Client::SQUIT;
 
 	_registered = false;
 	_clientType = TYPE_ZERO;
@@ -171,8 +171,11 @@ void Client::treatMessage()
 
 	memset(buffer, 0, BUFFER_SIZE);
 	ret = recv(this->getPoll().fd, buffer, 1024, 0);
+		std::cout << "buufferrr : " << std::endl;
+
 	if (ret == 0)
 	{
+		std::cout << "DISCONNECTED : " << std::endl;
 		_clientStatus = DISCONNECTED;
 		return;
 	}
@@ -196,14 +199,26 @@ void Client::treatMessage()
 		}
 		if (_clientStatus != CONNECTED)
 		{
-			if (_commands.size() > 0)
+			std::cout << "PENDING : " << std::endl;
+
+			if (_commands.size() > 2)
 			{
+				std::string nick = (*_commands[1]).getParameters()[0];
+				std::map<int, Client *> clients = getServer()->getClients();
+				for (std::map<int, Client *>::iterator cli = clients.begin(); cli != clients.end(); cli++)
+				{
+					if (cli->second->getNickname() == nick)
+						nick += "_";
+				}
 				_nickname = (*_commands[1]).getParameters()[0];
 				_username = (*_commands[2]).getParameters()[0];
 				_clientStatus = PENDING;
 			}
 			else
+			{
+				std::cout << "REFUSED : " << std::endl;
 				_clientStatus = REFUSED;
+			}
 			}
 	}
 	else

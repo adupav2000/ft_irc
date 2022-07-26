@@ -195,6 +195,11 @@ std::string Command::getCommand()
 	return _command;
 }
 
+std::string Command::getMessage()
+{
+	return _message;
+}
+
 Client *Command::getClient()
 {
 	return _client;

@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "client.hpp"
 
 /*
    Command: PRIVMSG
@@ -77,6 +78,74 @@
                                    *.edu.
 
 */
+
+void privmsgUser(Command *arguments, std::string receiver, Server *server, std::string message)
+{
+	std::string reply;
+	std::map<int, Client *> clients = server->getClients();
+	for(std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); it++)
+    {
+        if ((*it).second->getNickname() == receiver)
+		{
+			reply = ":" + arguments->getClient()->getNickname() + "!" + arguments->getClient()->getUsername() + "@localhost PRIVMSG " + receiver + " " + message + "\r\n";
+            send((*it).first, reply.c_str() , reply.size(), 0);
+			return ;
+        }
+    }
+	reply = receiver + " :No such nick/channel\r\n";
+	send(arguments->getClient()->getPoll().fd, reply.c_str() , reply.size(), 0);
+    return ;
+}
+
+void privmsgChannel(Command *arguments, std::string receiver, Server *server, std::string message)
+{
+    std::string reply;
+	std::map<std::string, Channel *> channels = server->getChannel();
+	std::map<std::string, Channel *>::iterator it;
+	if ((it = channels.find(receiver)) != channels.end())
+	{
+		reply = ":" + arguments->getClient()->getNickname() + "!" + arguments->getClient()->getUsername() + "@localhost PRIVMSG " + receiver + " " + message + "\r\n";
+    	std::map<int, Client *> channelClients = (*it).second->getClients();
+		std::cout << "client server PRVMSG : " << channelClients.size() << std::endl;
+		for (std::map<int, Client *>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++)
+		{
+			if (cli->first != arguments->getClient()->getPoll().fd)
+				send((*cli).first, reply.c_str() , reply.size(), 0);
+		}
+		return ;
+	}
+	else
+	{
+		reply = receiver + " :No such nick/channel\r\n";
+		send(arguments->getClient()->getPoll().fd, reply.c_str() , reply.size(), 0);
+	}
+    return;
+}
+
+int PRIVMSG(Command *arguments)
+{
+	if (arguments->getParameters().size() == 0)
+		return ERR_NEEDMOREPARAMS;
+	else if (arguments->getParameters().size() == 1)
+		return ERR_NOTEXTTOSEND;
+	// std::string message;
+	// for (size_t i = 1; i < arguments->getParameters().size(); i++)
+	// {
+	// 	if (message.size() == 0 && arguments->getParameters()[i].c_str()[0] !=  ':')
+	// 		message += ":";
+	// 	message += arguments->getParameters()[i];
+	// 	message += " ";
+	// }
+	std::string receiver = arguments->getParameters()[0];
+	Server *server = arguments->getServer();
+	std::cout << "receiver : " << receiver << std::endl;
+    if (receiver.find("#") != std::string::npos)
+        privmsgChannel(arguments, receiver, server, arguments->getMessage());
+    else 
+        privmsgUser(arguments, receiver, server, arguments->getMessage());
+	return 0;
+}
+
 /*
       Command: NOTICE
    Parameters: <msgtarget> <text>
