@@ -234,6 +234,8 @@ std::string findAndReplace(std::string toBeFound, std::string toBeSearchedThroug
 
 std::string Command::getErrorString(int num) const
 {
+	if (this->_errMess.find(num) != this->_errMess.end())
+		return ("");
 	std::string ret = this->_errMess.at(num);
 	ret = findAndReplace("<nickname>", ret, _client->getNickname());
 	if (this->getPrefix() == "NICK" && this->getParameters().size() > 0)
