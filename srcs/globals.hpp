@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:37:01 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 23:05:19 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 23:27:30 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -896,3 +896,6 @@ std::vector<std::string> split(std::string str, std::string delimiter);
 		it MUST use the reply RPL_TRYAGAIN to inform the
 		originating client.
 	*/
+
+#define SEND_CONFIRMNEWNICK 1000
+	/* confirms a new nickname changes */
