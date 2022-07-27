@@ -53,6 +53,12 @@ void Server::addChannel(Channel *channel)
 
 }
 
+void Server::destroyChannel(Channel *channel)
+{
+	_channel.erase(channel->getName());
+}
+
+
 void Server::init()
 {
     int					socketfd, on;
@@ -130,6 +136,9 @@ void Server::launch()
 						rplWelcome(client);
 					else if (client->getStatus() == CONNECTED)
 					{
+						std::cout << "pref : " << client->getCommands()[0]->getPrefix() << std::endl;
+						std::cout << "params : " << client->getCommands()[0]->getParameters()[0] << std::endl;
+						std::cout << "mess : " << client->getCommands()[0]->getMessage() << std::endl;
 						client->executeCommands();
 			// 			std::vector<Command *> commands = client->getCommands();
 			// 			for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)

@@ -31,6 +31,8 @@ class Channel
 
         /* SETTERS */
         void setKey(std::string key);
+		void setTopic(std::string topic);
+
 
         /* CHANNEL OPERATION */
         // int PART(Command *arguments);
@@ -44,6 +46,7 @@ class Channel
         /* Channel function */
         void addToChannel(Client *client);
         std::string getClientsName(Channel *channel);
+        void removeFromChannel(Client *client);
 
 
     private:

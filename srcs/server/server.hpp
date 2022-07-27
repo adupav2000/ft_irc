@@ -59,7 +59,7 @@ public:
 	// in charge of calling the right function
 
 	/* channel operation */
-	int destroyChannel();
+	void destroyChannel(Channel *channel);
 
 	/* user opération */
 	void acceptClient();

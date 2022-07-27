@@ -87,9 +87,18 @@ void Channel::setKey(std::string key)
     _key = key;
 }
 
+void Channel::setTopic(std::string topic)
+{
+    _topic = topic;
+}
 
 void Channel::addToChannel(Client *client)
 {
     _clients.insert(std::pair<int, Client * >(client->getPoll().fd, client));
     _nbClients++;
+}
+
+void Channel::removeFromChannel(Client *client)
+{
+    _clients.erase(client->getPoll().fd);
 }
