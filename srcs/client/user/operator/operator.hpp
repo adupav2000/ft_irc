@@ -8,12 +8,12 @@ class Operator : public User
 {
 public:
     Operator();
-    Operator(Client const & rhs);
+    Operator(User const & rhs, std::string);
     ~Operator();
     Operator &operator=(Operator const & rhs);
 
 private:
-
+	std::string _name;
 };
 
 #endif

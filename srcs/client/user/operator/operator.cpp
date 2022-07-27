@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 15:51:20 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/24 18:30:27 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/27 14:18:07 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Operator::~Operator()
 
 }
 
-Operator::Operator(Client const & rhs) : User(rhs)
+Operator::Operator(User const & rhs, std::string name) : User(rhs, rhs.getUsername(), rhs.getRealname()), _name(name)
 {
 	
 }
