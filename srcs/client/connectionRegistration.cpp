@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/27 11:47:43 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/27 14:19:35 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,11 +118,21 @@ int Client::USER(Command arguments)
 {
 	if (arguments.getParameters().size() < 5)
 		return (ERR_NEEDMOREPARAMS);
-	if (_registered)
+	if (_clientType != TYPE_PASS)
 		return (ERR_ALREADYREGISTRED);
-	_registered = true;
 	_clientType = TYPE_USER;
-	this->_serverRef->changeClientClass(this, (new User(*this)));
+	std::string username = arguments.getParameters()[0];
+	unsigned long i = 4;
+	std::string realname = "";
+	while (i < arguments.getParameters().size())
+	{
+		realname.append(arguments.getParameters().at(i));
+		i++;
+	}
+	realname.erase(realname.find(":"), 1);
+	if ((arguments.getParameters()[1].length() == 1))
+		this->setUserMode(static_cast<unsigned char>(arguments.getParameters()[1][0]));
+	this->_serverRef->changeClientClass(this, (new User(*this, username, realname)));
 	return (0);
 }
 
@@ -145,14 +155,11 @@ int Client::USER(Command arguments)
                                    using a username of "foo" and "bar"
                                    as the password.
  */
+// ONLY USERS CAN BECOME OPERATORS
 int Client::OPER(Command arguments)
 {
-	if (arguments.getParameters().size() < 3)
-		return (ERR_NEEDMOREPARAMS);
-	_registered = true;
-	_clientType = TYPE_OPERATOR;
-	this->_serverRef->changeClientClass(this, (new Operator(*this)));
-	return (0);
+	(void)arguments;
+	return (ERR_NOOPERHOST);
 }
 
 /* Command: MODE
@@ -213,6 +220,34 @@ int Client::MODE(Command arguments)
 			return (ERR_UMODEUNKNOWNFLAG);
 		_mode.push_back((arguments.getParameters()[2][1]));
 	}
+	return (0);
+}
+
+/*
+	The <mode> parameter should be a numeric, and can be used to
+   automatically set user modes when registering with the server.  This
+   parameter is a bitmask, with only 2 bits having any signification: if
+   the bit 2 is set, the user mode 'w' will be set and if the bit 3 is
+   set, the user mode 'i' will be set.  (See Section 3.1.5 "User
+   Modes").
+
+*/
+int Client::setUserMode(unsigned char num)
+{
+	if ((num & AWAY) == AWAY && _mode.find(AWAY) != std::string::npos)
+		_mode.push_back(AWAY);
+	else if ((num & INVISIBLE) == INVISIBLE && _mode.find(INVISIBLE) != std::string::npos)
+		_mode.push_back(INVISIBLE);
+	else if ((num & REC_WALLOPS) == REC_WALLOPS && _mode.find(REC_WALLOPS) != std::string::npos)
+		_mode.push_back(REC_WALLOPS);
+	else if ((num & RESTRICTED) == RESTRICTED && _mode.find(RESTRICTED) != std::string::npos)
+		_mode.push_back(RESTRICTED);
+	else if ((num & G_OPERATOR) == G_OPERATOR && _mode.find(G_OPERATOR) != std::string::npos)
+		_mode.push_back(G_OPERATOR);
+	else if ((num & LOC_OPERATOR) == LOC_OPERATOR && _mode.find(LOC_OPERATOR) != std::string::npos)
+		_mode.push_back(LOC_OPERATOR);
+	else if ((num & REC_USER_NOTICE) == REC_USER_NOTICE && _mode.find(REC_USER_NOTICE) != std::string::npos)
+		_mode.push_back(REC_USER_NOTICE);
 	return (0);
 }
 

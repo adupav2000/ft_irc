@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 22:41:20 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/27 14:50:57 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ Client::Client(Client const &rhs) : _serverRef(rhs.getServer()), _fds(rhs.getPol
 
 Client &Client::operator=(Client const &rhs)
 {
+	_commands = std::vector<Command *>(rhs.getCommands());
 	this->_fds = rhs._fds;
 	this->_messageFunctions = rhs._messageFunctions;
 	this->_nickname = rhs._nickname;
@@ -96,6 +97,8 @@ bool Client::isSpecial(char c) const
 	return ((c <= '}' && c >= '{') && (c >= '[' && c <= '`'));
 }
 
+/* Getters */
+
 std::string Client::getNickname() const
 {
 	return (this->_nickname);
@@ -104,6 +107,11 @@ std::string Client::getNickname() const
 std::string Client::getUsername() const
 {
 	return (this->_username);
+}
+
+std::string Client::getMode() const
+{
+	return (this->_mode);
 }
 
 struct pollfd Client::getPoll() const
@@ -121,6 +129,8 @@ Client::t_messFuncMap Client::getMessageFunctions() const
 	return (this->_messageFunctions);
 }
 
+/* Command execution */
+
 int Client::executeCommands()
 {
 	int ret;
@@ -132,9 +142,16 @@ int Client::executeCommands()
 		// if the user is in a chat and there is no matchin command : do nothing
 		try
 		{
-			if (_channels.size() == 0 && (ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())))) != 0)
+			// std::cout << "Talking from the executeCommand() : " << (*_commands.begin())->getPrefix() << std::endl;
+			ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())));
+			// std::cout << "Result function " << ret << std::endl;
+			// si pas de channel et le premier n'est pas une commande
+			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) != this->_messageFunctions.end()
+				&& ret != 0)
 			{
+				// std::cout << "Running the execute command " << std::endl;
 				errorStr = (*_commands.begin())->getErrorString(ret);
+				// std::cout << "errorStr : " << errorStr << std::endl;
 				send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 			}
 		}
@@ -162,9 +179,14 @@ int Client::sendReply(int replyNum)
 	return (0);
 }
 
-Status Client::getStatus()
+Status Client::getStatus() const
 {
 	return _clientStatus;
+}
+
+Type Client::getType() const
+{
+	return _clientType;
 }
 
 // std::map<std::string, int(Client*)(Command)>	Client::getFunction()
@@ -172,7 +194,7 @@ Status Client::getStatus()
 // 	return _functionCmd;
 // }
 
-std::vector<Command *> Client::getCommands()
+std::vector<Command *> Client::getCommands() const
 {
 	return _commands;
 }
@@ -262,4 +284,13 @@ void Client::treatMessage()
 	}
 	else if (_clientStatus != CONNECTED)
 		_clientStatus = REFUSED;
+}
+
+void Client::leaveChannel(Channel *channel)
+{
+	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end() ; it++)
+	{
+		if (*it == channel)
+			_channels.erase(it);
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 21:31:34 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/27 14:48:04 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,13 @@ public:
 	/* Getters */
 	std::string				getNickname() const;
 	std::string     		getUsername() const;
+	std::string     		getMode() const;
 	struct pollfd			getPoll() const;
 	Server		        	*getServer() const;
 	Client::t_messFuncMap	getMessageFunctions() const;
-	Status 					getStatus();
-	std::vector<Command *>  getCommands();
+	Status 					getStatus() const;
+	Type 					getType() const;
+	std::vector<Command *>  getCommands() const;
 
 	
 	/* Setters */
@@ -76,21 +78,24 @@ public:
 	void			setNickname(std::string newNickname);
 	void			setChannel(Channel *channel);
 
+	/* modifiers */
+	void leaveChannel(Channel *channel);
+
 	void clearCommands();
 
 protected:
 	/* Variables */
 	bool 					_registered;
 	std::vector<Command *>	_commands;
-	std::vector<Channel *> _channels;
-	t_messFuncMap	_messageFunctions;
-	std::string		_nickname;
-	std::string		_username;
-	std::string		_mode;
-	Status 			_clientStatus;
-	Type			_clientType;
+	std::vector<Channel *>	_channels;
+	t_messFuncMap			_messageFunctions;
+	std::string				_nickname;
+	std::string				_username;
+	std::string				_mode;
+	Status 					_clientStatus;
+	Type					_clientType;
 
-	std::string _availableModes;
+	std::string		_availableModes;
 
 	/* Server side variables */
 	Server					*_serverRef;
@@ -152,6 +157,7 @@ protected:
 	bool isSpecial(char c) const;
 	int	checkNickname(Command, std::string) const;
 	int sendReply(int replyNum);
+	int setUserMode(unsigned char num);
 };
 
 #endif
