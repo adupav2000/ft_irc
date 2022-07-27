@@ -139,18 +139,23 @@ int Client::PART(Command arguments)
 			std::map<int, Client *> users = channel->getClients();
 			for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
 			{
-				if (cli->second != client)
-				{
 					send(cli->first, reply.c_str(), reply.size(), 0);
-				}
 			}
 			channel->removeFromChannel(client);
-
+			client->leaveChannel(channel);
 			if (channel->getClients().size() == 0)
+			{
+				std::cout << "destrooy " << server->getChannel().size() << std::endl;
 				server->destroyChannel(channel);
+				std::cout << "destrooy " << server->getChannel().size() << std::endl;
+
+			}
 		}
 		else
-			return ERR_NOSUCHCHANNEL;
+		{
+			reply = channel->getName() + " :No such channel";
+			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+		}
 	}
 	return 0;
 } 
@@ -242,10 +247,7 @@ int Client::TOPIC(Command arguments)
 	std::map<int, Client *> users = channel->getClients();
 	for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
 	{
-		if (cli->second != client)
-		{
-			send(cli->first, reply.c_str(), reply.size(), 0);
-		}
+		send(cli->first, reply.c_str(), reply.size(), 0);
 	}
 	return 0;
 }

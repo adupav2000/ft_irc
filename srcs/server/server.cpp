@@ -139,6 +139,7 @@ void Server::launch()
 						std::cout << "pref : " << client->getCommands()[0]->getPrefix() << std::endl;
 						std::cout << "params : " << client->getCommands()[0]->getParameters()[0] << std::endl;
 						std::cout << "mess : " << client->getCommands()[0]->getMessage() << std::endl;
+						std::cout << "size channel : " << getChannel().size() << std::endl;
 						client->executeCommands();
 			// 			std::vector<Command *> commands = client->getCommands();
 			// 			for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)
