@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 20:18:29 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 22:41:20 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,12 +128,11 @@ int Client::executeCommands()
 
 	while (this->_commands.size() != 0)
 	{
-		// std::cout << "(**(_commands.begin()))";
-		// std::cout << (**(_commands.begin())) << std::endl;
 		//(this->*_messageFunctions.find((*_commands.begin())->getPrefix()) != this->*_messageFunctions->end())) &&
+		// if the user is in a chat and there is no matchin command : do nothing
 		try
 		{
-			if ((ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())))) != 0)
+			if (_channels.size() == 0 && (ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())))) != 0)
 			{
 				errorStr = (*_commands.begin())->getErrorString(ret);
 				send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
@@ -145,6 +144,21 @@ int Client::executeCommands()
 		}
 		_commands.erase(_commands.begin());
 	}
+	return (0);
+}
+
+/**
+ * @brief quick way to send a reply after a command
+ * 
+ * @param replyNum has to be one of the RPL_ defined in command.cpp
+ * @return int 
+ */
+int Client::sendReply(int replyNum)
+{
+	std::string errorStr;
+
+	errorStr = (*_commands.begin())->getErrorString(replyNum);
+	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	return (0);
 }
 

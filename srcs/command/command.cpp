@@ -137,6 +137,8 @@ void Command::insertAllMess()
 	this->_errMess[RPL_ADMINLOC2] = ":<admin info>";
 	this->_errMess[RPL_ADMINEMAIL] = ":<admin info>";
 	this->_errMess[RPL_TRYAGAIN] = "<command> :Please wait a while and try again.";
+
+	this->_errMess[SEND_CONFIRMNEWNICK] = "Your nickname is now <nickname>";
 	
 }
 
@@ -232,19 +234,23 @@ std::string findAndReplace(std::string toBeFound, std::string toBeSearchedThroug
 
 std::string Command::getErrorString(int num) const
 {
+	if (this->_errMess.find(num) != this->_errMess.end())
+		return ("");
 	std::string ret = this->_errMess.at(num);
-	findAndReplace("<nickname>", ret, _client->getNickname());
-	findAndReplace("<server name>", ret, _serverRef->getName());
-	findAndReplace("<command>", ret, this->getPrefix());
+	ret = findAndReplace("<nickname>", ret, _client->getNickname());
+	if (this->getPrefix() == "NICK" && this->getParameters().size() > 0)
+		ret = findAndReplace("<nick", ret, this->getParameters()[0]);
+	ret = findAndReplace("<server name>", ret, _serverRef->getName());
+	ret = findAndReplace("<command>", ret, this->getPrefix());
 	/* KWAME to be set up wth functions */
 	/*
 	EXAMPLE
 	std::string str = "<channel name>";
 	ret.replace(ret.find(str), str.length(), _channel->getName());
-	std::string str = "<target>";
-	std::string str = "<error code>";
-	std::string str = "<mask>";
-	std::string str = "<service name>";
+	str = "<target>";
+	str = "<error code>";
+	str = "<mask>";
+	str = "<service name>";
 	ret.replace(ret.find(str), str.length(), _client->getNickname());
 	*/
 	return (ret);

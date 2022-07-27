@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 20:15:56 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/26 21:31:34 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ protected:
 	Server					*_serverRef;
 	t_pollfd				_fds;
 	std::string 	_text;/* used to store text */
+	
+
 
 	/* Connection registration functions*/
 	int PASS(Command);
@@ -149,9 +151,7 @@ protected:
 	bool isLetter(char c) const;
 	bool isSpecial(char c) const;
 	int	checkNickname(Command, std::string) const;
-
+	int sendReply(int replyNum);
 };
-
-int PRIVMSG(Command *arguments);
 
 #endif

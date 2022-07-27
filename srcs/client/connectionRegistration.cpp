@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 19:13:14 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/27 11:47:43 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,13 @@ Command: PASS
 */
 int Client::PASS(Command arguments)
 {
-	if (arguments.getParameters().size() < 2)
+	if (arguments.getParameters().size() < 1)
 		return (ERR_NEEDMOREPARAMS);
 	if (_clientType > TYPE_ZERO)
 		return (ERR_ALREADYREGISTRED);
-	/* Le passe est stocké ou ? */
-	/* Est ce que qu'il doit correspondre a quelque chose ?*/
+	// TODO que se pass t'il si jamais le mots de passe est erroné ?
+	if (this->getServer()->correctPassword(arguments.getParameters()[0]))
+		return (0);
 	_clientType = TYPE_PASS;
 	return (0);
 }
@@ -62,26 +63,26 @@ int Client::PASS(Command arguments)
 */
 int Client::NICK(Command arguments)
 {
-	if (arguments.getParameters().size() < 2)
+	if (arguments.getParameters().size() < 1)
 		return (ERR_NONICKNAMEGIVEN);
-	if (_serverRef->nickNameUsed(arguments.getParameters()[1]))
+	if (_serverRef->nickNameUsed(arguments.getParameters()[0]))
 		return (ERR_NICKNAMEINUSE);	
-	if (_mode.find('r'))
+	if (_mode.find('r') != std::string::npos)
 		return (ERR_RESTRICTED);
-	std::string nTmp = arguments.getParameters()[1];
+	std::string nTmp = arguments.getParameters()[0];
 	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
 	y a un espace */
 	int retValNickname = this->checkNickname(arguments, nTmp);
 	if (retValNickname != 0)
 		return (retValNickname);
 	_clientType = TYPE_CLIENT;
-	this->_nickname = arguments.getParameters()[1];
-	return (0);
+	this->_nickname = arguments.getParameters()[0];
+	return (SEND_CONFIRMNEWNICK);
 }
 
 int	Client::checkNickname(Command arguments, std::string name) const
 {
-	if (arguments.getParameters().size() != 2 || name.length() > 9)
+	if (arguments.getParameters().size() != 1 || name.length() > 9)
 		return (ERR_ERRONEUSNICKNAME);
 	for (std::string::iterator it = name.begin(), end = name.end(); it != end; ++it)
 	{
