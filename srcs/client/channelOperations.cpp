@@ -59,9 +59,14 @@ int Client::JOIN(Command arguments)
 	std::vector<std::string> names = split(arguments.getParameters()[0], ",");
 	for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++)
 	{
+		if (!server->getChannel().count(*it))
+		{
+			channel = new Channel((*it), server, client);
+			server->addChannel(channel);
+		}
+		else 
+			channel = server->getChannel().find(*it)->second;
 		std::cout << "channel name : " << (*it) << std::endl;
-		channel = new Channel((*it), server, client);
-		server->addChannel(channel);
 		channel->addToChannel(client);
 		client->setChannel(channel);
 	}
@@ -74,7 +79,7 @@ int Client::JOIN(Command arguments)
 			(server->getChannel()[names[i]])->setKey(keys[i]);
 		}
 	}
-	reply += ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " JOIN " + names[0] + "\r\n";
+	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " JOIN " + names[0] + "\r\n";
 	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 	channel = server->getChannel()[names[0]];
 	if (channel->getTopic().size() > 0)
@@ -88,7 +93,6 @@ int Client::JOIN(Command arguments)
 	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 	return (0);
 }
-
 
 /*
   Command: PART
@@ -109,12 +113,52 @@ int Client::JOIN(Command arguments)
            ERR_NEEDMOREPARAMS              ERR_NOSUCHCHANNEL
            ERR_NOTONCHANNEL
 */
+
 int Client::PART(Command arguments)
 {
-	(void)arguments;
-	return (0);
-}
+	std::string reply;
+	Server *server = arguments.getServer();
+	Client *client = arguments.getClient();
+	Channel *channel;
 
+	if (arguments.getParameters().size() == 0)
+		return ERR_NEEDMOREPARAMS;
+	std::vector<std::string> names = split(arguments.getParameters()[0], ",");
+	for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); ++it)
+	{
+		if (server->getChannel().count(*it))
+		{
+			channel = server->getChannel()[*it];
+			if (!channel->getClients().count(client->getPoll().fd))
+			{
+				reply = channel->getName() + " :You're not on that channel";
+				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+				continue;
+			}
+			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " PART " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
+			std::map<int, Client *> users = channel->getClients();
+			for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
+			{
+					send(cli->first, reply.c_str(), reply.size(), 0);
+			}
+			channel->removeFromChannel(client);
+			client->leaveChannel(channel);
+			if (channel->getClients().size() == 0)
+			{
+				std::cout << "destrooy " << server->getChannel().size() << std::endl;
+				server->destroyChannel(channel);
+				std::cout << "destrooy " << server->getChannel().size() << std::endl;
+
+			}
+		}
+		else
+		{
+			reply = channel->getName() + " :No such channel";
+			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+		}
+	}
+	return 0;
+} 
 
 /*
      Command: MODE
@@ -162,10 +206,50 @@ int Client::modeChannel(Command arguments)
            RPL_NOTOPIC                     RPL_TOPIC
            ERR_CHANOPRIVSNEEDED            ERR_NOCHANMODES
 */
+
 int Client::TOPIC(Command arguments)
 {
-	(void)arguments;
-	return (0);
+	std::string reply;
+	Server *server = arguments.getServer();
+	Client *client = arguments.getClient();
+	Channel *channel;
+	std::map<std::string, Channel *>::iterator it;
+	bool right = false;
+
+	if (arguments.getParameters().size() == 0)
+		return ERR_NEEDMOREPARAMS;
+	if ((it = server->getChannel().find(arguments.getParameters()[0])) == server->getChannel().end())
+		return ERR_NOSUCHCHANNEL;
+	channel = it->second;
+	if (!channel->getClients().count(client->getPoll().fd))
+		return ERR_NOTONCHANNEL;
+	if (arguments.getMessage() == "")
+	{
+		if (it->second->getTopic() == "")
+			return RPL_NOTOPIC;
+		else
+			return RPL_TOPIC;
+	}
+	else 
+	{
+		if (channel->getMode().find('t') == std::string::npos)
+			right = true;
+		else if (client->getMode().find('o') == std::string::npos)
+			right = true;
+		if (right == false)
+			return ERR_CHANOPRIVSNEEDED;
+		if (arguments.getMessage() == ":")
+			it->second->setTopic("");
+		else
+			it->second->setTopic(arguments.getMessage());
+	}
+	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " TOPIC " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
+	std::map<int, Client *> users = channel->getClients();
+	for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
+	{
+		send(cli->first, reply.c_str(), reply.size(), 0);
+	}
+	return 0;
 }
 
 /*
