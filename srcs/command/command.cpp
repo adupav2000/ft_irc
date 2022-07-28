@@ -137,7 +137,6 @@ void Command::insertAllMess()
 	this->_errMess[RPL_ADMINLOC2] = ":<admin info>";
 	this->_errMess[RPL_ADMINEMAIL] = ":<admin info>";
 	this->_errMess[RPL_TRYAGAIN] = "<command> :Please wait a while and try again.";
-
 	this->_errMess[SEND_CONFIRMNEWNICK] = "Your nickname is now <nickname>";
 	
 }
@@ -244,6 +243,8 @@ std::string Command::getErrorString(int num) const
 		ret = findAndReplace("<nick", ret, this->getParameters()[0]);
 	ret = findAndReplace("<server name>", ret, _serverRef->getName());
 	ret = findAndReplace("<command>", ret, this->getPrefix());
+	ret = findAndReplace("<channel>", ret, this->getPrefix());
+	ret = findAndReplace("<topic>", ret, this->getPrefix());
 	/* KWAME to be set up wth functions */
 	/*
 	EXAMPLE

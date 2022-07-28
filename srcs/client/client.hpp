@@ -63,6 +63,8 @@ public:
 	/* Getters */
 	std::string				getNickname() const;
 	std::string     		getUsername() const;
+	std::string     		getHostname() const;
+	std::string     		getRealname() const;
 	std::string     		getMode() const;
 	struct pollfd			getPoll() const;
 	Server		        	*getServer() const;
@@ -93,9 +95,12 @@ protected:
 	t_messFuncMap			_messageFunctions;
 	std::string				_nickname;
 	std::string				_username;
+	std::string				_hostname;
+	std::string				_realname;
 	std::string				_mode;
 	Status 					_clientStatus;
 	Type					_clientType;
+
 
 	std::string		_availableModes;
 

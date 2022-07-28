@@ -204,6 +204,16 @@ std::vector<Channel *>	Client::getChannels() const
 	return _channels;
 }
 
+std::string     		Client::getHostname() const
+{
+	return _hostname;
+}
+
+std::string     		Client::getRealname() const
+{
+	return _realname;
+}
+
 void Client::setStatus(Status newStatus)
 {
 	_clientStatus = newStatus;
@@ -254,7 +264,7 @@ void Client::treatMessage()
 		{
 			if (message[i] == '\r' && message[i + 1] == '\n')
 			{
-				// std::cout << i << message.substr(start, i - start) << std::endl;
+				std::cout << "commande : " << message.substr(start, i - start) << std::endl;
 				_commands.push_back(new Command(message.substr(start, i - start), getServer(), this));
 				start = i + 2;
 				i += 2;
@@ -268,17 +278,17 @@ void Client::treatMessage()
 
 			if (_commands.size() > 2)
 			{
-				std::string nick = (*_commands[1]).getParameters()[0];
-				std::map<int, Client *> clients = getServer()->getClients();
-				for (std::map<int, Client *>::iterator cli = clients.begin(); cli != clients.end(); cli++)
-				{
-					if (cli->second->getNickname() == nick)
-						nick += "_";
-				}
-				_nickname = (*_commands[1]).getParameters()[0];
-				_nickname = nick;
-				_username = (*_commands[2]).getParameters()[0];
 				_clientStatus = PENDING;
+				executeCommands();
+				// std::string nick = (*_commands[1]).getParameters()[0];
+				// std::map<int, Client *> clients = getServer()->getClients();
+				// for (std::map<int, Client *>::iterator cli = clients.begin(); cli != clients.end(); cli++)
+				// {
+				// 	if (cli->second->getNickname() == nick)
+				// 		nick += "_";
+				// }
+				// _nickname = nick;
+				// _username = (*_commands[2]).getParameters()[0];
 			}
 			else
 			{

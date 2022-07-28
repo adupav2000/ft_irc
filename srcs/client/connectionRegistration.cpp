@@ -65,19 +65,31 @@ int Client::NICK(Command arguments)
 {
 	if (arguments.getParameters().size() < 1)
 		return (ERR_NONICKNAMEGIVEN);
-	if (_serverRef->nickNameUsed(arguments.getParameters()[0]))
-		return (ERR_NICKNAMEINUSE);	
 	if (_mode.find('r') != std::string::npos)
 		return (ERR_RESTRICTED);
 	std::string nTmp = arguments.getParameters()[0];
-	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
-	y a un espace */
-	int retValNickname = this->checkNickname(arguments, nTmp);
+	std::string reply;
+	int retValNickname;
+	retValNickname = this->checkNickname(arguments, nTmp);
 	if (retValNickname != 0)
 		return (retValNickname);
+	if (_clientStatus == PENDING)
+	{
+		while (_serverRef->nickNameUsed(nTmp))
+			nTmp += "_";
+	}
+	else
+	{
+		if (_serverRef->nickNameUsed(arguments.getParameters()[0]))
+			return (ERR_NICKNAMEINUSE);	
+	}
+	std::cout << "nickname size " << nTmp << std::endl;
 	_clientType = TYPE_CLIENT;
-	this->_nickname = arguments.getParameters()[0];
-	return (SEND_CONFIRMNEWNICK);
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost NICK " + nTmp + "\r\n";
+	this->_nickname = nTmp;
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	return 0;
+	// return (SEND_CONFIRMNEWNICK);
 }
 
 int	Client::checkNickname(Command arguments, std::string name) const
@@ -116,24 +128,17 @@ int	Client::checkNickname(Command arguments, std::string name) const
 */
 int Client::USER(Command arguments)
 {
-        (void )arguments;
-	// if (arguments.getParameters().size() < 5)
-	// 	return (ERR_NEEDMOREPARAMS);
-	// if (_clientType != TYPE_PASS)
-	// 	return (ERR_ALREADYREGISTRED);
-	// _clientType = TYPE_USER;
-	// std::string username = arguments.getParameters()[0];
-	// unsigned long i = 4;
-	// std::string realname = "";
-	// while (i < arguments.getParameters().size())
-	// {
-	// 	realname.append(arguments.getParameters().at(i));
-	// 	i++;
-	// }
-	// realname.erase(realname.find(":"), 1);
-	// if ((arguments.getParameters()[1].length() == 1))
-	// 	this->setUserMode(static_cast<unsigned char>(arguments.getParameters()[1][0]));
-	// this->_serverRef->changeClientClass(this, (new User(*this, username, realname)));
+	std::cout << "user size " << arguments.getParameters().size() << std::endl;
+	if (arguments.getParameters().size() < 3)
+		return (ERR_NEEDMOREPARAMS);
+	if (_clientType != TYPE_PASS)
+		return (ERR_ALREADYREGISTRED);
+	_clientType = TYPE_USER;
+	_username = arguments.getParameters()[0];
+	_hostname = arguments.getParameters()[2];
+	_realname = arguments.getMessage();
+	if ((arguments.getParameters()[1].length() == 1))
+		this->setUserMode(static_cast<unsigned char>(arguments.getParameters()[1][0]));
 	return (0);
 }
 

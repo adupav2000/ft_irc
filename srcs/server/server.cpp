@@ -108,16 +108,8 @@ void Server::launch()
 		std::vector<pollfd>::iterator end = pollfds.end();
 		while (beg != end)
 		{
-			// if (beg->revents & POLLHUP && beg->fd != _fds.fd)
-			// {
-			// 	removeClient(beg->fd);
-			// }
 			if (beg->revents & POLLIN)
 			{
-				// for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-				// {
-				// 	std::cout << "client status " << it->second->getStatus() << std::endl;
-				// }
 				if (beg->fd == _fds.fd)
 				{
 					if (_nbClients < NB_CLIENTS_MAX )
@@ -143,53 +135,9 @@ void Server::launch()
 						std::cout << "mess : " << client->getCommands()[0]->getMessage() << std::endl;
 						std::cout << "size channel : " << getChannel().size() << std::endl;
 						client->executeCommands();
-			// 			std::vector<Command *> commands = client->getCommands();
-			// 			for (std::vector<Command *>::iterator it = commands.begin(); it != commands.end(); it++)
-			// 			{
-			// 				std::string reply;
-			// 				std::vector<std::string> params = (*it)->getParameters();
-			// 				for (size_t i = 0; i < params.size(); i++)
-			// 				{
-			// 					std::cout << "params : " << (*it)->getParameters()[i] << std::endl;
-			// 				}
-			// 				if ((*it)->getPrefix() == "NICK")
-			// 				{
-			// 					reply += ":" + client->getNickname() + "!" + client->getUsername() + "@localhost NICK " + (*it)->getParameters()[0] + "\r\n";
-			// 					std::string nick = (*it)->getParameters()[0];
-			// 					for (std::map<int, Client *>::iterator cli = _clients.begin(); cli != _clients.end(); cli++)
-			// 					{
-			// 						if (cli->second->getNickname() == nick)
-			// 							nick += "_";
-			// 					}
-			// 					client->setNickname(nick);
-			// 					send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
-			// 				}
-			// 				if ((*it)->getPrefix() == "JOIN")
-			// 				{
-			// 					//JOIN(**it);
-			// 					//std::map<std::string, Channel *> chann = getChannel();
-			// 					//std::cout << "channel elem : " << chann.size() << std::endl;
-			// 					// for (std::map<std::string, Channel *>::iterator ite = chann.begin(); ite != chann.end(); ite++)
-			// 					// {
-			// 					// 	std::cout << "channels : " << (*ite).first << std::endl;
-			// 					// 	// std::cout << "channels client : " << (*ite).second->getClients()[client->getPoll().fd]->getNickname() << std::endl;
-			// 					// }
-			// 				}
-			// 				if ((*it)->getPrefix() == "PRIVMSG")
-			// 				{
-			// 					PRIVMSG(*it);
-			// 				}
-			// 			}
 					}
-			// 		//	client->executeCommands();
-			// 		client->clearCommands();
-			// 		std::cout << "fd : " << client->getPoll().fd << std::endl;
-	
 				}
 			}
-				// else{
-				// 	std::cout << "else" << std::endl;
-				// }
 			beg++;
 		}
 		pollfds.clear();
