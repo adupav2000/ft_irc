@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/27 14:48:04 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/28 00:07:04 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,10 @@ protected:
 	int SERVLIST(Command);
 	int SQUERY(Command);
 
+	/* User based queries */
+	int WHO(Command arguments);
+	int WHOIS(Command arguments);
+	int WHOWAS(Command arguments);
 
 	int PRIVMSG(Command);
 	int NOTICE(Command);
