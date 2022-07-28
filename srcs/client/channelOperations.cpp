@@ -144,12 +144,7 @@ int Client::PART(Command arguments)
 			channel->removeFromChannel(client);
 			client->leaveChannel(channel);
 			if (channel->getClients().size() == 0)
-			{
-				std::cout << "destrooy " << server->getChannel().size() << std::endl;
 				server->destroyChannel(channel);
-				std::cout << "destrooy " << server->getChannel().size() << std::endl;
-
-			}
 		}
 		else
 		{
@@ -226,9 +221,17 @@ int Client::TOPIC(Command arguments)
 	if (arguments.getMessage() == "")
 	{
 		if (it->second->getTopic() == "")
-			return RPL_NOTOPIC;
+		{
+			reply = channel->getName() + " :No topic is set";
+			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+			return 0;
+		}
 		else
-			return RPL_TOPIC;
+		{
+			reply = channel->getName() + " :" + it->second->getTopic();
+			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+			return 0;
+		}
 	}
 	else 
 	{
@@ -241,7 +244,10 @@ int Client::TOPIC(Command arguments)
 		if (arguments.getMessage() == ":")
 			it->second->setTopic("");
 		else
+		{
 			it->second->setTopic(arguments.getMessage());
+			std::cout << "topic : " << it->second->getTopic() << std::endl;
+		}
 	}
 	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " TOPIC " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
 	std::map<int, Client *> users = channel->getClients();
@@ -279,7 +285,101 @@ int Client::TOPIC(Command arguments)
 */
 int Client::NAME(Command arguments)
 {
-	(void)arguments;
+	std::string reply;
+	Server *server = arguments.getServer();
+	Client *client = arguments.getClient();
+	std::map<int, Client *> clients;
+	std::map<std::string, Channel *> channels = server->getChannel();
+
+	if (arguments.getParameters().size() == 1)
+	{
+		std::vector<std::string> param = split(arguments.getParameters()[0], ",");
+		for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
+		{
+			std::cout << "channels : " << std::endl;
+			for (std::vector<std::string>::iterator paramIt = param.begin(); paramIt < param.end(); paramIt++)
+			{
+				if (it->second->getName() == *paramIt)
+				{
+					std::string mode;
+					if (it->second->getMode().find('p') != std::string::npos)
+						mode = "*";
+					else if (it->second->getMode().find('s') != std::string::npos)
+						mode = "@";
+					else
+						mode = "=";
+					reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + mode + " " + it->second->getName();
+					clients = it->second->getClients();
+					if (clients.size())
+					{
+						for (std::map<int, Client *>::iterator cli = clients.begin(); cli != clients.end(); cli++)
+						{
+							if (cli->second->getMode().find('i') != std::string::npos)
+								continue;
+							if (cli != clients.begin())
+								reply += " ";
+							// if (USERMOD )
+							// 	reply += "@"
+							reply += cli->second->getNickname();
+						}
+						reply += "\r\n";
+						send(arguments.getClient()->getPoll().fd, reply.c_str(), reply.size(), 0);
+					}
+				}
+			}
+			reply = it->second->getName() + " :End of /NAMES list\r\n";
+			send(arguments.getClient()->getPoll().fd, reply.c_str(), reply.size(), 0);
+		}
+	}
+	else
+	{
+		for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
+		{
+			std::string mode;
+			if (it->second->getMode().find('p') != std::string::npos)
+				mode = "*";
+			else if (it->second->getMode().find('s') != std::string::npos)
+				mode = "@";
+			else
+				mode = "=";
+			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + mode + " " + it->second->getName();
+			clients = it->second->getClients();
+			if (clients.size())
+			{
+				for (std::map<int, Client *>::iterator cli = clients.begin(); cli != clients.end(); cli++)
+				{
+					if (cli->second->getMode().find('i') != std::string::npos)
+						continue;
+					if (cli != clients.begin())
+						reply += " ";
+					// if (USERMOD )
+					// 	reply += "@"
+					reply += cli->second->getNickname();
+				}
+				reply += "\r\n";
+				send(arguments.getClient()->getPoll().fd, reply.c_str(), reply.size(), 0);
+			}
+			reply = it->second->getName() + " :End of /NAMES list\r\n";
+			send(arguments.getClient()->getPoll().fd, reply.c_str(), reply.size(), 0);	
+		}
+		reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost *";
+		std::map<int, Client *> users = server->getClients();
+		if (users.size())
+		{
+			for (std::map<int, Client *>::iterator it = users.begin(); it != users.end(); ++it)
+			{
+				if (it->second->getChannels().size() == 0)
+				{
+					reply += " ";
+					reply += it->second->getNickname();
+				}
+			}
+			reply += "\r\n";
+			send(arguments.getClient()->getPoll().fd, reply.c_str(), reply.size(), 0);
+		}
+		reply = "* :End of /NAMES list\r\n";
+		send(arguments.getClient()->getPoll().fd, reply.c_str(), reply.size(), 0);	
+	}
 	return (0);
 }
 
@@ -303,8 +403,40 @@ int Client::NAME(Command arguments)
 */
 int Client::LIST(Command arguments)
 {
-	(void)arguments;
-	return (0);
+	std::string reply;
+	Server *server = arguments.getServer();
+	Client *client = arguments.getClient();
+	std::map<std::string, Channel *> channels = server->getChannel();
+
+	if (arguments.getParameters().size() > 0 && arguments.getParameters()[0] != "")
+	{
+		std::cout << "lala" << std::endl;
+		std::vector<std::string> param = split(arguments.getParameters()[0], ",");
+		for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+		{
+			for (std::vector<std::string>::iterator paramIt = param.begin(); paramIt < param.end(); paramIt++)
+			{
+				if (arguments.getParameters().size() == 0 || it->second->getName() == *paramIt)
+				{
+					std::cout << "loooloooo" << std::endl;
+					reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + it->second->getName() + " " + std::to_string(it->second->getClients().size()) + " " + it->second->getTopic() + "\r\n";
+					send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+				}
+			}
+		}
+	}
+	else 
+	{
+		for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+		{
+			std::cout << "laluuu" << std::endl;
+			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + it->second->getName() + " " + std::to_string(it->second->getClients().size()) + " " + it->second->getTopic() + "\r\n";
+			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+		}
+	}
+	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost End of /LIST\r\n";
+	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+	return 0;
 }
 
 /*
@@ -332,10 +464,36 @@ int Client::LIST(Command arguments)
 */ 
 int Client::INVITE(Command arguments)
 {
-	(void)arguments;
-	return (0);
-}
+	std::string reply;
+	Server *server = arguments.getServer();
+	Client *client = arguments.getClient();
+	Channel *channel;
 
+	if (arguments.getParameters().size() < 2)
+		return ERR_NEEDMOREPARAMS;
+	if (server->nickNameUsed(arguments.getParameters()[0]) == false)
+		return ERR_NOSUCHNICK;
+	if (server->getChannel().count(arguments.getParameters()[1]))
+	{
+		channel = server->getChannel()[arguments.getParameters()[1]];
+		if (server->getChannel()[arguments.getParameters()[1]]->clientOnChannel(arguments.getParameters()[0]))
+		{
+			reply = arguments.getParameters()[0] + " " + arguments.getParameters()[1] + " :is already on channel \r\n";
+			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+		}
+		// if (mode == 'i')
+		if (!channel->clientOnChannel(client->getNickname()))
+			return ERR_NOTONCHANNEL;
+		channel->addInvited(client);
+	}
+	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " INVITE " + arguments.getParameters()[0] + " " + arguments.getParameters()[1] + "\r\n";
+	send(server->findClientByNicknamme(arguments.getParameters()[0])->getPoll().fd, reply.c_str(), reply.size(), 0);
+	reply = arguments.getParameters()[1] + " " + arguments.getParameters()[1];
+	send(server->findClientByNicknamme(arguments.getParameters()[0])->getPoll().fd, reply.c_str(), reply.size(), 0);
+	// if (usermode ==)
+	// 	RPL_AWAY
+	return 0;
+}
 /*
    Command: KICK
    Parameters: <channel> *( "," <channel> ) <user> *( "," <user> )
@@ -361,6 +519,44 @@ int Client::INVITE(Command arguments)
 */
 int Client::KICK(Command arguments)
 {
-	(void)arguments;
-	return (0);
+	std::string reply;
+	Server *server = arguments.getServer();
+	Client *client = arguments.getClient();
+	Channel *channel;
+	if (arguments.getParameters().size() == 0)
+		return ERR_NEEDMOREPARAMS;
+	std::vector<std::string> channels = split(arguments.getParameters()[0], ",");
+	std::vector<std::string> clients = split(arguments.getParameters()[1], ",");
+	for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); ++it)
+	{
+		std::cout << "channels : " << *it << std::endl;
+		if (!server->getChannel().count(*it))
+		{
+			reply = *it + " :No such channel\r\n";
+			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+			continue;
+		}
+		channel = server->getChannel()[*it];
+		// CONDITION DE DROITS
+		// 	ERR_CHANOPRIVSNEEDED
+		for (std::vector<std::string>::iterator cli = clients.begin(); cli != clients.end(); ++cli)
+		{
+			if (!channel->clientOnChannel(*cli))
+			{
+				reply = *cli + " " + channel->getName() + " :They aren't on that channel\r\n";
+				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+				continue;
+			}
+			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " KICK " + arguments.getParameters()[0] + " " + arguments.getParameters()[1] + arguments.getMessage() + "\r\n";
+			std::map<int, Client *> users = channel->getClients();
+			for (std::map<int, Client *>::iterator cli2 = users.begin() ; cli2 != users.end(); cli2++)
+			{
+					send(cli2->first, reply.c_str(), reply.size(), 0);
+			}
+			Client *bannedClient = server->findClientByNicknamme(*cli);
+			channel->removeFromChannel(bannedClient);
+			bannedClient->leaveChannel(channel);		
+		}
+	}
+	return 0;
 }

@@ -102,3 +102,18 @@ void Channel::removeFromChannel(Client *client)
 {
     _clients.erase(client->getPoll().fd);
 }
+
+bool Channel::clientOnChannel(std::string name)
+{
+    for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+    {
+		if (it->second->getNickname() == name)
+			return true;
+    }
+	return false;
+}
+
+void Channel::addInvited(Client *client)
+{
+	_invited.push_back(client);
+}

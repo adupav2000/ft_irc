@@ -70,6 +70,8 @@ public:
 	Status 					getStatus() const;
 	Type 					getType() const;
 	std::vector<Command *>  getCommands() const;
+	std::vector<Channel *>	getChannels() const;
+
 
 	
 	/* Setters */

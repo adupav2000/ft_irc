@@ -199,6 +199,11 @@ std::vector<Command *> Client::getCommands() const
 	return _commands;
 }
 
+std::vector<Channel *>	Client::getChannels() const
+{
+	return _channels;
+}
+
 void Client::setStatus(Status newStatus)
 {
 	_clientStatus = newStatus;
@@ -233,7 +238,6 @@ void Client::treatMessage()
 
 	memset(buffer, 0, BUFFER_SIZE);
 	ret = recv(this->getPoll().fd, buffer, 1024, 0);
-
 	if (ret == 0)
 	{
 		std::cout << "DISCONNECTED : " << std::endl;
@@ -272,6 +276,7 @@ void Client::treatMessage()
 						nick += "_";
 				}
 				_nickname = (*_commands[1]).getParameters()[0];
+				_nickname = nick;
 				_username = (*_commands[2]).getParameters()[0];
 				_clientStatus = PENDING;
 			}

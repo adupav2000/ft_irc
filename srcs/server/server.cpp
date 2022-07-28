@@ -138,6 +138,8 @@ void Server::launch()
 					{
 						std::cout << "pref : " << client->getCommands()[0]->getPrefix() << std::endl;
 						std::cout << "params : " << client->getCommands()[0]->getParameters()[0] << std::endl;
+						if (client->getCommands()[0]->getParameters().size() > 1)
+							std::cout << "params : " << client->getCommands()[0]->getParameters()[1] << std::endl;
 						std::cout << "mess : " << client->getCommands()[0]->getMessage() << std::endl;
 						std::cout << "size channel : " << getChannel().size() << std::endl;
 						client->executeCommands();
@@ -230,6 +232,16 @@ bool Server::nickNameUsed(std::string nickname)
 			return true;
 	}
 	return false;
+}
+
+Client *Server::findClientByNicknamme(std::string nickname)
+{
+	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+	{
+		if (it->second->getNickname() == nickname)
+			return it->second;
+	}
+	return NULL;
 }
 
 bool Server::correctPassword(std::string password)

@@ -47,6 +47,9 @@ class Channel
         void addToChannel(Client *client);
         std::string getClientsName(Channel *channel);
         void removeFromChannel(Client *client);
+        bool clientOnChannel(std::string name);
+        void addInvited(Client *client);
+
 
 
     private:
@@ -59,6 +62,7 @@ class Channel
 		Server *_server;
         Client * _operator;
 		std::string _maxClients;
+        std::vector<Client *> _invited;
 };
 
 // int JOIN(Command *arguments);
