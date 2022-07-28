@@ -54,6 +54,9 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(PENDI
 	_messageFunctions["SERVLIST"] = &Client::SERVLIST;
 	_messageFunctions["SQUERY"] = &Client::SQUERY;
 
+	/* User based queries */
+	_messageFunctions["WHOWAS"] = &Client::WHOWAS;
+	_messageFunctions["WHOIS"] = &Client::WHOIS;
 
 	_messageFunctions["CAP"] = &Client::SQUIT;
 
