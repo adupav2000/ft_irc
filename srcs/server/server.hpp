@@ -72,6 +72,7 @@ public:
 	/* utils for client */
 	bool nickNameUsed(std::string nickname);
 	bool correctPassword(std::string password);
+	Client *findClientByNicknamme(std::string nickname);
 
 	/* channel operation */
 	void addChannel(Channel *channel);

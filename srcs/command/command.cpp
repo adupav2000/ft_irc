@@ -148,11 +148,13 @@ Command::Command()
 	return;
 }
 
-Command::Command(std::string message, Server *server, Client *client) : _recv(message), _serverRef(server), _client(client)
+Command::Command(std::string message, Server *server, Client *client) : _message(""), _recv(message), _serverRef(server), _client(client)
 {
 	this->insertAllMess();
 	std::vector<std::string> tmp;
 	// std::cout << "message " << message << std::endl;
+	if (message.find(":") != std::string::npos)
+		_message = ":";
 	tmp = split(message, ":");
 	_parameters = split(tmp[0], " ");
 	_prefix = _parameters[0];

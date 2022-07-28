@@ -116,23 +116,24 @@ int	Client::checkNickname(Command arguments, std::string name) const
 */
 int Client::USER(Command arguments)
 {
-	if (arguments.getParameters().size() < 5)
-		return (ERR_NEEDMOREPARAMS);
-	if (_clientType != TYPE_PASS)
-		return (ERR_ALREADYREGISTRED);
-	_clientType = TYPE_USER;
-	std::string username = arguments.getParameters()[0];
-	unsigned long i = 4;
-	std::string realname = "";
-	while (i < arguments.getParameters().size())
-	{
-		realname.append(arguments.getParameters().at(i));
-		i++;
-	}
-	realname.erase(realname.find(":"), 1);
-	if ((arguments.getParameters()[1].length() == 1))
-		this->setUserMode(static_cast<unsigned char>(arguments.getParameters()[1][0]));
-	this->_serverRef->changeClientClass(this, (new User(*this, username, realname)));
+        (void )arguments;
+	// if (arguments.getParameters().size() < 5)
+	// 	return (ERR_NEEDMOREPARAMS);
+	// if (_clientType != TYPE_PASS)
+	// 	return (ERR_ALREADYREGISTRED);
+	// _clientType = TYPE_USER;
+	// std::string username = arguments.getParameters()[0];
+	// unsigned long i = 4;
+	// std::string realname = "";
+	// while (i < arguments.getParameters().size())
+	// {
+	// 	realname.append(arguments.getParameters().at(i));
+	// 	i++;
+	// }
+	// realname.erase(realname.find(":"), 1);
+	// if ((arguments.getParameters()[1].length() == 1))
+	// 	this->setUserMode(static_cast<unsigned char>(arguments.getParameters()[1][0]));
+	// this->_serverRef->changeClientClass(this, (new User(*this, username, realname)));
 	return (0);
 }
 
