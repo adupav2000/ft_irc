@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/27 14:50:57 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/07/27 18:56:18y adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(PENDI
 	/* connection registration */
 	_messageFunctions["NICK"] = &Client::NICK;
 	_messageFunctions["USER"] = &Client::USER;
+	// UNSAFE 
+	_messageFunctions["USERHOST"] = &Client::USER;
+	_messageFunctions["OPER"] = &Client::OPER;
 	_messageFunctions["MODE"] = &Client::MODE;
 	_messageFunctions["SERVICE"] = &Client::SERVICE;
 	_messageFunctions["QUIT"] = &Client::QUIT;
@@ -71,6 +74,7 @@ Client::Client(Client const &rhs) : _serverRef(rhs.getServer()), _fds(rhs.getPol
 {
 	this->_messageFunctions = rhs._messageFunctions;
 	this->_nickname = rhs._nickname;
+	this->_commands = rhs.getCommands();
 }
 
 Client &Client::operator=(Client const &rhs)
@@ -135,31 +139,37 @@ int Client::executeCommands()
 {
 	int ret;
 	std::string errorStr;
+	unsigned long i = 0;
 
 	while (this->_commands.size() != 0)
 	{
 		//(this->*_messageFunctions.find((*_commands.begin())->getPrefix()) != this->*_messageFunctions->end())) &&
 		// if the user is in a chat and there is no matchin command : do nothing
+		std::cout << (*_commands.begin())->getPrefix();
+		i = 0;
+		while (i < (*_commands.begin())->getParameters().size())
+			std::cout << " " << (*_commands.begin())->getParameters()[i++];
+		std::cout << std::endl;
 		try
 		{
 			// std::cout << "Talking from the executeCommand() : " << (*_commands.begin())->getPrefix() << std::endl;
 			ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())));
 			// std::cout << "Result function " << ret << std::endl;
 			// si pas de channel et le premier n'est pas une commande
+			if (ret == -4)
+				return (-1);
 			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) != this->_messageFunctions.end()
 				&& ret != 0)
 			{
-				// std::cout << "Running the execute command " << std::endl;
 				errorStr = (*_commands.begin())->getErrorString(ret);
-				// std::cout << "errorStr : " << errorStr << std::endl;
-				send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
+				send(_fds.fd, errorStr.c_str(), errorStr.size(), 0);
 			}
+			_commands.erase(_commands.begin());
 		}
 		catch (const std::exception &e)
 		{
 			std::cerr << e.what() << '\n';
 		}
-		_commands.erase(_commands.begin());
 	}
 	return (0);
 }
@@ -275,7 +285,6 @@ void Client::treatMessage()
 					if (cli->second->getNickname() == nick)
 						nick += "_";
 				}
-				_nickname = (*_commands[1]).getParameters()[0];
 				_nickname = nick;
 				_username = (*_commands[2]).getParameters()[0];
 				_clientStatus = PENDING;
