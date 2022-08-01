@@ -151,27 +151,18 @@ Command::Command(std::string message, Server *server, Client *client) : _message
 {
 	this->insertAllMess();
 	std::vector<std::string> tmp;
-	// std::cout << "message " << message << std::endl;
 	if (message.find(":") != std::string::npos)
 		_message = ":";
 	tmp = split(message, ":");
 	_parameters = split(tmp[0], " ");
 	_prefix = _parameters[0];
 	_parameters.erase(_parameters.begin());
-	// for (std::vector<std::string>::iterator it = _parameters.begin(); it != _parameters.end(); it++)
-	// {
-	// 	std::cout << "parameters : " << *it << std::endl;
-	// }
 	if (tmp.size() > 1)
-	{
 		_message = tmp[1];
-		// std::cout << "message : " << _message << std::endl;
-	}
 	for (size_t i = 0; i < _prefix.length(); i++)
 	{
 		_prefix[i] = std::toupper(_prefix[i]);
 	}
-	// std::cout << "prefix : " << _prefix << std::endl;
 }
 
 Command::Command(Command const & rhs)

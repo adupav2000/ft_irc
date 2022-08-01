@@ -13,6 +13,9 @@
 #include <vector>
 #include <iostream>
 #include <string.h>
+#include <ctime>
+
+std::vector<std::string> split(std::string str, std::string delimiter);
 
 #define ERR_NOSUCHNICK 401 
 #define MESS_ERR_NOSUCHNICK "<nickname> :No such nick/channel"
@@ -433,8 +436,6 @@ user mode for a user other than themselves.
 
 #define REC_USER_NOTICE 's'
 /*	s - marks a user for receipt of server notices.*/
-
-std::vector<std::string> split(std::string str, std::string delimiter);
 
 #define RPL_WELCOME 001 
 	/*		"Welcome to the Internet Relay Network

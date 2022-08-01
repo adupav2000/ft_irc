@@ -89,13 +89,43 @@ int Client::MOTD(Command arguments)
 */
 int Client::LUSERS(Command arguments)
 {
-	(void)arguments;
-	return (RPL_LUSERCLIENT);
-	return (RPL_LUSERUNKNOWN);
-	return (RPL_LUSERME);
-	return (RPL_LUSEROP);
-	return (RPL_LUSERCHANNELS);
-	return (ERR_NOSUCHSERVER);
+   (void)arguments;
+   std::string reply;
+   std::map<int, Client *> clients = _serverRef->getClients();
+	int users = 0;
+	int operators = 0;
+   int invisible = 0;
+   int visible = 0;
+   int unknown = 0;
+   int services = 0;
+   int nbChannels = _serverRef->getChannel().size();
+
+	for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		if (it->second->getMode().find("i") != std::string::npos)
+			invisible++;
+		else
+			visible++;
+		if (it->second->getMode().find("o") != std::string::npos)
+			operators++;
+      if (it->second->getType() == TYPE_SERVICE)
+         services++;
+      else
+         users++;
+      if (it->second->getStatus() != CONNECTED)
+			unknown++;
+	}
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :There are " + std::to_string(users) + " users and " + std::to_string(services) + " services on 1 servers\r\n";
+   send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(operators) + " :operator(s) online\r\n";
+   send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(unknown) + " :unknown connection(s)\r\n";
+   send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(nbChannels) + " :channels formed\r\n";
+   send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :I have " + std::to_string(clients.size()) + " clients and 1 servers\r\n";
+   send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   return 0;
 }
 
 /*
@@ -120,8 +150,10 @@ int Client::LUSERS(Command arguments)
 int Client::VERSION(Command arguments)
 {
 	(void)arguments;
-	return (ERR_NOSUCHSERVER);
-	return (RPL_VERSION);
+   std::string reply;
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + _serverRef->getVersion() + " " + _serverRef->getName() + "\r\n";
+   send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   return 0;
 }
 
 /*
@@ -228,8 +260,8 @@ int Client::LINKS(Command argument)
 */
 int Client::TIME(Command argument)
 {
-	(void)argument;
-	return (0);
+   (void)argument;
+   return 0;
 }
 
 /*
@@ -351,7 +383,15 @@ int Client::TRACE(Command argument)
 int Client::ADMIN(Command argument)
 {
 	(void)argument;
-	return (0);
+   std::string reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + _serverRef->getName() + " :Administrative info\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost French IRC server created maintained by Adupavi and Kamanfo\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost You can contact us by mail at\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost adupavi@42.student.fr kamanfo@42.student.fr\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   return 0;
 }
 
 /*
@@ -381,5 +421,11 @@ int Client::ADMIN(Command argument)
 int Client::INFO(Command argument)
 {
 	(void)argument;
+   std::string reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + _serverRef->getVersion() + "\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost 42 Project ft_Irc made by adupavi and kamanfo\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost End of /INFO list\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
 	return (0);
 }

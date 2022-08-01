@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "client.hpp"
+
 /*
 Command: WHO
    Parameters: [ <mask> [ "o" ] ]
@@ -43,6 +45,13 @@ Command: WHO
                                    operator.
 
 */
+
+int Client::WHO(Command arguments)
+{
+	(void)arguments;
+	return 0;
+}
+
 /*
    Command: WHOIS
    Parameters: [ <target> ] <mask> *( "," <mask> )
@@ -79,6 +88,39 @@ Command: WHO
    WHOIS eff.org trillian          ; ask server eff.org for user
                                    information  about trillian
 */
+
+int Client::WHOIS(Command arguments)
+{
+	std::string reply;
+	if (arguments.getParameters().size() == 0)
+		return ERR_NONICKNAMEGIVEN;
+	if (_serverRef->nickNameUsed(arguments.getParameters()[0]) == false)
+		return ERR_NOSUCHNICK;
+	std::string chanNames;
+	Client *user = _serverRef->findClientByNicknamme(arguments.getParameters()[0]);
+	std::vector<Channel *> channels = user->getChannels();
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + user->getNickname() + " " + user->getUsername() + " localhost * :" + user->getRealname() + "\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	for (std::vector<Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
+	{
+		if (user->getMode().find('i') == std::string::npos)
+			chanNames = (*it)->getName() + " ";
+	}
+		
+	if (chanNames.length())
+	{
+		reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + user->getNickname() + " :" + chanNames + "\r\n";
+		send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	}
+	if (user->getMode().find('o') != std::string::npos)
+	{
+		reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + user->getNickname() + " :is an IRC operator\r\n";
+		send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	}
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + user->getNickname() + " :End of WHOIS list\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	return 0;
+}
 
 /*
    Command: WHOWAS

@@ -12,12 +12,14 @@
 
 #include "client.hpp"
 
-Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(PENDING), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds)
+Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW), _clientType(TYPE_ZERO), _serverRef(serverRef), _fds(fds), _passOK(false)
 {
 	/* connection registration */
+	_messageFunctions["PASS"] = &Client::PASS;
 	_messageFunctions["NICK"] = &Client::NICK;
 	_messageFunctions["USER"] = &Client::USER;
 	_messageFunctions["MODE"] = &Client::MODE;
+	_messageFunctions["OPER"] = &Client::OPER;
 	_messageFunctions["SERVICE"] = &Client::SERVICE;
 	_messageFunctions["QUIT"] = &Client::QUIT;
 	_messageFunctions["SQUIT"] = &Client::SQUIT;
@@ -51,10 +53,14 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(PENDI
 	_messageFunctions["SERVLIST"] = &Client::SERVLIST;
 	_messageFunctions["SQUERY"] = &Client::SQUERY;
 
-
 	_messageFunctions["CAP"] = &Client::SQUIT;
 
 	_messageFunctions["PRIVMSG"] = &Client::PRIVMSG;
+
+	/* userBasedQueries */
+	_messageFunctions["WHO"] = &Client::WHO;
+	_messageFunctions["WHOIS"] = &Client::WHOIS;
+	// _messageFunctions["WHOWAS"] = &Client::WHOWAS;
 
 	_registered = false;
 	_clientType = TYPE_ZERO;
@@ -124,6 +130,7 @@ Server *Client::getServer() const
 	return (this->_serverRef);
 }
 
+
 Client::t_messFuncMap Client::getMessageFunctions() const
 {
 	return (this->_messageFunctions);
@@ -136,7 +143,7 @@ int Client::executeCommands()
 	int ret;
 	std::string errorStr;
 
-	while (this->_commands.size() != 0)
+	while (this->_commands.size() != 0 && _clientStatus != REFUSED)
 	{
 		//(this->*_messageFunctions.find((*_commands.begin())->getPrefix()) != this->*_messageFunctions->end())) &&
 		// if the user is in a chat and there is no matchin command : do nothing
@@ -154,6 +161,19 @@ int Client::executeCommands()
 				// std::cout << "errorStr : " << errorStr << std::endl;
 				send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 			}
+			if (_clientStatus == NEW)
+			{
+				if ((*_commands.begin())->getPrefix() != "CAP" && (*_commands.begin())->getPrefix() != "PASS" && (*_commands.begin())->getPrefix() != "USER" && (*_commands.begin())->getPrefix() != "NICK")
+				{
+					_clientStatus = REFUSED;
+					return 0;
+				}
+				if ((_serverRef->getPassword() != "" && !_passOK) && (getUsername().size() != 0 || getNickname().size() != 0))
+				{
+					_clientStatus = REFUSED;
+					return 0;
+				}
+			}
 		}
 		catch (const std::exception &e)
 		{
@@ -161,6 +181,8 @@ int Client::executeCommands()
 		}
 		_commands.erase(_commands.begin());
 	}
+	if (getStatus() != PENDING)
+		_commands.clear();
 	return (0);
 }
 
@@ -250,23 +272,22 @@ void Client::treatMessage()
 	ret = recv(this->getPoll().fd, buffer, 1024, 0);
 	if (ret == 0)
 	{
-		std::cout << "DISCONNECTED : " << std::endl;
 		_clientStatus = DISCONNECTED;
+		_text.clear();
 		return;
 	}
 	buffer[ret] = 0;
-	message += buffer;
-	if (*(message.end() - 1) == '\n' && *(message.end() - 2) == '\r' && message.length() > 2)
+	_text += buffer;
+	if (*(_text.end() - 1) == '\n' && *(_text.end() - 2) == '\r' && _text.length() > 2)
 	{
 		i = 0;
 		start = 0;
-		while (message[i] && message[i + 1])
+		while (_text[i] && _text[i + 1])
 		{
-			if (message[i] == '\r' && message[i + 1] == '\n')
+			if (_text[i] == '\r' && _text[i + 1] == '\n')
 			{
-				std::cout << "commande : " << message.substr(start, i - start) << std::endl;
-				_commands.push_back(new Command(message.substr(start, i - start), getServer(), this));
-				start = i + 2;
+				_commands.push_back(new Command(_text.substr(start, i - start), getServer(), this));
+				start = i	 + 2;
 				i += 2;
 			}
 			else
@@ -274,31 +295,52 @@ void Client::treatMessage()
 		}
 		if (_clientStatus != CONNECTED)
 		{
-			std::cout << "PENDING : " << std::endl;
 
 			if (_commands.size() > 2)
 			{
-				_clientStatus = PENDING;
-				executeCommands();
-				// std::string nick = (*_commands[1]).getParameters()[0];
-				// std::map<int, Client *> clients = getServer()->getClients();
-				// for (std::map<int, Client *>::iterator cli = clients.begin(); cli != clients.end(); cli++)
-				// {
-				// 	if (cli->second->getNickname() == nick)
-				// 		nick += "_";
-				// }
-				// _nickname = nick;
-				// _username = (*_commands[2]).getParameters()[0];
+				if (_serverRef->getPassword() != "" && _commands[1]->getPrefix() != "PASS")
+					_clientStatus = REFUSED;
+				else 
+				{
+					_clientStatus = PENDING;
+					executeCommands();
+				}
 			}
 			else
 			{
-				std::cout << "REFUSED : " << std::endl;
 				_clientStatus = REFUSED;
 			}
 		}
+		_text.clear();
+	}
+	else if (*(_text.end() - 1) == '\n' && (_clientStatus == NEW || _clientStatus == CONNECTED))
+	{
+		if (_text.size() > 2)
+		{
+			*(_text.end() - 1) = '\r';
+			_text += "\n";
+			_commands.push_back(new Command(_text.substr(0, _text.size() - 2), getServer(), this));
+			if (_clientStatus != CONNECTED)
+			{
+				executeCommands();
+				if (getUsername().size() != 0 && getNickname().size() != 0)
+				{
+					if (_passOK == true || _serverRef->getPassword().size() == 0)
+						_clientStatus = PENDING;
+					else
+					{
+						_username = "";
+						_nickname = "";
+						_clientStatus = REFUSED;	
+					}
+				}
+			}
+		}
+		_text.clear();
 	}
 	else if (_clientStatus != CONNECTED)
 		_clientStatus = REFUSED;
+		
 }
 
 void Client::leaveChannel(Channel *channel)

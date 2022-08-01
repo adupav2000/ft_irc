@@ -29,6 +29,7 @@ class Command;
 class Channel;
 
 enum Status {
+	NEW,
 	CONNECTED,
 	DISCONNECTED,
 	PENDING,
@@ -100,14 +101,13 @@ protected:
 	std::string				_mode;
 	Status 					_clientStatus;
 	Type					_clientType;
-
-
 	std::string		_availableModes;
-
 	/* Server side variables */
 	Server					*_serverRef;
 	t_pollfd				_fds;
-	std::string 	_text;/* used to store text */
+	std::string 	_text;
+	bool					_passOK;
+
 	
 
 
@@ -154,7 +154,11 @@ protected:
 
 	int PRIVMSG(Command);
 	int NOTICE(Command);
-	
+
+	int WHO(Command);
+	int WHOIS(Command);
+	int WHOWAS(Command);
+
 	/* Channel function */
 	int modeChannel(Command arguments);
 
