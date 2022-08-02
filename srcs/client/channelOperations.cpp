@@ -324,16 +324,15 @@ int Client::modeChannel(Command arguments)
 int Client::TOPIC(Command arguments)
 {
 	std::string reply;
-	Server *server = arguments.getServer();
 	Client *client = arguments.getClient();
 	Channel *channel;
 	std::map<std::string, Channel *>::iterator it;
 
 	if (arguments.getParameters().size() == 0)
 		return ERR_NEEDMOREPARAMS;
-	if ((it = server->getChannel().find(arguments.getParameters()[0])) == server->getChannel().end())
+	if (_serverRef->getChannel().count(arguments.getParameters()[0]) == 0)
 		return ERR_NOSUCHCHANNEL;
-	channel = it->second;
+	channel = _serverRef->getChannel()[arguments.getParameters()[0]];
 	if (!channel->getClients().count(client->getPoll().fd))
 		return ERR_NOTONCHANNEL;
 	if (arguments.getMessage() == "")
@@ -353,19 +352,19 @@ int Client::TOPIC(Command arguments)
 	}
 	else 
 	{
-		if (channel->getMode().find('t') != std::string::npos && client->getMode().find('o') == std::string::npos)
+		std::cout << arguments.getMessage() << std::endl;
+		if (channel->getMode().find('t') != std::string::npos && client->getMode().find('o') == std::string::npos && it->second->getUserMode()[getPoll().fd].find("O") != std::string::npos && it->second->getUserMode()[getPoll().fd].find("o") == std::string::npos)
 			return ERR_CHANOPRIVSNEEDED;
 		if (arguments.getMessage() == ":")
 			it->second->setTopic("");
 		else
 			it->second->setTopic(arguments.getMessage());
 	}
+	std::cout << arguments.getMessage() << std::endl;
 	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " TOPIC " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
 	std::map<int, Client *> users = channel->getClients();
 	for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
-	{
 		send(cli->first, reply.c_str(), reply.size(), 0);
-	}
 	return 0;
 }
 
@@ -418,7 +417,7 @@ int Client::NAME(Command arguments)
 						mode = "@";
 					else
 						mode = "=";
-					reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + mode + " " + it->second->getName();
+					reply = ":" + client->getNickname() + " " + mode + " " + it->second->getName();
 					clients = it->second->getClients();
 					if (clients.size())
 					{
@@ -428,8 +427,8 @@ int Client::NAME(Command arguments)
 								continue;
 							if (cli != clients.begin())
 								reply += " ";
-							// if (USERMOD )
-							// 	reply += "@"
+							if (cli->second->getMode().find("o") != std::string::npos || it->second->getUserMode()[cli->second->getPoll().fd].find("O") != std::string::npos || it->second->getUserMode()[cli->second->getPoll().fd].find("o") != std::string::npos)
+								reply += "@";
 							reply += cli->second->getNickname();
 						}
 						reply += "\r\n";
@@ -462,8 +461,8 @@ int Client::NAME(Command arguments)
 						continue;
 					if (cli != clients.begin())
 						reply += " ";
-					// if (USERMOD )
-					// 	reply += "@"
+					if (cli->second->getMode().find("o") != std::string::npos || it->second->getUserMode()[cli->second->getPoll().fd].find("O") != std::string::npos || it->second->getUserMode()[cli->second->getPoll().fd].find("o") != std::string::npos)
+						reply += "@";
 					reply += cli->second->getNickname();
 				}
 				reply += "\r\n";
