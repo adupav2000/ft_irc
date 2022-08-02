@@ -25,6 +25,7 @@ public:
     std::string getPrefix() const;
     std::string getCommand() const;
 	std::string getMessage() const;
+	std::string getStringCommand() const;
     Client *getClient() const;
     Server *getServer() const;
     std::vector<std::string> getParameters() const;

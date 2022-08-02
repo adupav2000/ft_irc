@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/27 14:48:04 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/02 13:20:49 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define Client_HPP
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <sys/stat.h>
 #include <poll.h>
@@ -44,7 +45,15 @@ enum Type{
 	TYPE_USER,
 	TYPE_OPERATOR
 };
-
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 class Client
 {
 public:

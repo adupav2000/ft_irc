@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 22:23:58 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 20:14:26 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:59:41 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,41 +29,24 @@ Command: MOTD
 int Client::MOTD(Command arguments)
 {
 	std::string errorStr;
-	/* Need a MOTD file */
-	if (arguments.getParameters().size() < 2)
-		return (RPL_MOTD);
-	struct stat buffer;
-	if (stat((arguments.getParameters()[0]).c_str(), &buffer) != 0)
-		return (ERR_NOMOTD);
-	else
+	std::ifstream inputFile;
+	std::string motdTxt = "";
+	std::string line = "";
+
+	// TODO Handle motd from other servers
+	(void)arguments;
+	// this->sendReply(RPL_MOTDSTART);
+	inputFile.open("./files/motd.txt");
+	if (inputFile.is_open())
 	{
-		errorStr = (*_commands.begin())->getErrorString(RPL_MOTDSTART);
-		send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
-		/*
-		char buffer[128];
-		std::string result = "";
-		FILE *pipe = popen("./motd", "r");
-		if (!pipe)
-			throw std::runtime_error("popen() failed!");
-		try
+		while (getline(inputFile, line))
 		{
-			while (fgets(buffer, sizeof buffer, pipe) != NULL)
-			{
-				result += buffer;
-			}
+			motdTxt += line + '\n';
 		}
-		catch ()
-		{
-			pclose(pipe);
-			throw;
-		}
-		pclose(pipe);
-		_text = result;
-		*/
-		errorStr = (*_commands.begin())->getErrorString(RPL_MOTD);
-		send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
-		/* "Echo the content of all files in */
+		inputFile.close();
 	}
+	send(this->getPoll().fd, motdTxt.c_str(), motdTxt.size(), 0);
+	// this->sendReply(RPL_MOTD);
 	return (0);
 }
 
@@ -115,15 +98,15 @@ int Client::LUSERS(Command arguments)
       if (it->second->getStatus() != CONNECTED)
 			unknown++;
 	}
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :There are " + std::to_string(users) + " users and " + std::to_string(services) + " services on 1 servers\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :There are " + patch::to_string(users) + " users and " + patch::to_string(services) + " services on 1 servers\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(operators) + " :operator(s) online\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + patch::to_string(operators) + " :operator(s) online\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(unknown) + " :unknown connection(s)\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + patch::to_string(unknown) + " :unknown connection(s)\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(nbChannels) + " :channels formed\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + patch::to_string(nbChannels) + " :channels formed\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :I have " + std::to_string(clients.size()) + " clients and 1 servers\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :I have " + patch::to_string(clients.size()) + " clients and 1 servers\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
    return 0;
 }
