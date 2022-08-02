@@ -112,7 +112,7 @@ void Channel::setMaxClients(unsigned int limit)
 void Channel::setMode(char mode, char signe)
 {
 	if (signe == '-')
-		_mode.erase(mode);
+		_mode.erase(_mode.find(mode));
 	else if (signe == '+')
 		_mode += mode;
 }
