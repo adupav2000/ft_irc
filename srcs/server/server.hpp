@@ -41,6 +41,7 @@ class Server
 {
 public:
     Server();// meant to launch the server
+    Server(std::string port, std::string password);// meant to launch the server
     Server(Server const & rhs); // lauch another server
     ~Server();// destroys all channel and everything that was set
 	//server &operator=(server const & rhs);
@@ -54,6 +55,8 @@ public:
 	std::string getName() const;
 	std::map<int, Client *> getClients() const;
 	std::map<std::string, Channel *> getChannel() const;
+	std::string 	getVersion() const;
+	std::string 	getPassword() const;
 
 	/* Handle incomming strings */
 	// in charge of calling the right function
@@ -77,16 +80,20 @@ public:
 	/* channel operation */
 	void addChannel(Channel *channel);
 
-private:
-	std::string _name;
-	std::map<std::string, Channel *> _channel;
-	std::string	_password;
+	/* DISPLAY */
+	void displayServer();
 
+private:
+	std::string	_port;
+	std::string	_password;
+	std::string _name;
+	std::string _hostname;
+	std::map<std::string, Channel *> _channel;
 	typedef struct pollfd	t_pollfd;
 	t_pollfd				_fds;
 	std::map<int, Client *> _clients;
 	unsigned int _nbClients;
-
+	std::string _version;
 
 	/* Error types */
 	

@@ -104,9 +104,10 @@ void privmsgChannel(Command *arguments, std::string receiver, Server *server, st
 	std::map<std::string, Channel *>::iterator it;
 	if ((it = channels.find(receiver)) != channels.end())
 	{
+        if (it->second->clientOnChannel(arguments->getClient()->getNickname()) == false)
+            return ;
 		reply = ":" + arguments->getClient()->getNickname() + "!" + arguments->getClient()->getUsername() + "@localhost PRIVMSG " + receiver + " " + message + "\r\n";
     	std::map<int, Client *> channelClients = (*it).second->getClients();
-		std::cout << "client server PRVMSG : " << channelClients.size() << std::endl;
 		for (std::map<int, Client *>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++)
 		{
 			if (cli->first != arguments->getClient()->getPoll().fd)
@@ -128,17 +129,8 @@ int Client::PRIVMSG(Command arguments)
 		return ERR_NEEDMOREPARAMS;
 	else if (arguments.getParameters().size() == 1)
 		return ERR_NOTEXTTOSEND;
-	// std::string message;
-	// for (size_t i = 1; i < arguments->getParameters().size(); i++)
-	// {
-	// 	if (message.size() == 0 && arguments->getParameters()[i].c_str()[0] !=  ':')
-	// 		message += ":";
-	// 	message += arguments->getParameters()[i];
-	// 	message += " ";
-	// }
 	std::string receiver = arguments.getParameters()[0];
 	Server *server = arguments.getServer();
-	std::cout << "receiver : " << receiver << std::endl;
     if (receiver.find("#") != std::string::npos)
         privmsgChannel(&arguments, receiver, server, arguments.getMessage());
     else 

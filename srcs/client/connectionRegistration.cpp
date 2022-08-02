@@ -11,12 +11,9 @@
 /* ************************************************************************** */
 
 #include "client.hpp"
-#include "user/user.hpp"
-#include "user/operator/operator.hpp"
 #include "../server/server.hpp"
 #include "../globals.hpp"
 
-class User;
 /*
 Command: PASS
    Parameters: <password>
@@ -38,12 +35,12 @@ int Client::PASS(Command arguments)
 {
 	if (arguments.getParameters().size() < 1)
 		return (ERR_NEEDMOREPARAMS);
-	if (_clientType > TYPE_ZERO)
+	if (_clientStatus == CONNECTED)
 		return (ERR_ALREADYREGISTRED);
-	// TODO que se pass t'il si jamais le mots de passe est erroné ?
-	if (this->getServer()->correctPassword(arguments.getParameters()[0]))
-		return (0);
-	_clientType = TYPE_PASS;
+	if (!(_serverRef->correctPassword(arguments.getParameters()[0])))
+		setStatus(REFUSED);
+	else
+		_passOK = true;
 	return (0);
 }
 
@@ -65,19 +62,30 @@ int Client::NICK(Command arguments)
 {
 	if (arguments.getParameters().size() < 1)
 		return (ERR_NONICKNAMEGIVEN);
-	if (_serverRef->nickNameUsed(arguments.getParameters()[0]))
-		return (ERR_NICKNAMEINUSE);	
 	if (_mode.find('r') != std::string::npos)
 		return (ERR_RESTRICTED);
 	std::string nTmp = arguments.getParameters()[0];
-	/* Si jamais il y a plus de 2 arguments, cela veux dire qu'il 
-	y a un espace */
-	int retValNickname = this->checkNickname(arguments, nTmp);
+	std::string reply;
+	int retValNickname;
+	retValNickname = this->checkNickname(arguments, nTmp);
 	if (retValNickname != 0)
 		return (retValNickname);
+	if (_clientStatus == PENDING)
+	{
+		// CAS OU LE CLIENT N'EST PAS ENCORE ENREGISTRÉ
+		while (_serverRef->nickNameUsed(nTmp))
+			nTmp += "_";
+	}
+	else
+	{
+		if (_serverRef->nickNameUsed(arguments.getParameters()[0]))
+			return (ERR_NICKNAMEINUSE);	
+	}
 	_clientType = TYPE_CLIENT;
-	this->_nickname = arguments.getParameters()[0];
-	return (SEND_CONFIRMNEWNICK);
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost NICK " + nTmp + "\r\n";
+	this->_nickname = nTmp;
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	return 0;
 }
 
 int	Client::checkNickname(Command arguments, std::string name) const
@@ -116,24 +124,16 @@ int	Client::checkNickname(Command arguments, std::string name) const
 */
 int Client::USER(Command arguments)
 {
-        (void )arguments;
-	// if (arguments.getParameters().size() < 5)
-	// 	return (ERR_NEEDMOREPARAMS);
-	// if (_clientType != TYPE_PASS)
-	// 	return (ERR_ALREADYREGISTRED);
-	// _clientType = TYPE_USER;
-	// std::string username = arguments.getParameters()[0];
-	// unsigned long i = 4;
-	// std::string realname = "";
-	// while (i < arguments.getParameters().size())
-	// {
-	// 	realname.append(arguments.getParameters().at(i));
-	// 	i++;
-	// }
-	// realname.erase(realname.find(":"), 1);
-	// if ((arguments.getParameters()[1].length() == 1))
-	// 	this->setUserMode(static_cast<unsigned char>(arguments.getParameters()[1][0]));
-	// this->_serverRef->changeClientClass(this, (new User(*this, username, realname)));
+	if (arguments.getParameters().size() < 3)
+		return (ERR_NEEDMOREPARAMS);
+	if (_clientStatus == CONNECTED)
+		return (ERR_ALREADYREGISTRED);
+	_clientType = TYPE_USER;
+	_username = arguments.getParameters()[0];
+	_hostname = arguments.getParameters()[2];
+	_realname = arguments.getMessage();
+	if ((arguments.getParameters()[1].length() == 1))
+		this->setUserMode(static_cast<unsigned char>(arguments.getParameters()[1][0]));
 	return (0);
 }
 
@@ -159,8 +159,20 @@ int Client::USER(Command arguments)
 // ONLY USERS CAN BECOME OPERATORS
 int Client::OPER(Command arguments)
 {
-	(void)arguments;
-	return (ERR_NOOPERHOST);
+	std::string reply;
+	if (arguments.getParameters().size() < 2)
+		return ERR_NEEDMOREPARAMS;
+	if (arguments.getParameters()[1] != "pass")
+		return ERR_PASSWDMISMATCH;
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost You are now an IRC operator\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	if (getMode().find('o') == std::string::npos)
+	{
+		_mode = getMode() + "o";
+		reply = ":" + getNickname() + "!" + getUsername() + "@localhost +" + _mode + "\r\n";
+		send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	}
+	return 0;
 }
 
 /* Command: MODE
@@ -195,32 +207,42 @@ int Client::OPER(Command arguments)
 */
 int Client::MODE(Command arguments)
 {
-	// TODO : add the option for channels : redefinition in services responses
-	/* Check params if enough */
-	if (arguments.getParameters().size() < 3)
+	std::string reply;
+
+	if (arguments.getParameters().size() < 1)
 		return (ERR_NEEDMOREPARAMS);
-	/* check if the parameters are correct (existing nickname, correctly writen params (exsting..))) */
-	if (arguments.getParameters()[1][0] == '#')
+	if (arguments.getParameters()[0][0] == '#')
 		return (this->modeChannel(arguments));
-	if (_nickname != arguments.getParameters()[1])
+	if (_nickname != arguments.getParameters()[0])
 		return (ERR_USERSDONTMATCH);
-	/* check if you can add them (are they already set) right user */
-	if (arguments.getParameters()[2][0] == '-')
+	if (arguments.getParameters().size() > 1)
 	{
-		if ((_mode.begin() + _mode.find(arguments.getParameters()[2][1], 0)) == _mode.end())
-			return (0);
-		if (_availableModes.begin() + _availableModes.find(arguments.getParameters()[2][1], 0) == _availableModes.end())
-			return (ERR_UMODEUNKNOWNFLAG);
-		_mode.erase(_mode.find(arguments.getParameters()[2][1]), 1);
+		for (size_t i = 1; i < arguments.getParameters()[1].size(); i++)
+		{
+			if (_availableModes.find(arguments.getParameters()[1][i]) == std::string::npos)
+				return (ERR_UMODEUNKNOWNFLAG);
+		}
+		if (arguments.getParameters()[1][0] == '-')
+		{
+			for (size_t i = 1; i < arguments.getParameters()[1].size(); i++)
+			{
+				if (_mode.find((arguments.getParameters()[1][i])) == std::string::npos || arguments.getParameters()[1][i] == 'a' || arguments.getParameters()[1][i] == 'r')
+					continue;
+				_mode.erase(_mode.find(arguments.getParameters()[1][i]), 1);
+			}	
+		}
+		else if ((arguments.getParameters()[1])[0] == '+')
+		{
+			for (size_t i = 1; i < arguments.getParameters()[1].size(); i++)
+			{
+				if (_mode.find((arguments.getParameters()[1][i])) != std::string::npos || _availableModes.find((arguments.getParameters()[1][i])) == std::string::npos || arguments.getParameters()[1][i] == 'a' || arguments.getParameters()[1][i] == 'o' || arguments.getParameters()[1][i] == 'O')
+					continue;
+				_mode.push_back((arguments.getParameters()[1][i]));
+			}
+		}
 	}
-	else if (arguments.getParameters()[2][0] == '+')
-	{
-		if ((_mode.begin() + _mode.find(arguments.getParameters()[2][1], 0)) != _mode.end())
-			return (0);	
-		if (_availableModes.begin() + _availableModes.find(arguments.getParameters()[2][1], 0) == _availableModes.end())
-			return (ERR_UMODEUNKNOWNFLAG);
-		_mode.push_back((arguments.getParameters()[2][1]));
-	}
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost Your user mode is +" + _mode + "\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
 	return (0);
 }
 

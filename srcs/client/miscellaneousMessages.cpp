@@ -103,8 +103,11 @@ int Client::KILL(Command argument)
 */
 int Client::PING(Command argument)
 {
-	(void)argument;
-	return (0);
+	if (argument.getParameters().size() == 0)
+		return ERR_NOORIGIN;
+	std::string reply = ":" + getNickname() + " :No origin specified\r\n";
+	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	return 0;
 }
 
 /*

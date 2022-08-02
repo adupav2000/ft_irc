@@ -29,6 +29,7 @@ class Command;
 class Channel;
 
 enum Status {
+	NEW,
 	CONNECTED,
 	DISCONNECTED,
 	PENDING,
@@ -63,6 +64,8 @@ public:
 	/* Getters */
 	std::string				getNickname() const;
 	std::string     		getUsername() const;
+	std::string     		getHostname() const;
+	std::string     		getRealname() const;
 	std::string     		getMode() const;
 	struct pollfd			getPoll() const;
 	Server		        	*getServer() const;
@@ -93,16 +96,18 @@ protected:
 	t_messFuncMap			_messageFunctions;
 	std::string				_nickname;
 	std::string				_username;
+	std::string				_hostname;
+	std::string				_realname;
 	std::string				_mode;
 	Status 					_clientStatus;
 	Type					_clientType;
-
 	std::string		_availableModes;
-
 	/* Server side variables */
 	Server					*_serverRef;
 	t_pollfd				_fds;
-	std::string 	_text;/* used to store text */
+	std::string 	_text;
+	bool					_passOK;
+
 	
 
 
@@ -149,7 +154,11 @@ protected:
 
 	int PRIVMSG(Command);
 	int NOTICE(Command);
-	
+
+	int WHO(Command);
+	int WHOIS(Command);
+	int WHOWAS(Command);
+
 	/* Channel function */
 	int modeChannel(Command arguments);
 

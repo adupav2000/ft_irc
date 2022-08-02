@@ -27,11 +27,21 @@ class Channel
 		std::string getKey();
         unsigned int getNbClients();
 		std::map<int, Client *> getClients();
-		std::string getMaxClients();
+		unsigned int getMaxClients();
+		std::map<int, std::string> getUserMode();
+        std::string		getChannelModes();
+        Client *getClientOnChannel(std::string name);
+
+
+        
+
 
         /* SETTERS */
-        void setKey(std::string key);
+        void setKey(std::string key, char signe);
 		void setTopic(std::string topic);
+		void setMode(char, char);
+        void setMaxClients(unsigned int);
+
 
 
         /* CHANNEL OPERATION */
@@ -49,8 +59,8 @@ class Channel
         void removeFromChannel(Client *client);
         bool clientOnChannel(std::string name);
         void addInvited(Client *client);
-
-
+		void changeUserMode(int, char, char);
+        bool isInvited(std::string);
 
     private:
 		std::string _name;
@@ -59,10 +69,13 @@ class Channel
 		std::string _key;
         unsigned int _nbClients;
 		std::map<int, Client *> _clients;
+		std::map<int, std::string> _userMode;
 		Server *_server;
         Client * _operator;
-		std::string _maxClients;
+		unsigned int _maxClients;
         std::vector<Client *> _invited;
+    	std::string		_channelModes;
+
 };
 
 // int JOIN(Command *arguments);

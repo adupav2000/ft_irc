@@ -5,11 +5,10 @@ Channel::Channel()
     return ;
 }
 
-Channel::Channel(std::string name, Server *server, Client *client) : _name(name), _topic(""), _mode("="), _server(server), _operator(client)
+Channel::Channel(std::string name, Server *server, Client *client) : _name(name), _topic(""), _mode("="), _server(server), _operator(client), _channelModes("OovaimnqpsrtklbeI")
 {
     return ;
 }
-
 
 Channel::Channel(Channel const & rhs)
 {
@@ -75,21 +74,47 @@ std::string Channel::getClientsName(Channel *channel)
     return ret;  
 }
 
-std::string Channel::getMaxClients()
+unsigned int Channel::getMaxClients()
 {
     return _maxClients;
 }
 
+std::map<int, std::string> Channel::getUserMode()
+{
+	return _userMode;
+}
+
+std::string		Channel::getChannelModes()
+{
+	return _channelModes;
+}
+
 /* SETTERS */
 
-void Channel::setKey(std::string key)
+void Channel::setKey(std::string key, char signe)
 {
-    _key = key;
+	if (signe == '+')
+    	_key = key;
+	if (signe == '-')
+		_key.erase();
 }
 
 void Channel::setTopic(std::string topic)
 {
     _topic = topic;
+}
+
+void Channel::setMaxClients(unsigned int limit)
+{
+	_maxClients = limit;
+}
+
+void Channel::setMode(char mode, char signe)
+{
+	if (signe == '-')
+		_mode.erase(mode);
+	else if (signe == '+')
+		_mode += mode;
 }
 
 void Channel::addToChannel(Client *client)
@@ -113,7 +138,38 @@ bool Channel::clientOnChannel(std::string name)
 	return false;
 }
 
+Client *Channel::getClientOnChannel(std::string name)
+{
+    for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+    {
+		if (it->second->getNickname() == name)
+			return it->second;
+    }
+	return NULL;
+}
+
 void Channel::addInvited(Client *client)
 {
 	_invited.push_back(client);
 }
+
+void Channel::changeUserMode(int index, char mode, char signe)
+{
+	if (signe == '-')
+		_userMode[index].erase(_userMode[index].find(mode, 1));
+	else if (signe == '+')
+		_userMode[index].push_back(mode);
+}
+
+bool Channel::isInvited(std::string name)
+{
+	for (std::vector<Client *>::iterator it = _invited.begin(); it != _invited.end(); it++)
+	{
+		std::cout << "invited " << (*it)->getNickname() << std::endl;
+		if ((*it)->getNickname() == name)
+			return true;
+	}
+	return false;
+	
+}
+

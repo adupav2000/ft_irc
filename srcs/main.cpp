@@ -20,11 +20,13 @@
 
 int main(int argc, char *argv[])
 {
-	(void)argc;
-	(void)argv;
-
-	Server test;
-	test.init();
-	test.launch();
+	if (argc != 3)
+	{
+		std::cout << "le programme doit etre appelé comme ceci : ./ircserv <port> <password>" << std::endl;
+		return 1;
+	}
+	Server serv = Server(argv[1], argv[2]);
+	serv.init();
+	serv.launch();
 	return 0;
 }
