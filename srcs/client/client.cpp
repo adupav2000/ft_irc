@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/02 12:00:38 by AlainduPa        ###   ########.fr       */
+/*   Updated: 2022/08/02 15:43:27 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW),
 	_messageFunctions["PASS"] = &Client::PASS;
 	_messageFunctions["NICK"] = &Client::NICK;
 	_messageFunctions["USER"] = &Client::USER;
-	// UNSAFE 
+	// UNSAFE
 	_messageFunctions["USERHOST"] = &Client::USER;
 	_messageFunctions["OPER"] = &Client::OPER;
 	_messageFunctions["MODE"] = &Client::MODE;
@@ -134,7 +134,6 @@ Server *Client::getServer() const
 	return (this->_serverRef);
 }
 
-
 Client::t_messFuncMap Client::getMessageFunctions() const
 {
 	return (this->_messageFunctions);
@@ -160,14 +159,20 @@ int Client::executeCommands()
 		try
 		{
 			// std::cout << "Talking from the executeCommand() : " << (*_commands.begin())->getPrefix() << std::endl;
+			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) == this->_messageFunctions.end())
+			{
+				_commands.erase(_commands.begin());
+				continue;
+			}
 			ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())));
 			// std::cout << "Result function " << ret << std::endl;
 			// si pas de channel et le premier n'est pas une commande
 			if (ret == -4)
 				return (-1);
-			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) != this->_messageFunctions.end()
-				&& ret != 0)
+			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) != this->_messageFunctions.end() && ret != 0)
 			{
+				errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand();
+				send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 				errorStr = (*_commands.begin())->getErrorString(ret);
 				send(_fds.fd, errorStr.c_str(), errorStr.size(), 0);
 			}
@@ -184,6 +189,7 @@ int Client::executeCommands()
 					return 0;
 				}
 			}
+			_commands.erase(_commands.begin());
 		}
 		catch (const std::exception &e)
 		{
@@ -197,14 +203,16 @@ int Client::executeCommands()
 
 /**
  * @brief quick way to send a reply after a command
- * 
+ *
  * @param replyNum has to be one of the RPL_ defined in command.cpp
- * @return int 
+ * @return int
  */
 int Client::sendReply(int replyNum)
 {
 	std::string errorStr;
-
+	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand();
+	// std::cout << errorStr << std::endl;
+	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	errorStr = (*_commands.begin())->getErrorString(replyNum);
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	return (0);
@@ -230,17 +238,17 @@ std::vector<Command *> Client::getCommands() const
 	return _commands;
 }
 
-std::vector<Channel *>	Client::getChannels() const
+std::vector<Channel *> Client::getChannels() const
 {
 	return _channels;
 }
 
-std::string     		Client::getHostname() const
+std::string Client::getHostname() const
 {
 	return _hostname;
 }
 
-std::string     		Client::getRealname() const
+std::string Client::getRealname() const
 {
 	return _realname;
 }
@@ -296,7 +304,7 @@ void Client::treatMessage()
 			if (_text[i] == '\r' && _text[i + 1] == '\n')
 			{
 				_commands.push_back(new Command(_text.substr(start, i - start), getServer(), this));
-				start = i	 + 2;
+				start = i + 2;
 				i += 2;
 			}
 			else
@@ -309,12 +317,12 @@ void Client::treatMessage()
 			{
 				if (_serverRef->getPassword() != "" && _commands[1]->getPrefix() != "PASS")
 					_clientStatus = REFUSED;
-				else 
+				else
 				{
 					_clientStatus = PENDING;
 					executeCommands();
 				}
-				_nickname = nick;
+				//_nickname = nick;
 				_username = (*_commands[2]).getParameters()[0];
 				_clientStatus = PENDING;
 			}
@@ -343,7 +351,7 @@ void Client::treatMessage()
 					{
 						_username = "";
 						_nickname = "";
-						_clientStatus = REFUSED;	
+						_clientStatus = REFUSED;
 					}
 				}
 			}
@@ -352,12 +360,11 @@ void Client::treatMessage()
 	}
 	else if (_clientStatus != CONNECTED)
 		_clientStatus = REFUSED;
-		
 }
 
 void Client::leaveChannel(Channel *channel)
 {
-	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end() ; it++)
+	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); it++)
 	{
 		if (*it == channel)
 			_channels.erase(it);

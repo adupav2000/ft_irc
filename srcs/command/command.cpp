@@ -224,6 +224,16 @@ std::string findAndReplace(std::string toBeFound, std::string toBeSearchedThroug
 	return (ret);
 }
 
+/**
+ * @brief Get the String Command (ths whole command as it was sent)
+ * 
+ * @return std::string 
+ */
+std::string Command::getStringCommand() const
+{
+	return (this->_recv);
+}
+
 std::string Command::getErrorString(int num) const
 {
 	if (this->_errMess.find(num) != this->_errMess.end())
