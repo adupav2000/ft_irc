@@ -134,7 +134,9 @@ int Client::PRIVMSG(Command arguments)
     if (receiver.find("#") != std::string::npos)
         privmsgChannel(&arguments, receiver, server, arguments.getMessage());
     else 
+    {
         privmsgUser(&arguments, receiver, server, arguments.getMessage());
+    }
 	return 0;
 }
 

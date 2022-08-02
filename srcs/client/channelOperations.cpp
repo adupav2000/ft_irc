@@ -13,6 +13,8 @@
 #include "client.hpp"
 #include "../channel/channel.hpp"
 
+
+
 /*
 Command: JOIN
    Parameters: ( <channel> *( "," <channel> ) [ <key> *( "," <key> ) ] )
@@ -264,8 +266,10 @@ int Client::modeChannel(Command arguments)
 								if (channel->clientOnChannel(arguments.getParameters()[2]))
 									channel->changeUserMode(channel->getClientOnChannel(arguments.getParameters()[2])->getPoll().fd, arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
 								else
+								{
 									reply = ":" + getNickname() + " " + channel->getClientOnChannel(arguments.getParameters()[2])->getNickname() + " " + channel->getName() + " :They aren't on that channel\r\n";
 									send(getPoll().fd, reply.c_str(), reply.size(), 0);
+								}
 							}
 						}
 						else if (setMode.find(arguments.getParameters()[1][i]) != std::string::npos)
@@ -284,9 +288,7 @@ int Client::modeChannel(Command arguments)
 							}
 						}
 					}
-					
 				}
-				
 			}
 			else
 			{
@@ -525,7 +527,7 @@ int Client::LIST(Command arguments)
 			{
 				if (arguments.getParameters().size() == 0 || it->second->getName() == *paramIt)
 				{
-					reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + it->second->getName() + " " + std::to_string(it->second->getClients().size()) + " " + it->second->getTopic() + "\r\n";
+					reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + it->second->getName() + " " + patch::to_string(it->second->getClients().size()) + " " + it->second->getTopic() + "\r\n";
 					send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 				}
 			}
@@ -535,7 +537,7 @@ int Client::LIST(Command arguments)
 	{
 		for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
 		{
-			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + it->second->getName() + " " + std::to_string(it->second->getClients().size()) + " " + it->second->getTopic() + "\r\n";
+			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + it->second->getName() + " " + patch::to_string(it->second->getClients().size()) + " " + it->second->getTopic() + "\r\n";
 			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 		}
 	}

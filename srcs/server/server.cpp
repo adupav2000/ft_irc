@@ -172,7 +172,7 @@ void Server::acceptClient()
 void Server::removeClient(int fd)
 {
 	std::string display;
-	display = _clients[fd]->getNickname().size() ? "	[" + _clients[fd]->getNickname() + "] left the server" : "	[" + std::to_string(fd) + "] left the server";
+	display = _clients[fd]->getNickname().size() ? "	[" + _clients[fd]->getNickname() + "] left the server" : "	[" + patch::to_string(fd) + "] left the server";
 	std::cout << display << std::endl;
 	close(fd);
 	this->_clients.erase(fd);
@@ -243,7 +243,7 @@ void Server::displayServer()
 				if (client->getStatus() == CONNECTED)
 					display += "	[" + client->getNickname() + "] " + " mode +" + client->getMode() + " CONNECTED \n";
 				else if (client->getStatus() == REFUSED)
-					display += "	[" + std::to_string(client->getPoll().fd) + "] CONNECTION REFUSED \n";
+					display += "	[" + patch::to_string(client->getPoll().fd) + "] CONNECTION REFUSED \n";
 				std::cout << display << std::endl;
 			}
 		}
@@ -255,7 +255,7 @@ void Server::displayServer()
 		for (std::map<std::string, Channel *>::iterator it = _channel.begin(); it != _channel.end(); it++)
 		{
 			channel = it->second;
-			display += "	[" + channel->getName() + "] " + std::to_string(channel->getClients().size()) + " user(s)\n";
+			display += "	[" + channel->getName() + "] " + patch::to_string(channel->getClients().size()) + " user(s)\n";
 			std::cout << display << std::endl;
 		}
 		
