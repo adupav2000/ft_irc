@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/03 23:12:25 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 00:06:09 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,8 +195,9 @@ int Client::executeCommands()
 					return 0;
 				}
 			}
-			it = _commands.erase(_commands.begin());
-			//delete (*it);
+			//delete (*_commands.begin());
+			_commands.erase(_commands.begin());
+			
 		}
 		catch (const std::exception &e)
 		{
@@ -401,8 +402,8 @@ void Client::leaveChannel(Channel *channel)
 	{
 		if (*it == channel)
 		{
-			//delete channel;
 			_channels.erase(it);
+			//delete channel;
 		}
 	}
 }
