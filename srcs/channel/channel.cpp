@@ -101,6 +101,8 @@ void Channel::setKey(std::string key, char signe)
 
 void Channel::setTopic(std::string topic)
 {
+    std::cout << "topic : " << topic << std::endl; 
+    std::cout << "_topic : " << _topic << std::endl; 
     _topic = topic;
 }
 

@@ -326,7 +326,6 @@ int Client::TOPIC(Command arguments)
 	std::string reply;
 	Client *client = arguments.getClient();
 	Channel *channel;
-	std::map<std::string, Channel *>::iterator it;
 
 	if (arguments.getParameters().size() == 0)
 		return ERR_NEEDMOREPARAMS;
@@ -337,7 +336,7 @@ int Client::TOPIC(Command arguments)
 		return ERR_NOTONCHANNEL;
 	if (arguments.getMessage() == "")
 	{
-		if (it->second->getTopic() == "")
+		if (channel->getTopic() == "")
 		{
 			reply = channel->getName() + " :No topic is set";
 			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
@@ -345,7 +344,7 @@ int Client::TOPIC(Command arguments)
 		}
 		else
 		{
-			reply = channel->getName() + " :" + it->second->getTopic();
+			reply = channel->getName() + " :" + channel->getTopic();
 			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 			return 0;
 		}
@@ -353,12 +352,12 @@ int Client::TOPIC(Command arguments)
 	else 
 	{
 		std::cout << arguments.getMessage() << std::endl;
-		if (channel->getMode().find('t') != std::string::npos && client->getMode().find('o') == std::string::npos && it->second->getUserMode()[getPoll().fd].find("O") != std::string::npos && it->second->getUserMode()[getPoll().fd].find("o") == std::string::npos)
+		if (channel->getMode().find('t') != std::string::npos && client->getMode().find('o') == std::string::npos && channel->getUserMode()[getPoll().fd].find("O") == std::string::npos && channel->getUserMode()[getPoll().fd].find("o") == std::string::npos)
 			return ERR_CHANOPRIVSNEEDED;
 		if (arguments.getMessage() == ":")
-			it->second->setTopic("");
+			channel->setTopic("");
 		else
-			it->second->setTopic(arguments.getMessage());
+			channel->setTopic(arguments.getMessage());
 	}
 	std::cout << arguments.getMessage() << std::endl;
 	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " TOPIC " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
