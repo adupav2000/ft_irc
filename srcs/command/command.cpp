@@ -243,6 +243,7 @@ std::string Command::getErrorString(int num) const
 	ret = findAndReplace("<server name>", ret, _serverRef->getName());
 	ret = findAndReplace("<command>", ret, this->getPrefix());
 	ret = findAndReplace("<channel>", ret, this->getPrefix());
+	ret = findAndReplace("<channel name>", ret, this->getPrefix());
 	ret = findAndReplace("<topic>", ret, this->getPrefix());
 
 	ret = findAndReplace("<version>", ret, this->_serverRef->getVersion());

@@ -238,7 +238,7 @@ int Client::modeChannel(Command arguments)
 			}
 			else if ((arguments.getParameters()[1])[0] == '+')
 			{
-				if (channel->getMode().find((arguments.getParameters()[1][i])) != std::string::npos || channel->getChannelModes().find((arguments.getParameters()[1][i])) == std::string::npos || arguments.getParameters()[1][i] == 'a' || arguments.getParameters()[1][i] == 'o' || arguments.getParameters()[1][i] == 'O')
+				if (channel->getMode().find((arguments.getParameters()[1][i])) != std::string::npos || channel->getChannelModes().find((arguments.getParameters()[1][i])) == std::string::npos)
 					continue;
 			}
 			if (getMode().find("o") != std::string::npos || channel->getUserMode()[getPoll().fd].find("O") != std::string::npos || channel->getUserMode()[getPoll().fd].find("o") != std::string::npos)
@@ -256,6 +256,7 @@ int Client::modeChannel(Command arguments)
 					{
 						if (giveMode.find(arguments.getParameters()[1][i]) != std::string::npos)
 						{
+							std::cout << "accessed give mode" << std::endl;
 							if (arguments.getParameters().size() < 3)
 							{
 								reply = ":" + getNickname() + " MODE :Not enough parameters\r\n";
@@ -263,6 +264,7 @@ int Client::modeChannel(Command arguments)
 							}
 							else
 							{
+								// MODE #chan +o adu-pavi
 								if (channel->clientOnChannel(arguments.getParameters()[2]))
 									channel->changeUserMode(channel->getClientOnChannel(arguments.getParameters()[2])->getPoll().fd, arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
 								else
@@ -656,11 +658,11 @@ int Client::KICK(Command arguments)
 			std::map<int, Client *> users = channel->getClients();
 			for (std::map<int, Client *>::iterator cli2 = users.begin() ; cli2 != users.end(); cli2++)
 			{
-					send(cli2->first, reply.c_str(), reply.size(), 0);
+				send(cli2->first, reply.c_str(), reply.size(), 0);
 			}
 			Client *bannedClient = server->findClientByNicknamme(*cli);
 			channel->removeFromChannel(bannedClient);
-			bannedClient->leaveChannel(channel);		
+			bannedClient->leaveChannel(channel);
 		}
 	}
 	return 0;

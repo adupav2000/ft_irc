@@ -20,6 +20,7 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW),
 	_messageFunctions["USER"] = &Client::USER;
 	// UNSAFE
 	_messageFunctions["USERHOST"] = &Client::USER;
+
 	_messageFunctions["OPER"] = &Client::OPER;
 	_messageFunctions["MODE"] = &Client::MODE;
 	_messageFunctions["OPER"] = &Client::OPER;
@@ -104,7 +105,9 @@ bool Client::isLetter(char c) const
 
 bool Client::isSpecial(char c) const
 {
-	return ((c <= '}' && c >= '{') && (c >= '[' && c <= '`'));
+	return ((c <= '}' && c >= '{')
+		|| (c >= '[' && c <= '`')
+		|| (c <= '@' && c >= '!'));
 }
 
 /* Getters */
@@ -233,14 +236,17 @@ int Client::sendReply(int replyNum)
 {
 	std::string errorStr;
 	
-	// std::cout << errorStr << std::endl;
-	// sending the introduction
-	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand();
+	if (replyNum <= ERR_NOSUCHNICK && replyNum >= ERR_USERSDONTMATCH)
+	{
+	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand() + "\r\n";
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
-	errorStr = (*_commands.begin())->getErrorString(replyNum);
+	}
+	errorStr = ":" + getNickname() + "!" + getUsername() + "@" + this->_hostname + " " + (*_commands.begin())->getErrorString(replyNum);
+	std::cout << "sending reply for " << errorStr << std::endl;
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	return (0);
 }
+
 Status Client::getStatus() const
 {
 	return _clientStatus;
