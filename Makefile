@@ -41,7 +41,7 @@ SOURCE += $(addprefix srcs/, $(UTILS_FILE))
 
 OBJ = $(addprefix obj/, $(notdir $(SOURCE:.cpp=.o)))
 
-FLAGS = -std=c++98 -Wall -Wextra -Werror -g #-fsanitize=address #-fsanitize=leak
+FLAGS = -std=c++98 -Wall -Wextra -Werror -g -fsanitize=address #-fsanitize=leak
 COMPILER = clang++
 
 # Colors
