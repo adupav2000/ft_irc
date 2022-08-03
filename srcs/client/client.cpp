@@ -215,11 +215,9 @@ int Client::sendReply(std::vector<int> replyNum)
 	// sending the introduction
 	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand() + "\r\n";
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
-	std::cout << "Test ici" << *replyNum.begin() << std::endl;
 	for (std::vector<int>::iterator it = replyNum.begin(); it != replyNum.end(); it++)
 	{
 		errorStr = (*_commands.begin())->getErrorString(*it);
-		std::cout << "Text to be sent " << errorStr << std::endl;
 		send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	}
 	return (0);
