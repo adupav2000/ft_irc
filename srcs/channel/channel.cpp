@@ -158,9 +158,10 @@ void Channel::addInvited(Client *client)
 
 void Channel::changeUserMode(int index, char mode, char signe)
 {
+    std::cout << "changeUserMode : " << "index" << index << "mode" << mode << "signe" << signe << std::endl;
 	if (signe == '-')
 		_userMode[index].erase(_userMode[index].find(mode, 1));
-	else if (signe == '+')
+	else if (signe == '+' && _userMode[index].find(mode) == std::string::npos)
 		_userMode[index].push_back(mode);
 }
 
