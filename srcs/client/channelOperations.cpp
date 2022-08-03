@@ -264,10 +264,9 @@ int Client::modeChannel(Command arguments)
 							else
 							{
 								// MODE #chan +o adu-pavi
-								std::cout << arguments.getParameters()[2] << std::endl;
+
 								if (channel->clientOnChannel(arguments.getParameters()[2]))
 								{
-									std::cout << arguments.getParameters()[2] << std::endl;
 									Client *target = channel->getClientOnChannel(arguments.getParameters()[2]);
 									channel->changeUserMode(target->getPoll().fd, arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
 								}
