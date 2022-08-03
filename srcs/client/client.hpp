@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/02 13:20:49 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/02 21:02:16 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,7 @@ protected:
 	bool isLetter(char c) const;
 	bool isSpecial(char c) const;
 	int	checkNickname(Command, std::string) const;
+	int sendReply(std::vector<int> replyNum);
 	int sendReply(int replyNum);
 	int setUserMode(unsigned char num);
 };

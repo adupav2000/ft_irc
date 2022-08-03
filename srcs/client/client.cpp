@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/02 15:43:27 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/03 11:28:32 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,17 +207,42 @@ int Client::executeCommands()
  * @param replyNum has to be one of the RPL_ defined in command.cpp
  * @return int
  */
+int Client::sendReply(std::vector<int> replyNum)
+{
+	std::string errorStr;
+	
+	// std::cout << errorStr << std::endl;
+	// sending the introduction
+	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand() + "\r\n";
+	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
+	std::cout << "Test ici" << *replyNum.begin() << std::endl;
+	for (std::vector<int>::iterator it = replyNum.begin(); it != replyNum.end(); it++)
+	{
+		errorStr = (*_commands.begin())->getErrorString(*it);
+		std::cout << "Text to be sent " << errorStr << std::endl;
+		send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
+	}
+	return (0);
+}
+
+/**
+ * @brief quick way to send a reply after a command
+ *
+ * @param replyNum has to be one of the RPL_ defined in command.cpp
+ * @return int
+ */
 int Client::sendReply(int replyNum)
 {
 	std::string errorStr;
-	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand();
+	
 	// std::cout << errorStr << std::endl;
+	// sending the introduction
+	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand();
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	errorStr = (*_commands.begin())->getErrorString(replyNum);
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	return (0);
 }
-
 Status Client::getStatus() const
 {
 	return _clientStatus;

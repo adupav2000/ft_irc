@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 22:23:58 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/02 15:59:41 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/03 15:06:34 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int Client::MOTD(Command arguments)
 
 	// TODO Handle motd from other servers
 	(void)arguments;
-	// this->sendReply(RPL_MOTDSTART);
+	this->sendReply(RPL_MOTDSTART);
 	inputFile.open("./files/motd.txt");
 	if (inputFile.is_open())
 	{
@@ -404,11 +404,17 @@ int Client::ADMIN(Command argument)
 int Client::INFO(Command argument)
 {
 	(void)argument;
-   std::string reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + _serverRef->getVersion() + "\r\n";
-	send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost 42 Project ft_Irc made by adupavi and kamanfo\r\n";
-	send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost End of /INFO list\r\n";
-	send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	std::vector<int> toSend;
+	toSend.push_back(RPL_INFO);
+	toSend.push_back(RPL_ENDOFINFO);
+	this->sendReply(toSend);
+	/*std::string reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + _serverRef->getVersion() + "\r\n";
+		send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost 42 Project ft_Irc made by adupavi and kamanfo\r\n";
+		send(getPoll().fd, reply.c_str(), reply.size(), 0);
+	reply = ":" + getNickname() + "!" + getUsername() + "@localhost End of /INFO list\r\n";
+		send(getPoll().fd, reply.c_str(), reply.size(), 0);
+		this->sendReply(RPL_ENDOFINFO);
+		*/
 	return (0);
 }
