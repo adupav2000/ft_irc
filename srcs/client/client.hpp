@@ -14,6 +14,7 @@
 #define Client_HPP
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <sys/stat.h>
 #include <poll.h>
@@ -44,7 +45,15 @@ enum Type{
 	TYPE_USER,
 	TYPE_OPERATOR
 };
-
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 class Client
 {
 public:

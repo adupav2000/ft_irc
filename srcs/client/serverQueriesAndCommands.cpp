@@ -98,15 +98,15 @@ int Client::LUSERS(Command arguments)
       if (it->second->getStatus() != CONNECTED)
 			unknown++;
 	}
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :There are " + std::to_string(users) + " users and " + std::to_string(services) + " services on 1 servers\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :There are " + patch::to_string(users) + " users and " + patch::to_string(services) + " services on 1 servers\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(operators) + " :operator(s) online\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + patch::to_string(operators) + " :operator(s) online\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(unknown) + " :unknown connection(s)\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + patch::to_string(unknown) + " :unknown connection(s)\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + std::to_string(nbChannels) + " :channels formed\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + patch::to_string(nbChannels) + " :channels formed\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :I have " + std::to_string(clients.size()) + " clients and 1 servers\r\n";
+   reply = ":" + getNickname() + "!" + getUsername() + "@localhost :I have " + patch::to_string(clients.size()) + " clients and 1 servers\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
    return 0;
 }
