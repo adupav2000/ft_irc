@@ -72,6 +72,7 @@ int Client::NICK(Command arguments)
 		return (retValNickname);
 	if (_clientStatus == PENDING)
 	{
+	
 		// CAS OU LE CLIENT N'EST PAS ENCORE ENREGISTRÉ
 		while (_serverRef->nickNameUsed(nTmp))
 			nTmp += "_";
@@ -90,14 +91,23 @@ int Client::NICK(Command arguments)
 
 int	Client::checkNickname(Command arguments, std::string name) const
 {
-	if (arguments.getParameters().size() != 1 || name.length() > 9)
+	if (arguments.getParameters().size() < 1 || name.length() > 9)
+	{
+		std::cout << "issue at stage 0 size " << arguments.getParameters().size() << "len " << name.length() << std::endl;
 		return (ERR_ERRONEUSNICKNAME);
+	}
 	for (std::string::iterator it = name.begin(), end = name.end(); it != end; ++it)
 	{
 		if (it == name.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
+		{
+			std::cout << "First issue here " << !this->isLetter(*it) << !this->isSpecial(*it) << std::endl;
 			return (ERR_ERRONEUSNICKNAME);
+		}
 		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
+		{
+			std::cout << "Second issue here with char " << *it << "->" << !this->isDigit(*it) << !this->isLetter(*it) << !this->isSpecial(*it) << std::endl;
 			return (ERR_ERRONEUSNICKNAME);
+		}
 	}
 	return (0);
 }
@@ -164,12 +174,13 @@ int Client::OPER(Command arguments)
 		return ERR_NEEDMOREPARAMS;
 	if (arguments.getParameters()[1] != "pass")
 		return ERR_PASSWDMISMATCH;
-	reply = ":" + getNickname() + "!" + getUsername() + "@localhost You are now an IRC operator\r\n";
+	this->sendReply(RPL_YOUREOPER);
+	// reply = ":" + getNickname() + "!" + getUsername() + "@localhost You are now an IRC operator\r\n";
 	send(getPoll().fd, reply.c_str(), reply.size(), 0);
 	if (getMode().find('o') == std::string::npos)
 	{
 		_mode = getMode() + "o";
-		reply = ":" + getNickname() + "!" + getUsername() + "@localhost +" + _mode + "\r\n";
+		reply = ":" + getNickname() + "!" + getUsername() + "@localhost Your user mode is [+" + _mode + "]\r\n";
 		send(getPoll().fd, reply.c_str(), reply.size(), 0);
 	}
 	return 0;
@@ -185,7 +196,7 @@ int Client::OPER(Command arguments)
    A user MODE command MUST only be accepted if both the sender of the
    message and the nickname given as a parameter are both the same.  If
    no other parameter is given, then the server will return the current
-   settings for the nick.
+   settings for the nick.r
 
       The available modes are as follows:
 
@@ -211,6 +222,7 @@ int Client::MODE(Command arguments)
 
 	if (arguments.getParameters().size() < 1)
 		return (ERR_NEEDMOREPARAMS);
+	//todo sijamais le nom n'a pas de # mais est un nom de channel on fait quoi ?
 	if (arguments.getParameters()[0][0] == '#')
 		return (this->modeChannel(arguments));
 	if (_nickname != arguments.getParameters()[0])
