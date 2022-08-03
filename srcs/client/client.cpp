@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/03 11:28:32 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/03 23:12:25 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW),
 	_messageFunctions["USER"] = &Client::USER;
 	// UNSAFE
 	_messageFunctions["USERHOST"] = &Client::USER;
-	_messageFunctions["OPER"] = &Client::OPER;
 	_messageFunctions["MODE"] = &Client::MODE;
 	_messageFunctions["OPER"] = &Client::OPER;
 	_messageFunctions["SERVICE"] = &Client::SERVICE;
@@ -73,6 +72,10 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW),
 
 Client::~Client()
 {
+	for (size_t i = 0; i < _commands.size(); i++)
+		delete _commands[i];
+	_commands.clear();
+	std::cout << "clients : " << std::endl;
 	return;
 }
 
@@ -146,6 +149,7 @@ int Client::executeCommands()
 	int ret;
 	std::string errorStr;
 	unsigned long i = 0;
+	std::vector<Command *>::iterator it;
 
 	while (this->_commands.size() != 0 && _clientStatus != REFUSED)
 	{
@@ -189,7 +193,8 @@ int Client::executeCommands()
 					return 0;
 				}
 			}
-			_commands.erase(_commands.begin());
+			it = _commands.erase(_commands.begin());
+			//delete (*it);
 		}
 		catch (const std::exception &e)
 		{
@@ -390,6 +395,9 @@ void Client::leaveChannel(Channel *channel)
 	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); it++)
 	{
 		if (*it == channel)
+		{
+			//delete channel;
 			_channels.erase(it);
+		}
 	}
 }

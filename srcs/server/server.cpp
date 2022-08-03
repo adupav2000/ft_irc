@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 22:48:56 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/03 22:54:01 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./server.hpp"
+
+int exitRequest = 0;
 
 Server::Server (std::string port, std::string password) : _port(port), _password(password),  _name("ircServer"), _fds(), _nbClients(0), _version("1.0")
 {
@@ -19,6 +21,17 @@ Server::Server (std::string port, std::string password) : _port(port), _password
 
 Server::~Server()
 {
+	close(_fds.fd);
+	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+	{
+		close(it->first);
+		delete it->second;
+	}
+	_clients.clear();
+	for (std::map<std::string, Channel *>::iterator it = _channel.begin(); it != _channel.end(); it++)
+		delete it->second;
+	_channel.clear();
+	std::cout << "fdsfsdfsd : " << std::endl;
     return ;
 }
 
@@ -31,6 +44,11 @@ Server::~Server()
 // {
 //     return _null;
 // }
+
+void handler(int)
+{
+	exitRequest = 1;
+}
 
 std::string Server::getName() const 
 {
@@ -56,7 +74,6 @@ std::string 	Server::getPassword() const
 {
 	return _password;
 }
-
 
 void Server::addChannel(Channel *channel)
 {
@@ -103,9 +120,9 @@ void Server::launch()
 
 	std::vector<struct pollfd>		pollfds;
 	Client 							*client;
-
-
-	for (;;)
+	
+	signal(SIGINT, handler);
+	for (; !exitRequest ;)
 	{
 		pollfds.push_back(_fds);
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
@@ -136,13 +153,13 @@ void Server::launch()
 					else if (client->getStatus() == CONNECTED)
 					{
 						client->executeCommands();
-						displayServer();
 					}
 				}
 			}
 			beg++;
 		}
 		pollfds.clear();
+		displayServer();
 	}
 }
 
@@ -173,6 +190,7 @@ void Server::removeClient(int fd)
 	display = _clients[fd]->getNickname().size() ? "	[" + _clients[fd]->getNickname() + "] left the server" : "	[" + patch::to_string(fd) + "] left the server";
 	std::cout << display << std::endl;
 	close(fd);
+	delete _clients[fd];
 	this->_clients.erase(fd);
 	this->_nbClients -= 1;
 	
