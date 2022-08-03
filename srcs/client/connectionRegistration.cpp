@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   connectionRegistration.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/27 14:19:35 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/03 19:05:16 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,9 +170,14 @@ int Client::USER(Command arguments)
 int Client::OPER(Command arguments)
 {
 	std::string reply;
+	std::string name = "oper";
+	std::string password = "pass";
+
 	if (arguments.getParameters().size() < 2)
 		return ERR_NEEDMOREPARAMS;
-	if (arguments.getParameters()[1] != "pass")
+	if (arguments.getParameters()[0] != name)
+		return ERR_NOOPERHOST;
+	if (arguments.getParameters()[1] != password)
 		return ERR_PASSWDMISMATCH;
 	this->sendReply(RPL_YOUREOPER);
 	// reply = ":" + getNickname() + "!" + getUsername() + "@localhost You are now an IRC operator\r\n";

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   miscellaneousMessages.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 22:23:58 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 20:08:34 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/03 18:43:22 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,8 @@ int Client::KILL(Command argument)
 int Client::PING(Command argument)
 {
 	if (argument.getParameters().size() == 0)
-		return ERR_NOORIGIN;
-	std::string reply = ":" + getNickname() + " :No origin specified\r\n";
+	    return ERR_NOORIGIN;
+	std::string reply = ":" + getNickname() + " PONG \r\n";
 	send(getPoll().fd, reply.c_str(), reply.size(), 0);
 	return 0;
 }

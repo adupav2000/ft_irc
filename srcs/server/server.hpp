@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 11:02:06 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 22:37:57 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/03 21:41:35 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 #include <string>
 #include <iostream>
-#include <sstream>
 #include <stdio.h>
 #include <vector>
 #include <map>
@@ -31,6 +30,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <fstream>
+#include <signal.h>
 #include "../client/client.hpp"
 #include "../channel/channel.hpp"
 
@@ -84,6 +84,8 @@ public:
 	/* DISPLAY */
 	void displayServer();
 
+	/* handle signal */
+
 private:
 	std::string	_port;
 	std::string	_password;
@@ -95,7 +97,6 @@ private:
 	std::map<int, Client *> _clients;
 	unsigned int _nbClients;
 	std::string _version;
-
 	/* Error types */
 	
 };
