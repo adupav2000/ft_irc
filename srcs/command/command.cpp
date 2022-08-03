@@ -244,6 +244,10 @@ std::string Command::getErrorString(int num) const
 	ret = findAndReplace("<command>", ret, this->getPrefix());
 	ret = findAndReplace("<channel>", ret, this->getPrefix());
 	ret = findAndReplace("<topic>", ret, this->getPrefix());
+
+	ret = findAndReplace("<version>", ret, this->_serverRef->getVersion());
+	//WIERD : <server name does exactly the same>
+    ret = findAndReplace("<server>", ret, this->_serverRef->getName());
 	/*
 		MOTS Clef a remplacer !!
 		<# visible>
@@ -338,7 +342,7 @@ std::string Command::getErrorString(int num) const
 	*/
 	if (ret.size() > 2 &&
 		((*(ret.end() - 2) != '\n' || *(ret.end() - 2) != '\r')
-		&& *(ret.end() - 1) != '\n' || *(ret.end() - 1) != '\r'))
+		&& (*(ret.end() - 1) != '\n' || *(ret.end() - 1) != '\r')))
 	{
 		ret.push_back('\r');
 		ret.push_back('\n');

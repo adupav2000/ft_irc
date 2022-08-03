@@ -134,6 +134,9 @@ int Client::VERSION(Command arguments)
 {
 	(void)arguments;
    std::string reply;
+   if (arguments.getParameters().size() > 0)
+      return (ERR_NOSUCHSERVER);
+   return (RPL_VERSION);
 	reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + _serverRef->getVersion() + " " + _serverRef->getName() + "\r\n";
    send(getPoll().fd, reply.c_str(), reply.size(), 0);
    return 0;
