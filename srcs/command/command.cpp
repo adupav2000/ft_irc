@@ -94,7 +94,7 @@ void Command::insertAllMess()
 	this->_errMess[RPL_ENDOFLINKS] = "<mask> :End of LINKS list";
 	this->_errMess[RPL_BANLIST] = "<channel> <banmask>";
 	this->_errMess[RPL_ENDOFBANLIST] = "<channel> :End of channel ban list";
-	this->_errMess[RPL_INFO] = ":<string>";
+	this->_errMess[RPL_INFO] = ":<nickname>!<username>@<hostname> 42 Project made by adu-pavi and kamanfo\r\n";
 	this->_errMess[RPL_ENDOFINFO] = ":End of INFO list";
 	this->_errMess[RPL_MOTDSTART] = ":- <server> Message of the day - ";
 	this->_errMess[RPL_MOTD] = ":- <text>";
@@ -138,7 +138,6 @@ void Command::insertAllMess()
 	this->_errMess[RPL_ADMINEMAIL] = ":<admin info>";
 	this->_errMess[RPL_TRYAGAIN] = "<command> :Please wait a while and try again.";
 	this->_errMess[SEND_CONFIRMNEWNICK] = "Your nickname is now <nickname>";
-	
 }
 
 Command::Command()
@@ -165,7 +164,7 @@ Command::Command(std::string message, Server *server, Client *client) : _message
 	}
 }
 
-Command::Command(Command const & rhs)
+Command::Command(Command const &rhs)
 {
 	this->_errMess = rhs._errMess;
 	this->_prefix = rhs._prefix;
@@ -208,7 +207,6 @@ Server *Command::getServer() const
 	return _serverRef;
 }
 
-
 std::vector<std::string> Command::getParameters() const
 {
 	return _parameters;
@@ -226,8 +224,8 @@ std::string findAndReplace(std::string toBeFound, std::string toBeSearchedThroug
 
 /**
  * @brief Get the String Command (ths whole command as it was sent)
- * 
- * @return std::string 
+ *
+ * @return std::string
  */
 std::string Command::getStringCommand() const
 {
@@ -236,7 +234,7 @@ std::string Command::getStringCommand() const
 
 std::string Command::getErrorString(int num) const
 {
-	if (this->_errMess.find(num) != this->_errMess.end())
+	if (this->_errMess.find(num) == this->_errMess.end())
 		return ("");
 	std::string ret = this->_errMess.at(num);
 	ret = findAndReplace("<nickname>", ret, _client->getNickname());
@@ -246,6 +244,87 @@ std::string Command::getErrorString(int num) const
 	ret = findAndReplace("<command>", ret, this->getPrefix());
 	ret = findAndReplace("<channel>", ret, this->getPrefix());
 	ret = findAndReplace("<topic>", ret, this->getPrefix());
+	/*
+		MOTS Clef a remplacer !!
+		<# visible>
+		<abort message>
+		<active type>
+		<admin info>
+		<available channel modes>
+		<available user modes>
+		<away message>
+		<banmask>
+		<byte count>
+		<channel name>
+		<channel>
+		<char>
+		<class>
+		<client IP address in dot form>
+		<client name>
+		<command>
+		<comments>
+		<config file>
+		<count>
+		<date>
+		<debug level>
+		<debuglevel>
+		<destination>
+		<error code>
+		<exceptionmask>
+		<file op>
+		<file>
+		<hopcount>
+		<host>
+		<hostmask>
+		<hostname>
+		<host|server>
+		<info>
+		<int>
+		<integer>
+		<invitemask>
+		<linkname>
+		<logfile>
+		<mask>
+		<mode params>
+		<mode>
+		<name>
+		<new_mode_string>
+		<newtype>
+		<nick!user|*!*>
+		<nick/channel>
+		<nick>
+		<nickname>
+		<port number>
+		<protocol version>
+		<real name>
+		<received Kbytes>
+		<received messages>
+		<remote count>
+		<reply>
+		<sendq>
+		<sent Kbytes>
+		<sent messages>
+		<server address>
+		<server info>
+		<server name>
+		<server>
+		<servername>
+		<service name>
+		<servicename>
+		<stats letter>
+		<string showing server's local time>
+		<target>
+		<text>
+		<time open>
+		<topic>
+		<ttyline>
+		<type>
+		<user>
+		<username>
+		<ver>
+		<version & debug level>
+		<version>
+*/
 	/* KWAME to be set up wth functions */
 	/*
 	EXAMPLE
@@ -257,5 +336,12 @@ std::string Command::getErrorString(int num) const
 	str = "<service name>";
 	ret.replace(ret.find(str), str.length(), _client->getNickname());
 	*/
+	if (ret.size() > 2 &&
+		((*(ret.end() - 2) != '\n' || *(ret.end() - 2) != '\r')
+		&& *(ret.end() - 1) != '\n' || *(ret.end() - 1) != '\r'))
+	{
+		ret.push_back('\r');
+		ret.push_back('\n');
+	}
 	return (ret);
 }
