@@ -97,8 +97,9 @@ private:
 	std::map<int, Client *> _clients;
 	unsigned int _nbClients;
 	std::string _version;
+
 	/* Error types */
-	
+	std::vector<Client *>	_toDelClient;
 };
 
 #endif

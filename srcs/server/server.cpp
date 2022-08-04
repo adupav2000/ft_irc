@@ -31,7 +31,9 @@ Server::~Server()
 	for (std::map<std::string, Channel *>::iterator it = _channel.begin(); it != _channel.end(); it++)
 		delete it->second;
 	_channel.clear();
-	std::cout << "fdsfsdfsd : " << std::endl;
+	for (std::vector<Client *>::iterator it = _toDelClient.begin(); it != _toDelClient.end(); it++)
+		delete *it;
+	_toDelClient.clear();
     return ;
 }
 
@@ -189,10 +191,9 @@ void Server::removeClient(int fd)
 	display = _clients[fd]->getNickname().size() ? "	[" + _clients[fd]->getNickname() + "] left the server" : "	[" + patch::to_string(fd) + "] left the server";
 	std::cout << display << std::endl;
 	close(fd);
-	//delete _clients[fd];
+	_toDelClient.push_back(_clients[fd]);
 	this->_clients.erase(fd);
 	this->_nbClients -= 1;
-	
 }
 
 bool Server::nickNameUsed(std::string nickname)

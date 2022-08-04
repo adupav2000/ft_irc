@@ -70,8 +70,8 @@ int Client::JOIN(Command arguments)
 			}
 			(*it)->removeFromChannel(client);
 			client->leaveChannel((*it));
-			if ((*it)->getClients().size() == 0)
-				server->destroyChannel((*it));
+			//if ((*it)->getClients().size() == 0)
+				//server->destroyChannel((*it));
 		}
 		return 0;
 	}
@@ -176,8 +176,8 @@ int Client::PART(Command arguments)
 			}
 			channel->removeFromChannel(this);
 			this->leaveChannel(channel);
-			if (channel->getClients().size() == 0)
-				server->destroyChannel(channel);
+			// if (channel->getClients().size() == 0)
+				// server->destroyChannel(channel);
 		}
 		else
 		{

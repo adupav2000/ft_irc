@@ -409,7 +409,6 @@ void Client::leaveChannel(Channel *channel)
 		if (*it == channel)
 		{
 			_channels.erase(it);
-			//delete channel;
 		}
 	}
 }
