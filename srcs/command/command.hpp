@@ -49,5 +49,4 @@ private:
 	Channel *_channel;
 };
 
-
 #endif

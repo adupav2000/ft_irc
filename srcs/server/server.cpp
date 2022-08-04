@@ -6,13 +6,13 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 19:36:29 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 21:16:58 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./server.hpp"
 
-int exitRequest = 0;
+volatile int exitRequest = 0;
 
 Server::Server (std::string port, std::string password) : _port(port), _password(password),  _name("ircServer"), _fds(), _nbClients(0), _version("1.0")
 {
@@ -22,19 +22,14 @@ Server::Server (std::string port, std::string password) : _port(port), _password
 Server::~Server()
 {
 	close(_fds.fd);
-	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-		close(it->first);
-	for (size_t i = 0; i < commandGarbage.size(); i++)
-		delete commandGarbage[i];
-	commandGarbage.clear();
 	for (size_t i = 0; i < channelGarbage.size(); i++)
 		delete channelGarbage[i];
 	channelGarbage.clear();
+	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+		close(it->first);
 	for (size_t i = 0; i < clientGarbage.size(); i++)
 		delete clientGarbage[i];
 	clientGarbage.clear();
-	std::cout << "priiiinnnttt   " << std::endl;
-
     return ;
 }
 
@@ -49,7 +44,7 @@ Server::~Server()
 // }
 
 void handler(int)
-{	
+{
 	exitRequest = 1;
 }
 
@@ -87,7 +82,7 @@ std::string 	Server::getPassword() const
 void Server::addChannel(Channel *channel)
 {
 	this->_channel.insert(std::pair<std::string, Channel *>(channel->getName(), channel));
-
+	channelGarbage.push_back(channel);
 }
 
 void Server::destroyChannel(Channel *channel)
@@ -132,13 +127,13 @@ void Server::launch()
 	
 	signal(SIGINT, handler);
 	
-	for (; !exitRequest ;)
+	while (!exitRequest)
 	{
 		pollfds.push_back(_fds);
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 			pollfds.push_back((*it).second->getPoll());
 		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
-			exitError(strerror(errno));
+			strerror(errno);
 		std::vector<pollfd>::iterator beg = pollfds.begin();
 		std::vector<pollfd>::iterator end = pollfds.end();
 		while (beg != end)
@@ -172,8 +167,6 @@ void Server::launch()
 		if (_nbClients < NB_CLIENTS_MAX )
 			displayServer();
 	}
-	std::cout << "Welcome to I" << std::endl;
-
 }
 
 void Server::acceptClient()

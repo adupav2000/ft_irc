@@ -84,7 +84,6 @@ int Client::JOIN(Command arguments)
 		if (!server->getChannel().count(*it))
 		{
 			channel = new Channel((*it), server, client);
-			channelGarbage.push_back(channel);
 			server->addChannel(channel);
 			channel->changeUserMode(getPoll().fd, 'o', '+');
 		}

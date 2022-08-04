@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 19:26:49 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 21:06:48 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,9 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW),
 
 Client::~Client()
 {
-	/*for (size_t i = 0; i < _commands.size(); i++)
-		delete _commands[i];
-	_commands.clear();
-	std::cout << "clients : " << std::endl;*/
+	for (size_t i = 0; i < commandGarbage.size(); i++)
+		delete commandGarbage[i];
+	commandGarbage.clear();
 	return;
 }
 
@@ -334,8 +333,8 @@ void Client::treatMessage()
 			if (_text[i] == '\r' && _text[i + 1] == '\n')
 			{
 				Command *command = new Command(_text.substr(start, i - start), getServer(), this);
-				_commands.push_back(command);
 				commandGarbage.push_back(command);
+				_commands.push_back(command);	
 				start = i + 2;
 				i += 2;
 			}

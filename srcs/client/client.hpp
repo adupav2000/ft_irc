@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 16:35:32 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 21:01:58 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,5 +182,6 @@ protected:
 	int setUserMode(unsigned char num);
 };
 
+static std::vector<Command *>	commandGarbage;
 
 #endif
