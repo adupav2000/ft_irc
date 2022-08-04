@@ -150,7 +150,7 @@ int Client::PART(Command arguments)
 {
 	std::string reply;
 	Server *server = arguments.getServer();
-	Client *client = arguments.getClient();
+	// Client *client = arguments.getClient();
 	Channel *channel;
 
 	if (arguments.getParameters().size() == 0)
@@ -161,29 +161,29 @@ int Client::PART(Command arguments)
 		if (server->getChannel().count(*it))
 		{
 			channel = server->getChannel()[*it];
-			if (!channel->getClients().count(client->getPoll().fd))
+			if (!channel->getClients().count(this->getPoll().fd))
 			{
 				reply = channel->getName() + " :You're not on that channel";
-				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+				send(this->getPoll().fd, reply.c_str(), reply.size(), 0);
 				continue;
 			}
 			std::cout << this->getNickname() << " is quitting" << std::endl;
 			if (!(arguments.getParameters().size() == 2 && arguments.getParameters()[1] == this->_nickname))
-				reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " PART " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
+				reply = ":" + this->getNickname() + "!" + this->getUsername() + "@localhost" + " PART " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
 			std::map<int, Client *> users = channel->getClients();
 			for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
 			{
-					send(cli->first, reply.c_str(), reply.size(), 0);
+				send(cli->first, reply.c_str(), reply.size(), 0);
 			}
-			channel->removeFromChannel(client);
-			client->leaveChannel(channel);
+			channel->removeFromChannel(this);
+			this->leaveChannel(channel);
 			if (channel->getClients().size() == 0)
 				server->destroyChannel(channel);
 		}
 		else
 		{
 			reply = channel->getName() + " :No such channel";
-			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
+			send(this->getPoll().fd, reply.c_str(), reply.size(), 0);
 		}
 	}
 	return 0;
