@@ -58,11 +58,11 @@ int Client::JOIN(Command arguments)
 	Client *client = arguments.getClient();
 	Channel *channel;
 	std::vector<Channel *> channels = getChannels();
-	if (arguments.getParameters()[0] == "#0")
+	if (arguments.getParameters()[0] == "#0" || arguments.getParameters()[0] == "0")
 	{
 		for (std::vector<Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 		{
-			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " PART " + (*it)->getName() + "\r\n";
+			reply = ":" + client->getNickname() + " PART :" + (*it)->getName() + "\r\n";
 			std::map<int, Client *> users = (*it)->getClients();
 			for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
 			{
@@ -89,7 +89,7 @@ int Client::JOIN(Command arguments)
 			channel = server->getChannel().find(*it)->second;
 			if (channel->getMode().find('l') != std::string::npos && channel->getClients().size() == channel->getMaxClients())
 			{
-				reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost " + channel->getName() + " :Cannot join channel (+l) \r\n";
+				reply = client->getNickname() + " " + channel->getName() + " :Cannot join channel (+l) \r\n";
 				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 				return 0;
 			}
@@ -244,10 +244,11 @@ int Client::modeChannel(Command arguments)
 			}
 			if (getMode().find("o") != std::string::npos || channel->getUserMode()[getPoll().fd].find("O") != std::string::npos || channel->getUserMode()[getPoll().fd].find("o") != std::string::npos)
 			{
-				if (toggleMode.find(arguments.getParameters()[1][i]) != std::string::npos)
+				if (toggleMode.find(arguments.getParameters()[1][i]) != std::string::npos || ((arguments.getParameters()[1])[0] == '-' && setMode.find(arguments.getParameters()[1][i]) ))
 					channel->setMode(arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
 				else
 				{
+					std::cout << "user mode oo " << std::endl;
 					if (arguments.getParameters().size() < 3)
 					{
 						reply = ":" + getNickname() + " MODE :Not enough parameters\r\n";
@@ -264,8 +265,6 @@ int Client::modeChannel(Command arguments)
 							}
 							else
 							{
-								// MODE #chan +o adu-pavi
-
 								if (channel->clientOnChannel(arguments.getParameters()[2]))
 								{
 									Client *target = channel->getClientOnChannel(arguments.getParameters()[2]);
@@ -283,13 +282,22 @@ int Client::modeChannel(Command arguments)
 							if (arguments.getParameters()[1][i] == 'k')
 							{
 								if (arguments.getParameters()[2] == channel->getKey())
+								{
 									channel->setKey(arguments.getParameters()[2], arguments.getParameters()[1][0]);
+									channel->setMode(arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
+								}
 								param = channel->getKey();
+
 							}
 							else if (arguments.getParameters()[1][i] == 'l')
 							{
 								if (atoi((arguments.getParameters()[2]).c_str()) > 1)
+								{
 									channel->setMaxClients(atoi((arguments.getParameters()[2]).c_str()));
+									channel->setMode(arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
+								}
+								std::cout << "parm l = " << arguments.getParameters()[2] << std::endl;
+								std::cout << "parm l = " << channel->getMaxClients() << std::endl;
 								channel->getMaxClients();
 							}
 						}
