@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 11:02:06 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/03 21:41:35 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 19:25:55 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,10 @@ private:
 	std::string _version;
 
 	/* Error types */
-	std::vector<Client *>	_toDelClient;
 };
+
+static std::vector<Channel *>	channelGarbage;
+static std::vector<Client *>	clientGarbage;
+static std::vector<Command *>	commandGarbage;
 
 #endif

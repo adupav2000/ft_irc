@@ -57,7 +57,11 @@ int Client::JOIN(Command arguments)
 	Channel *channel;
 
 	std::vector<Channel *> channels = getChannels();
-	if (arguments.getParameters()[0] == "#0" || arguments.getParameters()[0] == "0")
+	if (arguments.getParameters().size() < 1)
+		return ERR_NEEDMOREPARAMS;
+	if ((arguments.getParameters()[0])[0] != '#')
+		return 0;
+	if (arguments.getParameters()[0] == "0")
 	{
 		for (std::vector<Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 		{
@@ -80,6 +84,7 @@ int Client::JOIN(Command arguments)
 		if (!server->getChannel().count(*it))
 		{
 			channel = new Channel((*it), server, client);
+			channelGarbage.push_back(channel);
 			server->addChannel(channel);
 			channel->changeUserMode(getPoll().fd, 'o', '+');
 		}
@@ -180,8 +185,8 @@ int Client::PART(Command arguments)
 			arguments.setChannel(channel);
 			channel->removeFromChannel(this);
 			this->leaveChannel(channel);
-			// if (channel->getClients().size() == 0)
-				// server->destroyChannel(channel);
+			if (channel->getClients().size() == 0)
+				server->destroyChannel(channel);
 		}
 		else
 		{

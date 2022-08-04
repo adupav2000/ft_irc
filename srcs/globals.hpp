@@ -6,9 +6,12 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:37:01 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/03 19:49:04 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 16:29:57 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
 #include <vector>
 #include <iostream>
@@ -19,6 +22,7 @@ std::vector<std::string> split(std::string str, std::string delimiter);
 
 #define ERR_ALREADYREGISTRED 462 
        /*       ":Unauthorized command (already registered)"
+
 
          - Returned by the server to any link which tries to
            change part of the registered details (such as
@@ -129,3 +133,6 @@ std::vector<std::string> split(std::string str, std::string delimiter);
 	/* confirms a new nickname changes */
 
 #define SEND_CONFIRMDISCONNECT 1001
+
+#endif
+

@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 00:09:53 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 19:36:29 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,18 @@ Server::~Server()
 {
 	close(_fds.fd);
 	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-	{
 		close(it->first);
-		delete it->second;
-	}
-	_clients.clear();
-	for (std::map<std::string, Channel *>::iterator it = _channel.begin(); it != _channel.end(); it++)
-		delete it->second;
-	_channel.clear();
-	for (std::vector<Client *>::iterator it = _toDelClient.begin(); it != _toDelClient.end(); it++)
-		delete *it;
-	_toDelClient.clear();
+	for (size_t i = 0; i < commandGarbage.size(); i++)
+		delete commandGarbage[i];
+	commandGarbage.clear();
+	for (size_t i = 0; i < channelGarbage.size(); i++)
+		delete channelGarbage[i];
+	channelGarbage.clear();
+	for (size_t i = 0; i < clientGarbage.size(); i++)
+		delete clientGarbage[i];
+	clientGarbage.clear();
+	std::cout << "priiiinnnttt   " << std::endl;
+
     return ;
 }
 
@@ -48,8 +49,14 @@ Server::~Server()
 // }
 
 void handler(int)
-{
+{	
 	exitRequest = 1;
+}
+
+void exitError(std::string str)
+{
+	std::cout << str << std::endl;
+	exit(1);	
 }
 
 std::string Server::getName() const 
@@ -97,19 +104,19 @@ void Server::init()
 
 	on = 1;
 	if ((socketfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-		(strerror(errno)) ;
+		exitError(strerror(errno)) ;
 	if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR , &on, sizeof(on)) < 0)
-		strerror(errno);
+		exitError(strerror(errno));
 	memset(&addr, 0, sizeof(struct sockaddr_in));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(atoi(_port.c_str()));
 	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	if (fcntl(socketfd, F_SETFL, O_NONBLOCK) < -1)
-		strerror(errno);
+		exitError(strerror(errno));
 	if (bind(socketfd, (struct sockaddr *) &addr, sizeof(struct sockaddr_in)) == -1)
-		strerror(errno);	
+		exitError(strerror(errno));
 	if (listen(socketfd, NB_CLIENTS_MAX) == -1)
-		return ;
+		exitError(strerror(errno));
 	addr_size = sizeof(addr);
 	_fds.fd = socketfd;
 	_fds.events = POLLIN;
@@ -124,13 +131,14 @@ void Server::launch()
 	Client 							*client;
 	
 	signal(SIGINT, handler);
+	
 	for (; !exitRequest ;)
 	{
 		pollfds.push_back(_fds);
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 			pollfds.push_back((*it).second->getPoll());
 		if (poll(&pollfds[0], _nbClients + 1, -1) == -1)
-			strerror(errno);
+			exitError(strerror(errno));
 		std::vector<pollfd>::iterator beg = pollfds.begin();
 		std::vector<pollfd>::iterator end = pollfds.end();
 		while (beg != end)
@@ -161,8 +169,11 @@ void Server::launch()
 			beg++;
 		}
 		pollfds.clear();
-		displayServer();
+		if (_nbClients < NB_CLIENTS_MAX )
+			displayServer();
 	}
+	std::cout << "Welcome to I" << std::endl;
+
 }
 
 void Server::acceptClient()
@@ -175,13 +186,15 @@ void Server::acceptClient()
 	addr_size = sizeof(client_addr);
 	client_sock = accept(_fds.fd, (struct sockaddr *)&client_addr, &addr_size);
 	if (client_sock == -1)
-		strerror(errno);
+		exitError(strerror(errno));
 	if (fcntl(client_sock, F_SETFL,  O_NONBLOCK) == -1)
-		strerror(errno);
+		exitError(strerror(errno));
 	fds.fd = client_sock;
 	fds.events = POLLIN;
 	fds.revents = POLLIN;
-	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, this)));
+	Client *client = new Client(fds, this);
+	this->_clients.insert(std::pair<int, Client *>(client_sock, client));
+	clientGarbage.push_back(client);
 	this->_nbClients += 1;
 }
 
@@ -191,7 +204,6 @@ void Server::removeClient(int fd)
 	display = _clients[fd]->getNickname().size() ? "	[" + _clients[fd]->getNickname() + "] left the server" : "	[" + patch::to_string(fd) + "] left the server";
 	std::cout << display << std::endl;
 	close(fd);
-	_toDelClient.push_back(_clients[fd]);
 	this->_clients.erase(fd);
 	this->_nbClients -= 1;
 }
