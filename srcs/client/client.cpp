@@ -195,8 +195,9 @@ int Client::executeCommands()
 					return 0;
 				}
 			}
-			it = _commands.erase(_commands.begin());
-			//delete (*it);
+			//delete (*_commands.begin());
+			_commands.erase(_commands.begin());
+			
 		}
 		catch (const std::exception &e)
 		{
@@ -407,8 +408,8 @@ void Client::leaveChannel(Channel *channel)
 	{
 		if (*it == channel)
 		{
-			//delete channel;
 			_channels.erase(it);
+			//delete channel;
 		}
 	}
 }

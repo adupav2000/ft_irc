@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/03 22:54:01 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 00:09:53 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,6 @@ void Server::acceptClient()
 		strerror(errno);
 	if (fcntl(client_sock, F_SETFL,  O_NONBLOCK) == -1)
 		strerror(errno);
-		
 	fds.fd = client_sock;
 	fds.events = POLLIN;
 	fds.revents = POLLIN;
@@ -190,7 +189,7 @@ void Server::removeClient(int fd)
 	display = _clients[fd]->getNickname().size() ? "	[" + _clients[fd]->getNickname() + "] left the server" : "	[" + patch::to_string(fd) + "] left the server";
 	std::cout << display << std::endl;
 	close(fd);
-	delete _clients[fd];
+	//delete _clients[fd];
 	this->_clients.erase(fd);
 	this->_nbClients -= 1;
 	

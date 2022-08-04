@@ -258,7 +258,6 @@ int Client::modeChannel(Command arguments)
 					{
 						if (giveMode.find(arguments.getParameters()[1][i]) != std::string::npos)
 						{
-							std::cout << "accessed give mode" << std::endl;
 							if (arguments.getParameters().size() < 3)
 							{
 								reply = ":" + getNickname() + " MODE :Not enough parameters\r\n";
@@ -267,8 +266,12 @@ int Client::modeChannel(Command arguments)
 							else
 							{
 								// MODE #chan +o adu-pavi
+
 								if (channel->clientOnChannel(arguments.getParameters()[2]))
-									channel->changeUserMode(channel->getClientOnChannel(arguments.getParameters()[2])->getPoll().fd, arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
+								{
+									Client *target = channel->getClientOnChannel(arguments.getParameters()[2]);
+									channel->changeUserMode(target->getPoll().fd, arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
+								}
 								else
 								{
 									reply = ":" + getNickname() + " " + channel->getClientOnChannel(arguments.getParameters()[2])->getNickname() + " " + channel->getName() + " :They aren't on that channel\r\n";
