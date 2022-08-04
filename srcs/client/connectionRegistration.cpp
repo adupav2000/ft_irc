@@ -331,7 +331,7 @@ int Client::SERVICE(Command arguments)
 
 /*
 Command: QUIT
-   Parameters: [ <Quit Message> ]
+	Parameters: none
 
    A client session is terminated with a quit message.  The server
    acknowledges this by sending an ERROR message to the client.
@@ -343,7 +343,9 @@ Command: QUIT
 int Client::QUIT(Command arguments)
 {
 	(void)arguments;
-	/* has to kill the obj, to avoid other commands to get executed*/
+	_clientStatus = DISCONNECTED;
+	sendReply(SEND_CONFIRMDISCONNECT);
+	this->getServer()->removeClient(this->getPoll().fd);
 	return (0);
 }
 

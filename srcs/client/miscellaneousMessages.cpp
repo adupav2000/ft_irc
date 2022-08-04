@@ -66,6 +66,14 @@
 int Client::KILL(Command argument)
 {
 	(void)argument;
+        if (argument.getParameters().size() < 2)
+                return (ERR_NEEDMOREPARAMS);
+        if (this->getMode().find('o') == std::string::npos)
+                return (ERR_NOPRIVILEGES);
+        if (this->getServer()->findClientByNicknamme(argument.getParameters()[0]) == NULL)
+                return (ERR_NOSUCHNICK);
+        Client *clientPoint =  this->getServer()->findClientByNicknamme(argument.getParameters()[0]);
+        clientPoint->QUIT(argument);
 	return (0);
 }
 

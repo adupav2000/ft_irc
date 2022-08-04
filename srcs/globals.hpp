@@ -900,3 +900,5 @@ user mode for a user other than themselves.
 
 #define SEND_CONFIRMNEWNICK 1000
 	/* confirms a new nickname changes */
+
+#define SEND_CONFIRMDISCONNECT 1001
