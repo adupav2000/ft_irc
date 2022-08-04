@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 11:07:52 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/04 13:53:54 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -367,7 +367,7 @@ void Client::treatMessage()
 		}
 		_text.clear();
 	}
-	else if (*(_text.end() - 1) == '\n' && (_clientStatus == NEW || _clientStatus == CONNECTED))
+	else if (_text != "\n" && *(_text.end() - 1) == '\n' && (_clientStatus == NEW || _clientStatus == CONNECTED))
 	{
 		if (_text.size() > 2)
 		{

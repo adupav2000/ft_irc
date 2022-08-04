@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:58:54 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/03 19:05:16 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 13:51:17 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,6 @@ int Client::MODE(Command arguments)
 
 	if (arguments.getParameters().size() < 1)
 		return (ERR_NEEDMOREPARAMS);
-	//todo sijamais le nom n'a pas de # mais est un nom de channel on fait quoi ?
 	if (arguments.getParameters()[0][0] == '#')
 		return (this->modeChannel(arguments));
 	if (_nickname != arguments.getParameters()[0])

@@ -58,20 +58,18 @@ int Client::JOIN(Command arguments)
 	Client *client = arguments.getClient();
 	Channel *channel;
 	std::vector<Channel *> channels = getChannels();
-	if (arguments.getParameters()[0] == "#0" || arguments.getParameters()[0] == "0")
+	if (arguments.getParameters().size() < 1)
+		return ERR_NEEDMOREPARAMS;
+	if ((arguments.getParameters()[0])[0] != '#')
+		return 0;
+	if (arguments.getParameters()[0] == "0")
 	{
 		for (std::vector<Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 		{
 			reply = ":" + client->getNickname() + " PART :" + (*it)->getName() + "\r\n";
 			std::map<int, Client *> users = (*it)->getClients();
 			for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
-			{
-				send(cli->first, reply.c_str(), reply.size(), 0);
-			}
-			(*it)->removeFromChannel(client);
-			client->leaveChannel((*it));
-			if ((*it)->getClients().size() == 0)
-				server->destroyChannel((*it));
+				cli->second->PART(arguments);
 		}
 		return 0;
 	}
