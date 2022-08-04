@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 21:07:09 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 21:16:58 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void handler(int)
 
 void exitError(std::string str)
 {
+	std::cout << str << std::endl;
 	exit(1);	
 }
 
