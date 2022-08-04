@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/03 23:12:25 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 11:07:52 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,6 +393,12 @@ void Client::treatMessage()
 	}
 	else if (_clientStatus != CONNECTED)
 		_clientStatus = REFUSED;
+}
+
+void Client::leaveSingleChannel(Channel *channel, Command *argument)
+{
+	(void)channel;
+	this->PART(*argument);
 }
 
 void Client::leaveChannel(Channel *channel)

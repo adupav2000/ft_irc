@@ -167,7 +167,9 @@ int Client::PART(Command arguments)
 				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 				continue;
 			}
-			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " PART " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
+			std::cout << this->getNickname() << " is quitting" << std::endl;
+			if (!(arguments.getParameters().size() == 2 && arguments.getParameters()[1] == this->_nickname))
+				reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " PART " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
 			std::map<int, Client *> users = channel->getClients();
 			for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
 			{
@@ -653,14 +655,14 @@ int Client::KICK(Command arguments)
 				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 				continue;
 			}
-			reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " KICK " + arguments.getParameters()[0] + " " + arguments.getParameters()[1] + arguments.getMessage() + "\r\n";
 			std::map<int, Client *> users = channel->getClients();
 			for (std::map<int, Client *>::iterator cli2 = users.begin() ; cli2 != users.end(); cli2++)
 			{
 				send(cli2->first, reply.c_str(), reply.size(), 0);
 			}
 			Client *bannedClient = server->findClientByNicknamme(*cli);
-			channel->removeFromChannel(bannedClient);
+			std::cout << "This function was called " << std::endl;
+			channel->removeFromChannel(bannedClient, &arguments);
 			bannedClient->leaveChannel(channel);
 		}
 	}

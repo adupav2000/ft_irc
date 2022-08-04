@@ -125,6 +125,14 @@ void Channel::addToChannel(Client *client)
     _nbClients++;
 }
 
+void Channel::removeFromChannel(Client *client, Command *argument)
+{
+    //delete client;
+	std::cout << "Good call "<< std::endl;
+	client->leaveSingleChannel(this, argument);
+    _clients.erase(client->getPoll().fd);
+}
+
 void Channel::removeFromChannel(Client *client)
 {
     //delete client;

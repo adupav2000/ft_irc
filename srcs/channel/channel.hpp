@@ -57,6 +57,7 @@ class Channel
         void addToChannel(Client *client);
         std::string getClientsName(Channel *channel);
         void removeFromChannel(Client *client);
+		void removeFromChannel(Client *client, Command *argument);
         bool clientOnChannel(std::string name);
         void addInvited(Client *client);
 		void changeUserMode(int, char, char);
