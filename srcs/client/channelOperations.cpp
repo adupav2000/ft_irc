@@ -190,7 +190,7 @@ int Client::PART(Command arguments)
 		}
 		else
 		{
-			reply = channel->getName() + " :No such channel";
+			reply = arguments.getParameters()[0] + " :No such channel";
 			send(this->getPoll().fd, reply.c_str(), reply.size(), 0);
 		}
 	}

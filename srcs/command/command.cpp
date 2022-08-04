@@ -2,12 +2,12 @@
 
 void Command::insertAllMess()
 {
-	this->_errMess[ERR_NOSUCHNICK] = "<nickname> :No such nick/channel";
+	this->_errMess[ERR_NOSUCHNICK] = "<nick> :No such nick/channel";
 	this->_errMess[ERR_NOSUCHSERVER] = "<server name> :No such server";
 	this->_errMess[ERR_NOSUCHCHANNEL] = "<channel name> :No such channel";
 	this->_errMess[ERR_CANNOTSENDTOCHAN] = "<channel name> :Cannot send to channel";
 	this->_errMess[ERR_TOOMANYCHANNELS] = "<channel name> :You have joined too many channels";
-	this->_errMess[ERR_WASNOSUCHNICK] = "<nickname> :There was no such nickname";
+	this->_errMess[ERR_WASNOSUCHNICK] = "<nick> :There was no such nickname";
 	
 	
 	this->_errMess[ERR_NOORIGIN] = ":No origin specified";
