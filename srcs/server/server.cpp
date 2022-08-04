@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 09:25:34 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 14:11:32 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 19:36:29 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,18 @@ Server::~Server()
 {
 	close(_fds.fd);
 	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-	{
 		close(it->first);
-		delete it->second;
-	}
-	_clients.clear();
-	for (std::map<std::string, Channel *>::iterator it = _channel.begin(); it != _channel.end(); it++)
-		delete it->second;
-	_channel.clear();
-	std::cout << "fdsfsdfsd : " << std::endl;
+	for (size_t i = 0; i < commandGarbage.size(); i++)
+		delete commandGarbage[i];
+	commandGarbage.clear();
+	for (size_t i = 0; i < channelGarbage.size(); i++)
+		delete channelGarbage[i];
+	channelGarbage.clear();
+	for (size_t i = 0; i < clientGarbage.size(); i++)
+		delete clientGarbage[i];
+	clientGarbage.clear();
+	std::cout << "priiiinnnttt   " << std::endl;
+
     return ;
 }
 
@@ -46,7 +49,7 @@ Server::~Server()
 // }
 
 void handler(int)
-{
+{	
 	exitRequest = 1;
 }
 
@@ -128,6 +131,7 @@ void Server::launch()
 	Client 							*client;
 	
 	signal(SIGINT, handler);
+	
 	for (; !exitRequest ;)
 	{
 		pollfds.push_back(_fds);
@@ -168,6 +172,8 @@ void Server::launch()
 		if (_nbClients < NB_CLIENTS_MAX )
 			displayServer();
 	}
+	std::cout << "Welcome to I" << std::endl;
+
 }
 
 void Server::acceptClient()
@@ -186,7 +192,9 @@ void Server::acceptClient()
 	fds.fd = client_sock;
 	fds.events = POLLIN;
 	fds.revents = POLLIN;
-	this->_clients.insert(std::pair<int, Client *>(client_sock, new Client(fds, this)));
+	Client *client = new Client(fds, this);
+	this->_clients.insert(std::pair<int, Client *>(client_sock, client));
+	clientGarbage.push_back(client);
 	this->_nbClients += 1;
 }
 
@@ -196,10 +204,8 @@ void Server::removeClient(int fd)
 	display = _clients[fd]->getNickname().size() ? "	[" + _clients[fd]->getNickname() + "] left the server" : "	[" + patch::to_string(fd) + "] left the server";
 	std::cout << display << std::endl;
 	close(fd);
-	//delete _clients[fd];
 	this->_clients.erase(fd);
 	this->_nbClients -= 1;
-	
 }
 
 bool Server::nickNameUsed(std::string nickname)

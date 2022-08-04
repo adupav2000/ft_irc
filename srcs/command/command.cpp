@@ -138,6 +138,8 @@ void Command::insertAllMess()
 	this->_errMess[RPL_ADMINEMAIL] = ":<admin info>";
 	this->_errMess[RPL_TRYAGAIN] = "<command> :Please wait a while and try again.";
 	this->_errMess[SEND_CONFIRMNEWNICK] = "Your nickname is now <nickname>";
+
+	this->_errMess[SEND_CONFIRMDISCONNECT] = "Your connection was suspended";
 }
 
 Command::Command()

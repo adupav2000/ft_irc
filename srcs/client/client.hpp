@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 01:38:46 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/04 16:35:32 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,5 +181,6 @@ protected:
 	int sendReply(int replyNum);
 	int setUserMode(unsigned char num);
 };
+
 
 #endif

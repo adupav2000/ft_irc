@@ -69,7 +69,13 @@ int Client::JOIN(Command arguments)
 			reply = ":" + client->getNickname() + " PART :" + (*it)->getName() + "\r\n";
 			std::map<int, Client *> users = (*it)->getClients();
 			for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
-				cli->second->PART(arguments);
+			{
+				send(cli->first, reply.c_str(), reply.size(), 0);
+			}
+			(*it)->removeFromChannel(client);
+			client->leaveChannel((*it));
+			if ((*it)->getClients().size() == 0)
+				server->destroyChannel((*it));
 		}
 		return 0;
 	}
@@ -79,6 +85,7 @@ int Client::JOIN(Command arguments)
 		if (!server->getChannel().count(*it))
 		{
 			channel = new Channel((*it), server, client);
+			channelGarbage.push_back(channel);
 			server->addChannel(channel);
 			channel->changeUserMode(getPoll().fd, 'o', '+');
 		}

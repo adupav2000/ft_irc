@@ -6,7 +6,7 @@
 /*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:26 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 13:53:54 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/04 19:26:49 by kamanfo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,10 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW),
 
 Client::~Client()
 {
-	for (size_t i = 0; i < _commands.size(); i++)
+	/*for (size_t i = 0; i < _commands.size(); i++)
 		delete _commands[i];
 	_commands.clear();
-	std::cout << "clients : " << std::endl;
+	std::cout << "clients : " << std::endl;*/
 	return;
 }
 
@@ -152,6 +152,7 @@ int Client::executeCommands()
 	std::string errorStr;
 	unsigned long i = 0;
 	std::vector<Command *>::iterator it;
+	std::vector<Command *> toDel;
 
 	while (this->_commands.size() != 0 && _clientStatus != REFUSED)
 	{
@@ -195,7 +196,6 @@ int Client::executeCommands()
 					return 0;
 				}
 			}
-			//delete (*_commands.begin());
 			_commands.erase(_commands.begin());
 			
 		}
@@ -337,7 +337,9 @@ void Client::treatMessage()
 		{
 			if (_text[i] == '\r' && _text[i + 1] == '\n')
 			{
-				_commands.push_back(new Command(_text.substr(start, i - start), getServer(), this));
+				Command *command = new Command(_text.substr(start, i - start), getServer(), this);
+				_commands.push_back(command);
+				commandGarbage.push_back(command);
 				start = i + 2;
 				i += 2;
 			}
@@ -373,7 +375,9 @@ void Client::treatMessage()
 		{
 			*(_text.end() - 1) = '\r';
 			_text += "\n";
-			_commands.push_back(new Command(_text.substr(0, _text.size() - 2), getServer(), this));
+			Command *command = new Command(_text.substr(0, _text.size() - 2), getServer(), this);
+			_commands.push_back(command);
+			commandGarbage.push_back(command);
 			if (_clientStatus != CONNECTED)
 			{
 				executeCommands();
@@ -409,7 +413,6 @@ void Client::leaveChannel(Channel *channel)
 		if (*it == channel)
 		{
 			_channels.erase(it);
-			//delete channel;
 		}
 	}
 }
