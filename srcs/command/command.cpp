@@ -8,14 +8,8 @@ void Command::insertAllMess()
 	this->_errMess[ERR_CANNOTSENDTOCHAN] = "<channel name> :Cannot send to channel";
 	this->_errMess[ERR_TOOMANYCHANNELS] = "<channel name> :You have joined too many channels";
 	this->_errMess[ERR_WASNOSUCHNICK] = "<nick> :There was no such nickname";
-	
-	
 	this->_errMess[ERR_NOORIGIN] = ":No origin specified";
-	
 	this->_errMess[ERR_NOTEXTTOSEND] = ":No text to send";
-	
-	
-	
 	this->_errMess[ERR_UNKNOWNCOMMAND] = "<command> :Unknown command";
 	this->_errMess[ERR_NOMOTD] = ":MOTD File is missing";
 	//  this->_errMess[ERR_NOADMININFO] = "<server> :No administrative info available";
@@ -85,7 +79,7 @@ void Command::insertAllMess()
 	//  this->_errMess[RPL_ENDOFINVITELIST] = "<channel> :End of channel invite list";
 	//  this->_errMess[RPL_EXCEPTLIST] = "<channel> <exceptionmask>";
 	//  this->_errMess[RPL_ENDOFEXCEPTLIST] = "<channel> :End of channel exception list";
-	 this->_errMess[RPL_VERSION] = "<version>.<debuglevel> <server> :<comments>";
+	 this->_errMess[RPL_VERSION] = "<version>.0 <server> :<comments>";
 	//  this->_errMess[RPL_WHOREPLY] = "<channel> <user> <host> <server> <nick>";
 	//  this->_errMess[RPL_ENDOFWHO] = "<name> :End of WHO list";
 	//  this->_errMess[RPL_NAMREPLY] = "( '=' / '*' / '@' ) <channel>";
@@ -98,7 +92,7 @@ void Command::insertAllMess()
 	this->_errMess[RPL_ENDOFINFO] = ":End of INFO list";
 	 this->_errMess[RPL_MOTDSTART] = ":- <server> Message of the day - ";
 	//  this->_errMess[RPL_MOTD] = ":- <text>";
-	//  this->_errMess[RPL_ENDOFMOTD] = ":End of MOTD command";
+	 this->_errMess[RPL_ENDOFMOTD] = ":End of MOTD command";
 	this->_errMess[RPL_YOUREOPER] = ":You are now an IRC operator";
 	//  this->_errMess[RPL_REHASHING] = "<config file> :Rehashing";
 	this->_errMess[RPL_YOURESERVICE] = "You are service <servicename>";
@@ -265,6 +259,7 @@ std::string Command::getErrorString(int num) const
 	ret = findAndReplace("<version>", ret, this->_serverRef->getVersion());
 	//WIERD : <server name does exactly the same>
     ret = findAndReplace("<server>", ret, this->_serverRef->getName());
+    ret = findAndReplace("<comments>", ret, "Fully functionnal !");
 	/*
 		MOTS Clef a remplacer !!
 		<# visible>

@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 22:23:58 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/03 15:06:34 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/05 00:41:04 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ int Client::MOTD(Command arguments)
 	std::string motdTxt = "";
 	std::string line = "";
 
-	// TODO Handle motd from other servers
 	(void)arguments;
 	this->sendReply(RPL_MOTDSTART);
 	inputFile.open("./files/motd.txt");
@@ -46,7 +45,7 @@ int Client::MOTD(Command arguments)
 		inputFile.close();
 	}
 	send(this->getPoll().fd, motdTxt.c_str(), motdTxt.size(), 0);
-	// this->sendReply(RPL_MOTD);
+	this->sendReply(RPL_ENDOFMOTD);
 	return (0);
 }
 
@@ -133,13 +132,10 @@ int Client::LUSERS(Command arguments)
 int Client::VERSION(Command arguments)
 {
 	(void)arguments;
-   std::string reply;
-   if (arguments.getParameters().size() > 0)
-      return (ERR_NOSUCHSERVER);
-   return (RPL_VERSION);
-	reply = ":" + getNickname() + "!" + getUsername() + "@localhost :" + _serverRef->getVersion() + " " + _serverRef->getName() + "\r\n";
-   send(getPoll().fd, reply.c_str(), reply.size(), 0);
-   return 0;
+	std::string reply;
+	if (arguments.getParameters().size() > 0)
+		return (ERR_NOSUCHSERVER);
+	return (RPL_VERSION);
 }
 
 /*
