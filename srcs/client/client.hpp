@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:04:29 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/02 21:02:16 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/04 01:38:46 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ public:
 
 	/* modifiers */
 	void leaveChannel(Channel *channel);
+	void leaveSingleChannel(Channel *channel, Command *argument);
 
 	void clearCommands();
 
