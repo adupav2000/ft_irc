@@ -167,7 +167,6 @@ int Client::PART(Command arguments)
 				send(this->getPoll().fd, reply.c_str(), reply.size(), 0);
 				continue;
 			}
-			std::cout << this->getNickname() << " is quitting" << std::endl;
 			if (!(arguments.getParameters().size() == 2 && arguments.getParameters()[1] == this->_nickname))
 				reply = ":" + this->getNickname() + "!" + this->getUsername() + "@localhost" + " PART " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
 			std::map<int, Client *> users = channel->getClients();
