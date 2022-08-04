@@ -92,22 +92,13 @@ int Client::NICK(Command arguments)
 int	Client::checkNickname(Command arguments, std::string name) const
 {
 	if (arguments.getParameters().size() < 1 || name.length() > 9)
-	{
-		std::cout << "issue at stage 0 size " << arguments.getParameters().size() << "len " << name.length() << std::endl;
 		return (ERR_ERRONEUSNICKNAME);
-	}
 	for (std::string::iterator it = name.begin(), end = name.end(); it != end; ++it)
 	{
 		if (it == name.begin() && !this->isLetter(*it) && !this->isSpecial(*it))
-		{
-			std::cout << "First issue here " << !this->isLetter(*it) << !this->isSpecial(*it) << std::endl;
 			return (ERR_ERRONEUSNICKNAME);
-		}
 		if (!this->isDigit(*it) && !this->isLetter(*it) && !this->isSpecial(*it))
-		{
-			std::cout << "Second issue here with char " << *it << "->" << !this->isDigit(*it) << !this->isLetter(*it) << !this->isSpecial(*it) << std::endl;
 			return (ERR_ERRONEUSNICKNAME);
-		}
 	}
 	return (0);
 }

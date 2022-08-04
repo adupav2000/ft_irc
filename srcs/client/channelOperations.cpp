@@ -13,8 +13,6 @@
 #include "client.hpp"
 #include "../channel/channel.hpp"
 
-
-
 /*
 Command: JOIN
    Parameters: ( <channel> *( "," <channel> ) [ <key> *( "," <key> ) ] )
@@ -57,6 +55,7 @@ int Client::JOIN(Command arguments)
 	Server *server = arguments.getServer();
 	Client *client = arguments.getClient();
 	Channel *channel;
+
 	std::vector<Channel *> channels = getChannels();
 	if (arguments.getParameters()[0] == "#0" || arguments.getParameters()[0] == "0")
 	{
@@ -70,8 +69,8 @@ int Client::JOIN(Command arguments)
 			}
 			(*it)->removeFromChannel(client);
 			client->leaveChannel((*it));
-			//if ((*it)->getClients().size() == 0)
-				//server->destroyChannel((*it));
+			if ((*it)->getClients().size() == 0)
+				server->destroyChannel((*it));
 		}
 		return 0;
 	}
@@ -87,6 +86,7 @@ int Client::JOIN(Command arguments)
 		else
 		{
 			channel = server->getChannel().find(*it)->second;
+			arguments.setChannel(channel);
 			if (channel->getMode().find('l') != std::string::npos && channel->getClients().size() == channel->getMaxClients())
 			{
 				reply = client->getNickname() + " " + channel->getName() + " :Cannot join channel (+l) \r\n";
@@ -108,9 +108,12 @@ int Client::JOIN(Command arguments)
 		std::vector<std::string> keys = split(arguments.getParameters()[1], ",");
 		for (size_t i = 0; i < keys.size(); i++)
 		{
+			arguments.setChannel(server->getChannel()[names[i]]);
 			(server->getChannel()[names[i]])->setKey(keys[i], '+');
 		}
 	}
+
+	arguments.setChannel(server->getChannel()[names[0]]);
 	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " JOIN " + names[0] + "\r\n";
 	send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 	channel = server->getChannel()[names[0]];
@@ -174,6 +177,7 @@ int Client::PART(Command arguments)
 			{
 				send(cli->first, reply.c_str(), reply.size(), 0);
 			}
+			arguments.setChannel(channel);
 			channel->removeFromChannel(this);
 			this->leaveChannel(channel);
 			// if (channel->getClients().size() == 0)
@@ -306,7 +310,8 @@ int Client::modeChannel(Command arguments)
 			}
 			else
 			{
-				reply = getNickname() + " " + channel->getName() + " :You're not channel operator\r\n";
+				// reply = getNickname() + " " + channel->getName() + " :You're not channel operator\r\n";
+				reply = "#" + channel->getName() + " :You're not channel operator\r\n";
 				send(getPoll().fd, reply.c_str(), reply.size(), 0);
 			}
 
@@ -650,12 +655,15 @@ int Client::KICK(Command arguments)
 	{
 		if (!server->getChannel().count(*it))
 		{
-			reply = *it + " :No such channel\r\n";
+			reply = "#" + *it + " :No such channel\r\n";
 			send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 			continue;
 		}
 		channel = server->getChannel()[*it];
-		if (getMode().find("o") == std::string::npos && channel->getUserMode()[getPoll().fd].find("O") == std::string::npos && channel->getUserMode()[getPoll().fd].find("o") == std::string::npos)
+		(*_commands.begin())->setChannel(server->getChannel()[*it]);
+		if (getMode().find("o") == std::string::npos
+			&& channel->getUserMode()[getPoll().fd].find("O") == std::string::npos
+			&& channel->getUserMode()[getPoll().fd].find("o") == std::string::npos)
 			return ERR_CHANOPRIVSNEEDED;
 		for (std::vector<std::string>::iterator cli = clients.begin(); cli != clients.end(); ++cli)
 		{
@@ -668,6 +676,7 @@ int Client::KICK(Command arguments)
 			std::map<int, Client *> users = channel->getClients();
 			for (std::map<int, Client *>::iterator cli2 = users.begin() ; cli2 != users.end(); cli2++)
 			{
+				std::cout << "SENDING CHANNE " << reply << std::endl;
 				send(cli2->first, reply.c_str(), reply.size(), 0);
 			}
 			Client *bannedClient = server->findClientByNicknamme(*cli);
