@@ -256,11 +256,11 @@ int Client::modeChannel(Command arguments)
 					channel->setMode(arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
 				else
 				{
-					std::cout << "user mode oo " << std::endl;
 					if (arguments.getParameters().size() < 3)
 					{
-						reply = ":" + getNickname() + " MODE :Not enough parameters\r\n";
-						send(getPoll().fd, reply.c_str(), reply.size(), 0);
+						sendReply(ERR_NEEDMOREPARAMS);
+						// reply = ":" + getNickname() + " MODE :Not enough parameters\r\n";
+						// send(getPoll().fd, reply.c_str(), reply.size(), 0);
 					}
 					else 
 					{
@@ -268,8 +268,9 @@ int Client::modeChannel(Command arguments)
 						{
 							if (arguments.getParameters().size() < 3)
 							{
-								reply = ":" + getNickname() + " MODE :Not enough parameters\r\n";
-								send(getPoll().fd, reply.c_str(), reply.size(), 0);
+								sendReply(ERR_NEEDMOREPARAMS);
+								// reply = ":" + getNickname() + " MODE :Not enough parameters\r\n";
+								// send(getPoll().fd, reply.c_str(), reply.size(), 0);
 							}
 							else
 							{
@@ -304,8 +305,6 @@ int Client::modeChannel(Command arguments)
 									channel->setMaxClients(atoi((arguments.getParameters()[2]).c_str()));
 									channel->setMode(arguments.getParameters()[1][i], arguments.getParameters()[1][0]);
 								}
-								std::cout << "parm l = " << arguments.getParameters()[2] << std::endl;
-								std::cout << "parm l = " << channel->getMaxClients() << std::endl;
 								channel->getMaxClients();
 							}
 						}
@@ -315,7 +314,9 @@ int Client::modeChannel(Command arguments)
 			else
 			{
 				// reply = getNickname() + " " + channel->getName() + " :You're not channel operator\r\n";
-				reply = "#" + channel->getName() + " :You're not channel operator\r\n";
+				arguments.setChannel(channel);
+				// reply = "#" + channel->getName() + " :You're not channel operator\r\n";
+				reply = arguments.getErrorString(ERR_CHANOPRIVSNEEDED);
 				send(getPoll().fd, reply.c_str(), reply.size(), 0);
 			}
 
@@ -673,14 +674,13 @@ int Client::KICK(Command arguments)
 		{
 			if (!channel->clientOnChannel(*cli))
 			{
-				reply = *cli + " " + channel->getName() + " :They aren't on that channel\r\n";
+				reply = this->getNickname() + " " + *cli + " " + channel->getName() + " :They aren't on that channel\r\n";
 				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 				continue;
 			}
 			std::map<int, Client *> users = channel->getClients();
 			for (std::map<int, Client *>::iterator cli2 = users.begin() ; cli2 != users.end(); cli2++)
 			{
-				std::cout << "SENDING CHANNE " << reply << std::endl;
 				send(cli2->first, reply.c_str(), reply.size(), 0);
 			}
 			Client *bannedClient = server->findClientByNicknamme(*cli);

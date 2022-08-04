@@ -22,10 +22,10 @@ void Command::insertAllMess()
 	//  this->_errMess[ERR_FILEERROR] = ":File error doing <file op> on <file>";
 	this->_errMess[ERR_NONICKNAMEGIVEN] = ":No nickname given";
 	this->_errMess[ERR_ERRONEUSNICKNAME] = "<nick> :Erroneous nickname";
-	this->_errMess[ERR_NICKNAMEINUSE] = "<nick> :Nickname is already in use";
+	this->_errMess[ERR_NICKNAMEINUSE] = "<nickname> <nick> :Nickname is already in use";
 	//  this->_errMess[ERR_NICKCOLLISION] = "<nick> :Nickname collision KILL from <user>@<host>";
 	//  this->_errMess[ERR_UNAVAILRESOURCE] = "<nick/channel> :Nick/channel is temporarily unavailable";
-	this->_errMess[ERR_USERNOTINCHANNEL] = "<nick> <channel> :They aren't on that channel";
+	this->_errMess[ERR_USERNOTINCHANNEL] = "<nickname> <nick> <channel> :They aren't on that channel";
 	this->_errMess[ERR_NOTONCHANNEL] = "<channel> :You're not on that channel";
 	this->_errMess[ERR_USERONCHANNEL] = "<user> <channel> :is already on channel";
 	//  this->_errMess[ERR_NOLOGIN] = "<user> :User not logged in";
@@ -247,8 +247,14 @@ std::string Command::getErrorString(int num) const
 	if (this->_errMess.find(num) == this->_errMess.end())
 		return ("");
 	std::string ret = this->_errMess.at(num);
-	ret = findAndReplace("<nickname>", ret, _client->getNickname());
-	ret = findAndReplace("<nick>", ret, this->getParameters()[0]);
+	if (_client->getNickname().length() == 0)
+		ret = findAndReplace("<nickname>", ret, _client->getUsername());
+	else 
+		ret = findAndReplace("<nickname>", ret, _client->getNickname());
+	if (this->getParameters().size() > 0)
+		ret = findAndReplace("<nick>", ret, this->getParameters()[0]);
+	if (this->getPrefix() == "KICK" && this->getParameters().size())
+		ret = findAndReplace("<nick>", ret, this->getParameters()[1]);
 	ret = findAndReplace("<server name>", ret, _serverRef->getName());
 	ret = findAndReplace("<command>", ret, this->getPrefix());
 	if (this->_channel != NULL)
