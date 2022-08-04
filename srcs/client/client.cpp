@@ -176,12 +176,14 @@ int Client::executeCommands()
 			// si pas de channel et le premier n'est pas une commande
 			if (ret == -4)
 				return (-1);
-			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) != this->_messageFunctions.end() && ret != 0)
+			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) != this->_messageFunctions.end()
+				&& ret != 0)
 			{
-				errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand();
+				// errorStr = ":" + this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand();
+				errorStr = ":ircserv " + patch::to_string(ret) + " " + this->_nickname + " ";
+				errorStr += (*_commands.begin())->getErrorString(ret);
+				std::cout << "Error String : " << errorStr << std::endl;
 				send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
-				errorStr = (*_commands.begin())->getErrorString(ret);
-				send(_fds.fd, errorStr.c_str(), errorStr.size(), 0);
 			}
 			if (_clientStatus == NEW)
 			{
@@ -219,13 +221,11 @@ int Client::sendReply(std::vector<int> replyNum)
 {
 	std::string errorStr;
 	
-	// std::cout << errorStr << std::endl;
-	// sending the introduction
-	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand() + "\r\n";
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	for (std::vector<int>::iterator it = replyNum.begin(); it != replyNum.end(); it++)
 	{
-		errorStr = (*_commands.begin())->getErrorString(*it);
+		errorStr = ":irserv " + patch::to_string(*it) + " " + this->getNickname() + " ";
+		errorStr += (*_commands.begin())->getErrorString(*it);
 		send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	}
 	return (0);
@@ -240,13 +240,9 @@ int Client::sendReply(std::vector<int> replyNum)
 int Client::sendReply(int replyNum)
 {
 	std::string errorStr;
-	
-	if (replyNum <= ERR_NOSUCHNICK && replyNum >= ERR_USERSDONTMATCH)
-	{
-	errorStr = this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand() + "\r\n";
-	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
-	}
-	errorStr = ":" + getNickname() + "!" + getUsername() + "@" + this->_hostname + " " + (*_commands.begin())->getErrorString(replyNum);
+
+	errorStr = ":irserv " + patch::to_string(replyNum) + " " + this->getNickname() + " " + (*_commands.begin())->getErrorString(replyNum);
+	// errorStr = ":" + getNickname() + "!" + getUsername() + "@" + this->_hostname + " " + (*_commands.begin())->getErrorString(replyNum);
 	std::cout << "sending reply for " << errorStr << std::endl;
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	return (0);

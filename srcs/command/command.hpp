@@ -30,6 +30,9 @@ public:
     Server *getServer() const;
     std::vector<std::string> getParameters() const;
 	std::string getErrorString(int num) const;
+    
+    /* Setters */
+    Channel *setChannel(Channel *chan);
 
 
 private:
