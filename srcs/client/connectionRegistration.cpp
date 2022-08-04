@@ -38,7 +38,10 @@ int Client::PASS(Command arguments)
 	if (_clientStatus == CONNECTED)
 		return (ERR_ALREADYREGISTRED);
 	if (!(_serverRef->correctPassword(arguments.getParameters()[0])))
+	{
 		setStatus(REFUSED);
+		return (ERR_PASSWDMISMATCH);
+	}
 	else
 		_passOK = true;
 	return (0);
@@ -72,8 +75,7 @@ int Client::NICK(Command arguments)
 		return (retValNickname);
 	if (_clientStatus == PENDING)
 	{
-	
-		// CAS OU LE CLIENT N'EST PAS ENCORE ENREGISTRÉ
+		/* suivant la technique de DALNET */
 		while (_serverRef->nickNameUsed(nTmp))
 			nTmp += "_";
 	}
@@ -167,12 +169,10 @@ int Client::OPER(Command arguments)
 	if (arguments.getParameters().size() < 2)
 		return ERR_NEEDMOREPARAMS;
 	if (arguments.getParameters()[0] != name)
-		return ERR_NOOPERHOST;
+		return ERR_PASSWDMISMATCH;
 	if (arguments.getParameters()[1] != password)
 		return ERR_PASSWDMISMATCH;
 	this->sendReply(RPL_YOUREOPER);
-	// reply = ":" + getNickname() + "!" + getUsername() + "@localhost You are now an IRC operator\r\n";
-	send(getPoll().fd, reply.c_str(), reply.size(), 0);
 	if (getMode().find('o') == std::string::npos)
 	{
 		_mode = getMode() + "o";
@@ -216,7 +216,7 @@ int Client::MODE(Command arguments)
 {
 	std::string reply;
 
-	if (arguments.getParameters().size() < 1)
+	if (arguments.getParameters().size() < 2)
 		return (ERR_NEEDMOREPARAMS);
 	if (arguments.getParameters()[0][0] == '#')
 		return (this->modeChannel(arguments));
