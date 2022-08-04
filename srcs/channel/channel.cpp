@@ -135,8 +135,8 @@ void Channel::removeFromChannel(Client *client, Command *argument)
 
 void Channel::removeFromChannel(Client *client)
 {
-    //delete client;
     _clients.erase(client->getPoll().fd);
+    //delete client;
 }
 
 bool Channel::clientOnChannel(std::string name)
