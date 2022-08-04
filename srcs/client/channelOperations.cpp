@@ -661,7 +661,6 @@ int Client::KICK(Command arguments)
 				send(cli2->first, reply.c_str(), reply.size(), 0);
 			}
 			Client *bannedClient = server->findClientByNicknamme(*cli);
-			std::cout << "This function was called " << std::endl;
 			channel->removeFromChannel(bannedClient, &arguments);
 			bannedClient->leaveChannel(channel);
 		}

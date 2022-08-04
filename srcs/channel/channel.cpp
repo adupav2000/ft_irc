@@ -128,7 +128,6 @@ void Channel::addToChannel(Client *client)
 void Channel::removeFromChannel(Client *client, Command *argument)
 {
     //delete client;
-	std::cout << "Good call "<< std::endl;
 	client->leaveSingleChannel(this, argument);
     _clients.erase(client->getPoll().fd);
 }
@@ -166,7 +165,6 @@ void Channel::addInvited(Client *client)
 
 void Channel::changeUserMode(int index, char mode, char signe)
 {
-    std::cout << "changeUserMode : " << "index" << index << "mode" << mode << "signe" << signe << std::endl;
 	if (signe == '-')
 		_userMode[index].erase(_userMode[index].find(mode, 1));
 	else if (signe == '+' && _userMode[index].find(mode) == std::string::npos)
@@ -177,7 +175,6 @@ bool Channel::isInvited(std::string name)
 {
 	for (std::vector<Client *>::iterator it = _invited.begin(); it != _invited.end(); it++)
 	{
-		std::cout << "invited " << (*it)->getNickname() << std::endl;
 		if ((*it)->getNickname() == name)
 			return true;
 	}
