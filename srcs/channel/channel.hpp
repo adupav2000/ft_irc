@@ -79,6 +79,4 @@ class Channel
 
 };
 
-// int JOIN(Command *arguments);
-
 #endif

@@ -181,4 +181,3 @@ bool Channel::isInvited(std::string name)
 	return false;
 	
 }
-
