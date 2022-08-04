@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   globals.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamanfo <kamanfo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 10:37:01 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/08/04 20:58:30 by kamanfo          ###   ########.fr       */
+/*   Updated: 2022/08/05 00:33:55 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ std::vector<std::string> split(std::string str, std::string delimiter);
 #define RPL_ENDOFINFO 374
 #define RPL_ENDOFWHOIS 318    
 #define RPL_MOTDSTART 375    
+#define RPL_ENDOFMOTD 376 
 
 #define RPL_VERSION 351
 #define ERR_ALREADYREGISTRED 462

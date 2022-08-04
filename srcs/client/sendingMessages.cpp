@@ -6,7 +6,7 @@
 /*   By: adu-pavi <adu-pavi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/24 22:21:48 by adu-pavi          #+#    #+#             */
-/*   Updated: 2022/07/26 19:23:05 by adu-pavi         ###   ########.fr       */
+/*   Updated: 2022/08/05 00:50:36 by adu-pavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@
 
    PRIVMSG kalt%millennium.stealth.net@irc.stealth.net :Are you a frog?
                                    ; Message to a user on server
-                                   irc.stealth.net with username of
+                                   irc.stealth.net wgloith username of
                                    "kalt", and connected from the host
                                    millennium.stealth.net.
 
@@ -159,3 +159,62 @@ int Client::PRIVMSG(Command arguments)
 
    See PRIVMSG for more details on replies and examples.
 */
+void noticeUser(Command *arguments, std::string receiver, Server *server, std::string message)
+{
+	std::string reply;
+	std::map<int, Client *> clients = server->getClients();
+	for(std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); it++)
+    {
+        if ((*it).second->getNickname() == receiver)
+		{
+			reply = ":" + arguments->getClient()->getNickname() + "!" + arguments->getClient()->getUsername() + "@localhost NOTICE " + receiver + " " + message + "\r\n";
+            send((*it).first, reply.c_str() , reply.size(), 0);
+			return ;
+        }
+    }
+	reply = receiver + " :No such nick/channel\r\n";
+	send(arguments->getClient()->getPoll().fd, reply.c_str() , reply.size(), 0);
+    return ;
+}
+
+void noticeChannel(Command *arguments, std::string receiver, Server *server, std::string message)
+{
+    std::string reply;
+	std::map<std::string, Channel *> channels = server->getChannel();
+	std::map<std::string, Channel *>::iterator it;
+	if ((it = channels.find(receiver)) != channels.end())
+	{
+        if (it->second->clientOnChannel(arguments->getClient()->getNickname()) == false)
+            return ;
+		reply = ":" + arguments->getClient()->getNickname() + "!" + arguments->getClient()->getUsername() + "@localhost NOTICE " + receiver + " " + message + "\r\n";
+    	std::map<int, Client *> channelClients = (*it).second->getClients();
+		for (std::map<int, Client *>::iterator cli = channelClients.begin(); cli != channelClients.end(); cli++)
+		{
+			if (cli->first != arguments->getClient()->getPoll().fd)
+				send((*cli).first, reply.c_str() , reply.size(), 0);
+		}
+		return ;
+	}
+	else
+	{
+		reply = receiver + " :No such nick/channel\r\n";
+		send(arguments->getClient()->getPoll().fd, reply.c_str() , reply.size(), 0);
+	}
+    return;
+}
+int Client::NOTICE(Command arguments)
+{
+	(void)arguments;
+	if (arguments.getParameters().size() == 0)
+		return ERR_NEEDMOREPARAMS;
+	else if (arguments.getParameters().size() == 1)
+		return ERR_NOTEXTTOSEND;
+	std::string receiver = arguments.getParameters()[0];
+	Server *server = arguments.getServer();
+    if (receiver.find("#") != std::string::npos)
+        noticeChannel(&arguments, receiver, server, arguments.getMessage());
+    else 
+    {
+        noticeUser(&arguments, receiver, server, arguments.getMessage());
+    }
+}

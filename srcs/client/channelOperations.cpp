@@ -674,7 +674,8 @@ int Client::KICK(Command arguments)
 		{
 			if (!channel->clientOnChannel(*cli))
 			{
-				reply = this->getNickname() + " " + *cli + " " + channel->getName() + " :They aren't on that channel\r\n";
+				reply = ":ircserv " + patch::to_string(ERR_NOTONCHANNEL) + " " + this->getNickname() + " :";
+				reply += this->getNickname() + " " + *cli + " " + channel->getName() + " :They aren't on that channel\r\n";
 				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 				continue;
 			}
