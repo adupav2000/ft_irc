@@ -123,7 +123,7 @@ int	Client::checkNickname(Command arguments, std::string name) const
 
    Numeric Replies:
 
-           ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
+           ERR_NEEDMOREPARAMS              PRIVMSG
 */
 int Client::USER(Command arguments)
 {

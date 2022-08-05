@@ -33,16 +33,6 @@ Server::~Server()
     return ;
 }
 
-// Server::Server(Server const & rhs)
-// {
-//     return ;
-// }
-
-// Server &Server::operator=(Server const & rhs)
-// {
-//     return _null;
-// }
-
 void handler(int)
 {
 	exitRequest = 1;
@@ -252,7 +242,6 @@ void Server::displayServer()
 	Client *client;
 	Channel *channel;
 
-    // std::cout << std::string( 100, '\n' );
 	if (_clients.size() != 0)
 	{
 		display =  "USERS : \n";

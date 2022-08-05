@@ -21,11 +21,6 @@ Channel::~Channel()
     return ;
 }
 
-// Channel &Channel::operator=(Channel const & rhs)
-// {
-//     return 
-// }
-
 /* GETTERS */
 std::string Channel::getName()
 {
@@ -127,7 +122,6 @@ void Channel::addToChannel(Client *client)
 
 void Channel::removeFromChannel(Client *client, Command *argument)
 {
-    //delete client;
 	client->leaveSingleChannel(this, argument);
     _clients.erase(client->getPoll().fd);
 }
@@ -135,7 +129,6 @@ void Channel::removeFromChannel(Client *client, Command *argument)
 void Channel::removeFromChannel(Client *client)
 {
     _clients.erase(client->getPoll().fd);
-    //delete client;
 }
 
 bool Channel::clientOnChannel(std::string name)

@@ -45,7 +45,7 @@ SOURCE += $(addprefix srcs/, $(MAIN_FILE))
 
 COMPILER = clang++
 
-FLAGS = -std=c++98 -Wall -Wextra -Werror -g -fsanitize=address #-fsanitize=leak
+FLAGS = -std=c++98 -Wall -Wextra -Werror -g
 
 OBJ = $(SOURCE:.cpp=.o)
 

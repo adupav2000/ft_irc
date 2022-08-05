@@ -118,8 +118,6 @@ int Client::WHOIS(Command arguments)
 		send(getPoll().fd, reply.c_str(), reply.size(), 0);
 	}
         sendReply(RPL_ENDOFWHOIS);
-	// reply = ":" + getNickname() + "!" + getUsername() + "@localhost " + user->getNickname() + " :End of WHOIS list\r\n";
-	// send(getPoll().fd, reply.c_str(), reply.size(), 0);
 	return 0;
 }
 

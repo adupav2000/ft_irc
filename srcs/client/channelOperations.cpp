@@ -118,8 +118,6 @@ int Client::JOIN(Command arguments)
 	}
 
 	arguments.setChannel(server->getChannel()[names[0]]);
-	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " JOIN " + names[0] + "\r\n";
-	// send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 	std::map<int, Client *> users = channel->getClients();
 	for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
 		send(cli->first, reply.c_str(), reply.size(), 0);
@@ -378,7 +376,6 @@ int Client::TOPIC(Command arguments)
 	}
 	else 
 	{
-		std::cout << arguments.getMessage() << std::endl;
 		if (channel->getMode().find('t') != std::string::npos && client->getMode().find('o') == std::string::npos && channel->getUserMode()[getPoll().fd].find("O") == std::string::npos && channel->getUserMode()[getPoll().fd].find("o") == std::string::npos)
 			return ERR_CHANOPRIVSNEEDED;
 		if (arguments.getMessage() == ":")
@@ -386,7 +383,6 @@ int Client::TOPIC(Command arguments)
 		else
 			channel->setTopic(arguments.getMessage());
 	}
-	std::cout << arguments.getMessage() << std::endl;
 	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " TOPIC " + channel->getName() + " :" + arguments.getMessage() + "\r\n";
 	std::map<int, Client *> users = channel->getClients();
 	for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
@@ -652,11 +648,11 @@ int Client::INVITE(Command arguments)
 int Client::KICK(Command arguments)
 {
 	std::string reply;
+	if (arguments.getParameters().size() < 2)
+		return ERR_NEEDMOREPARAMS;
 	Server *server = arguments.getServer();
 	Client *client = arguments.getClient();
 	Channel *channel;
-	if (arguments.getParameters().size() == 0)
-		return ERR_NEEDMOREPARAMS;
 	std::vector<std::string> channels = split(arguments.getParameters()[0], ",");
 	std::vector<std::string> clients = split(arguments.getParameters()[1], ",");
 	for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); ++it)
@@ -669,6 +665,11 @@ int Client::KICK(Command arguments)
 		}
 		channel = server->getChannel()[*it];
 		(*_commands.begin())->setChannel(server->getChannel()[*it]);
+		if (!channel->clientOnChannel(arguments.getParameters()[1]))
+		{
+			sendReply(ERR_USERNOTINCHANNEL);
+			continue;
+		}
 		if (getMode().find("o") == std::string::npos
 			&& channel->getUserMode()[getPoll().fd].find("O") == std::string::npos
 			&& channel->getUserMode()[getPoll().fd].find("o") == std::string::npos)
@@ -677,7 +678,7 @@ int Client::KICK(Command arguments)
 		{
 			if (!channel->clientOnChannel(*cli))
 			{
-				reply = ":ircserv " + patch::to_string(ERR_NOTONCHANNEL) + " " + this->getNickname() + " :";
+				reply = ":ircserv " + patch::to_string(ERR_USERNOTINCHANNEL) + " " + this->getNickname() + " :";
 				reply += this->getNickname() + " " + *cli + " " + channel->getName() + " :They aren't on that channel\r\n";
 				send(client->getPoll().fd, reply.c_str(), reply.size(), 0);
 				continue;

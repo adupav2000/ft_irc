@@ -18,7 +18,6 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW),
 	_messageFunctions["PASS"] = &Client::PASS;
 	_messageFunctions["NICK"] = &Client::NICK;
 	_messageFunctions["USER"] = &Client::USER;
-	// UNSAFE
 	_messageFunctions["USERHOST"] = &Client::USER;
 	_messageFunctions["MODE"] = &Client::MODE;
 	_messageFunctions["OPER"] = &Client::OPER;
@@ -58,11 +57,11 @@ Client::Client(t_pollfd fds, Server *serverRef) : _mode(""), _clientStatus(NEW),
 	_messageFunctions["CAP"] = &Client::SQUIT;
 
 	_messageFunctions["PRIVMSG"] = &Client::PRIVMSG;
+	_messageFunctions["NOTICE"] = &Client::NOTICE;
 
 	/* userBasedQueries */
 	_messageFunctions["WHO"] = &Client::WHO;
 	_messageFunctions["WHOIS"] = &Client::WHOIS;
-	// _messageFunctions["WHOWAS"] = &Client::WHOWAS;
 
 	_registered = false;
 	_clientType = TYPE_ZERO;
@@ -155,8 +154,6 @@ int Client::executeCommands()
 
 	while (this->_commands.size() != 0 && _clientStatus != REFUSED)
 	{
-		//(this->*_messageFunctions.find((*_commands.begin())->getPrefix()) != this->*_messageFunctions->end())) &&
-		// if the user is in a chat and there is no matchin command : do nothing
 		std::cout << (*_commands.begin())->getPrefix();
 		i = 0;
 		while (i < (*_commands.begin())->getParameters().size())
@@ -164,21 +161,17 @@ int Client::executeCommands()
 		std::cout << std::endl;
 		try
 		{
-			// std::cout << "Talking from the executeCommand() : " << (*_commands.begin())->getPrefix() << std::endl;
 			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) == this->_messageFunctions.end())
 			{
 				_commands.erase(_commands.begin());
 				continue;
 			}
 			ret = (this->*_messageFunctions.at((*_commands.begin())->getPrefix()))((**(_commands.begin())));
-			// std::cout << "Result function " << ret << std::endl;
-			// si pas de channel et le premier n'est pas une commande
 			if (ret == -4)
 				return (-1);
 			if (this->_messageFunctions.find((*_commands.begin())->getPrefix()) != this->_messageFunctions.end()
 				&& ret != 0)
 			{
-				// errorStr = ":" + this->_nickname + "!" + this->_username + "@" + this->_hostname + " " + (*_commands.begin())->getStringCommand();
 				errorStr = ":ircserv " + patch::to_string(ret) + " " + this->_nickname + " ";
 				errorStr += (*_commands.begin())->getErrorString(ret);
 				std::cout << "Error String : " << errorStr << std::endl;
@@ -240,9 +233,6 @@ int Client::sendReply(int replyNum)
 {
 	std::string errorStr;
 
-	errorStr = ":irserv " + patch::to_string(replyNum) + " " + this->getNickname() + " " + (*_commands.begin())->getErrorString(replyNum);
-	// errorStr = ":" + getNickname() + "!" + getUsername() + "@" + this->_hostname + " " + (*_commands.begin())->getErrorString(replyNum);
-	std::cout << "sending reply for " << errorStr << std::endl;
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	return (0);
 }
@@ -256,11 +246,6 @@ Type Client::getType() const
 {
 	return _clientType;
 }
-
-// std::map<std::string, int(Client*)(Command)>	Client::getFunction()
-// {
-// 	return _functionCmd;
-// }
 
 std::vector<Command *> Client::getCommands() const
 {
@@ -355,7 +340,6 @@ void Client::treatMessage()
 					_clientStatus = PENDING;
 					executeCommands();
 				}
-				//_nickname = nick;
 				_username = (*_commands[2]).getParameters()[0];
 				_clientStatus = PENDING;
 			}
