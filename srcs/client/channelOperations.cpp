@@ -118,6 +118,7 @@ int Client::JOIN(Command arguments)
 	}
 
 	arguments.setChannel(server->getChannel()[names[0]]);
+	reply = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost" + " JOIN " + names[0] + "\r\n";
 	std::map<int, Client *> users = channel->getClients();
 	for (std::map<int, Client *>::iterator cli = users.begin() ; cli != users.end(); cli++)
 		send(cli->first, reply.c_str(), reply.size(), 0);

@@ -233,6 +233,7 @@ int Client::sendReply(int replyNum)
 {
 	std::string errorStr;
 
+	errorStr = ":irserv " + patch::to_string(replyNum) + " " + this->getNickname() + " " + (*_commands.begin())->getErrorString(replyNum);
 	send(this->getPoll().fd, errorStr.c_str(), errorStr.size(), 0);
 	return (0);
 }
