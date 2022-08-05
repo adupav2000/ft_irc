@@ -217,4 +217,5 @@ int Client::NOTICE(Command arguments)
     {
         noticeUser(&arguments, receiver, server, arguments.getMessage());
     }
+    return (0);
 }

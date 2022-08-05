@@ -316,6 +316,8 @@ void Client::treatMessage()
 
 	memset(buffer, 0, BUFFER_SIZE);
 	ret = recv(this->getPoll().fd, buffer, 1024, 0);
+	if (ret == -1 || buffer[0] == '\n')
+		return ;
 	if (ret == 0)
 	{
 		_clientStatus = DISCONNECTED;
